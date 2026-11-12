@@ -4,7 +4,7 @@ description: Explores prior art, open-source repositories, academic papers, and 
 license: MIT
 compatibility: Requires Python 3.8+ (standard library only). Optional git, gh CLI, or GITHUB_TOKEN for elevated rate limits.
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   author: "BeenHere Open Source Project"
 allowed-tools: Bash, Read, Grep, Glob, WebSearch
 ---
@@ -22,11 +22,12 @@ Activate this skill when:
 - The user presents a new software concept, architecture, or feature and asks if it has already been built.
 - The user asks for existing open-source libraries, academic papers, commercial products, or prior art.
 - The user is debating whether to build a custom solution from scratch or adopt/fork/integrate existing projects.
-- You are prompted with phrases like: *"has this been built?"*, *"explore prior art"*, *"find existing tools"*, *"reusability audit"*, or `/beenhere`.
+- You need deep integration analysis, interface symbol extraction, dependency constraints, or license risk checks for candidate repositories.
+- You are prompted with phrases like: *"has this been built?"*, *"explore prior art"*, *"find existing tools"*, *"reusability audit"*, *"integration blueprint"*, or `/beenhere`.
 
 ---
 
-## The 12-Step Research Protocol
+## The 14-Step Research & Integration Protocol
 
 Follow this structured workflow to conduct an objective, multi-angle investigation without context window saturation:
 
@@ -44,7 +45,9 @@ IDEA
   ├─► 9. Transferability Evaluation (references/transferability_rubric.md)
   ├─► 10. Feature Gap & Enhancement Analysis (references/feature_gap_analysis.md)
   ├─► 11. Code Reusability & License Clearance Audit (scripts/repo_inspector.py)
-  └─► 12. Strategic Build Decision & Landscape Report (templates/IDEA_LANDSCAPE.md)
+  ├─► 12. Strategic Build Decision & Landscape Report (templates/IDEA_LANDSCAPE.md)
+  ├─► 13. Deep Interface & Integration Point Analysis (scripts/integration_analyzer.py)
+  └─► 14. Architecture Integration Blueprint (templates/INTEGRATION_BLUEPRINT.md)
 ```
 
 ---
@@ -101,10 +104,18 @@ Transform raw discoveries into defensible technical intelligence:
 
 ---
 
-### Phase 4: Strategy Formulation & Landscape Reporting (Step 12)
+### Phase 4: Strategy Formulation & Architecture Integration (Steps 12–14)
 1. **Formulate Build Decision:** Select a defensible posture (*Adopt, Fork, Extend, Extract, Integrate, Build from Scratch, or Investigate Further*) using [references/evaluation_rubric.md](references/evaluation_rubric.md).
-2. **Render Structured Report:** Populate [templates/IDEA_LANDSCAPE.md](templates/IDEA_LANDSCAPE.md) with verified findings across all 15 standardized sections.
-3. **Verify Final Report Integrity:**
+2. **Render Structured Landscape Report:** Populate [templates/IDEA_LANDSCAPE.md](templates/IDEA_LANDSCAPE.md) with verified findings across all 15 standardized sections.
+3. **Deep Interface & Dependency Analysis (Step 13):**
+   Execute static symbol and manifest inspection for primary adoption candidates:
+   ```bash
+   python scripts/integration_analyzer.py --repo "owner/repo" --source-file "src/entrypoint.py" --manifest-file "pyproject.toml" --json
+   ```
+   Extracts exported classes/functions, dependencies, version constraints, and BSL-1.1 Additional Use Grants.
+4. **Synthesize Integration Blueprint (Step 14):**
+   When multiple components are recommended for a single product, synthesize [templates/INTEGRATION_BLUEPRINT.md](templates/INTEGRATION_BLUEPRINT.md) defining boundaries, protocols, dependency matrices, license compliance, and missing custom components.
+5. **Verify Final Report Integrity:**
    ```bash
    python scripts/verify_sources.py --file <path-to-generated-report>
    ```
