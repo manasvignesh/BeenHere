@@ -54,18 +54,35 @@ Claude Code will automatically evaluate the description in `SKILL.md` and load B
 
 ---
 
-## 2. Installation in OpenAI Codex / AGY
+## 2. Installation in OpenAI Codex
 
-OpenAI Codex and Antigravity load skills from `.agent/skills/` or `.codex/skills/`.
+OpenAI Codex loads skills from the standardized `.agents/skills/<skill-name>/` directory structure.
 
-### Project Setup
+### Option A: Project-Local Installation (Recommended)
+Inside your project root:
 ```bash
-mkdir -p .agent/skills/beenhere
-cp -r /path/to/beenhere/* .agent/skills/beenhere/
+# macOS / Linux
+mkdir -p .agents/skills/beenhere
+cp -r /path/to/beenhere/* .agents/skills/beenhere/
+
+# Windows PowerShell
+New-Item -ItemType Directory -Force -Path ".agents\skills\beenhere"
+Copy-Item -Recurse -Force c:\path\to\beenhere\* ".agents\skills\beenhere\"
 ```
 
-### Verification
-In your Codex or AGY session, activate the skill by asking:
+### Option B: User-Global Installation
+```bash
+# macOS / Linux
+mkdir -p ~/.agents/skills/beenhere
+cp -r /path/to/beenhere/* ~/.agents/skills/beenhere/
+
+# Windows PowerShell
+New-Item -ItemType Directory -Force -Path "$HOME\.agents\skills\beenhere"
+Copy-Item -Recurse -Force c:\path\to\beenhere\* "$HOME\.agents\skills\beenhere\"
+```
+
+### Verification in Codex
+In your Codex session, activate the skill by asking:
 ```text
 Explore prior art and reusability for: "real-time peer-to-peer collaborative canvas"
 ```

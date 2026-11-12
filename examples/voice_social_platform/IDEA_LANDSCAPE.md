@@ -40,14 +40,15 @@ Deconstructing the concept into four architectural layers reveals the foundation
 ### 2.2 Open-Source Ecosystem & GitHub Prior Art
 
 Discovered via BeenHere's deterministic `github_search.py` utility across queries: `"voice agent WebRTC"`, `"multi-agent debate"`, and `"generative agents social"`.
+*(Verification Depth: Findings verified via official GitHub API metadata, manifest presence, and repository READMEs).*
 
 | Repository | Stars | Language | License | Maintenance | Primary Reusable Module / Role | Evidence Tier |
 | :--- | :---: | :--- | :--- | :---: | :--- | :--- |
-| [pipecat-ai/pipecat](https://github.com/pipecat-ai/pipecat) | 17,221 | Python | BSD-2-Clause | **ACTIVE** (today) | Full-duplex voice pipeline, WebRTC bridge, multi-agent bus coordination. | `[VERIFIED-SOURCE]` |
-| [joonspk-research/generative_agents](https://github.com/joonspk-research/generative_agents) | 22,374 | Python | Apache-2.0 | **DORMANT** (828d ago) | Cognitive architecture: associative memory stream, reflection synthesis, and social relationship graphs. | `[VERIFIED-SOURCE]` |
-| [letta-ai/letta](https://github.com/letta-ai/letta) | 25,426 | TypeScript/Python | Apache-2.0 | **ACTIVE** (24d ago) | Stateful agent memory OS; tiered context management across sessions. | `[VERIFIED-SOURCE]` |
-| [thunlp/ChatEval](https://github.com/thunlp/ChatEval) | 346 | Python | Apache-2.0 | **DORMANT** (754d ago) | Multi-agent debate orchestration with persona referees evaluating claims. | `[VERIFIED-SOURCE]` |
-| [Lynpoint/CyberVerse](https://github.com/Lynpoint/CyberVerse) | 1,958 | Python | GPL-3.0 | **ACTIVE** (today) | WebRTC real-time digital human platform with persona memory. *(GPL-3.0 warning)* | `[VERIFIED-METADATA]` |
+| [pipecat-ai/pipecat](https://github.com/pipecat-ai/pipecat) | 17,221 | Python | BSD-2-Clause | **ACTIVE** (today) | Full-duplex voice pipeline, WebRTC bridge, multi-agent bus coordination. | `[VERIFIED-METADATA]` |
+| [joonspk-research/generative_agents](https://github.com/joonspk-research/generative_agents) | 22,374 | Python | Apache-2.0 | **DORMANT** (828d ago) | Cognitive architecture: associative memory stream, reflection synthesis, and social relationship graphs. | `[VERIFIED-METADATA]` |
+| [letta-ai/letta](https://github.com/letta-ai/letta) | 25,426 | TypeScript/Python | Apache-2.0 | **ACTIVE** (24d ago) | Stateful agent memory OS; tiered context management across sessions. | `[VERIFIED-METADATA]` |
+| [thunlp/ChatEval](https://github.com/thunlp/ChatEval) | 346 | Python | Apache-2.0 | **DORMANT** (754d ago) | Multi-agent debate orchestration with persona referees evaluating claims. | `[VERIFIED-METADATA]` |
+| [Lynpoint/CyberVerse](https://github.com/Lynpoint/CyberVerse) | 1,958 | Python | GPL-3.0 | **ACTIVE** (today) | WebRTC real-time digital human platform with persona memory. *(GPL-3.0 copyleft obligation)* | `[VERIFIED-METADATA]` |
 | [streamcoreai/streamcore-server](https://github.com/streamcoreai/streamcore-server) | 245 | Go | Apache-2.0 | **ACTIVE** (5d ago) | High-concurrency WebRTC WHIP streaming server with barge-in support. | `[VERIFIED-METADATA]` |
 
 ---
@@ -56,9 +57,9 @@ Discovered via BeenHere's deterministic `github_search.py` utility across querie
 
 | Paper / Mechanism | Authors & Year | Core Theoretical Finding | Architectural Relevance | Evidence Tier |
 | :--- | :--- | :--- | :--- | :--- |
-| **Generative Agents: Interactive Simulacra of Human Behavior** | Park et al. (Stanford, 2023) | Agents maintain believable persistent behaviors when combining a memory stream with periodic reflection and hierarchical planning. | Provides the algorithmic blueprint for believable synthetic personalities in social groups. | `[VERIFIED-SOURCE]` |
-| **ChatEval: Towards Better LLM-based Evaluators through Multi-Agent Debate** | Chan et al. (Tsinghua, 2023) | Multi-agent debate with diverse role personas significantly outperforms single-agent evaluation in detecting nuances, fallacies, and factual inconsistencies. | Grounding for the platform's assumption-challenging and idea-evaluation mechanics. | `[VERIFIED-SOURCE]` |
-| **Improving Factuality and Reasoning in Language Models through Multiagent Debate** | Du et al. (MIT, 2023) | Iterative rounds of multi-agent debate reduce hallucinations and force convergence toward mathematically defensible truths. | Justifies using multiple debating agents rather than a single consensus agent to evaluate user ideas. | `[VERIFIED-SOURCE]` |
+| **Generative Agents: Interactive Simulacra of Human Behavior** | Park et al. (Stanford, 2023) | Agents maintain believable persistent behaviors when combining a memory stream with periodic reflection and hierarchical planning. | Provides the algorithmic blueprint for believable synthetic personalities in social groups. | `[VERIFIED-METADATA]` |
+| **ChatEval: Towards Better LLM-based Evaluators through Multi-Agent Debate** | Chan et al. (Tsinghua, 2023) | Multi-agent debate with diverse role personas significantly outperforms single-agent evaluation in detecting nuances, fallacies, and factual inconsistencies. | Grounding for the platform's assumption-challenging and idea-evaluation mechanics. | `[VERIFIED-METADATA]` |
+| **Improving Factuality and Reasoning in Language Models through Multiagent Debate** | Du et al. (MIT, 2023) | Iterative rounds of multi-agent debate reduce hallucinations and force convergence toward mathematically defensible truths. | Justifies using multiple debating agents rather than a single consensus agent to evaluate user ideas. | `[VERIFIED-METADATA]` |
 | **The Uses of Argument (Toulmin Schema)** | Stephen Toulmin (1958) | Formal structure of informal reasoning: Data $\rightarrow$ Warrant $\rightarrow$ Backing $\rightarrow$ Qualifier $\rightarrow$ Claim $\leftrightarrow$ Rebuttal. | Ideal structural AST for extracting and scoring arguments in conversation. | `[INFERRED]` |
 
 ---
@@ -104,7 +105,7 @@ Stripping away consumer social terminology reveals three mature engineering fiel
 
 ## 5. Technical Reusability & Code Clearance Audit
 
-Inspection executed via `scripts/repo_inspector.py`:
+Inspection executed via `scripts/repo_inspector.py` *(Verification Depth: METADATA_AND_MANIFESTS_ONLY)*:
 
 ### 5.1 Repository: [pipecat-ai/pipecat](https://github.com/pipecat-ai/pipecat)
 - **Legal Clearance:** **`CLEAR`**
@@ -129,10 +130,10 @@ Inspection executed via `scripts/repo_inspector.py`:
 - **Recommendation:** **EXTRACT ALGORITHMS ONLY**. Do not take as a project dependency. Carve out the clean memory reflection synthesis math (`reverie/backend_server/persona/cognitive_modules/reflect.py`) and reimplement inside the active pipeline.
 
 ### 5.4 Repository: [Lynpoint/CyberVerse](https://github.com/Lynpoint/CyberVerse)
-- **Legal Clearance:** **`RESTRICTED / LICENSE WARNING`**
-  - **License:** `GPL-3.0` (Strong Copyleft) `[VERIFIED-METADATA]`.
-- **Blocker:** Any application incorporating or statically linking CyberVerse source code must be released under GPL-3.0. Incompatible with proprietary SaaS or permissive open-source frameworks.
-- **Recommendation:** **AVOID REUSE**. Use Pipecat instead.
+- **Legal Clearance:** **`RECIPROCAL_ON_DISTRIBUTION / COPYLEFT WARNING`**
+  - **License:** `GPL-3.0` (Reciprocal Copyleft) `[VERIFIED-METADATA]`.
+- **Legal Nuance & Obligations:** Commercial use and server-side SaaS execution are legally permitted. However, if any client binaries, desktop installers, or mobile applications are distributed to users, complete source code must be disclosed under GPL-3.0. Additionally, statically combining CyberVerse code with Apache-2.0 or proprietary modules into distributed binaries creates license conflicts.
+- **Recommendation:** **AVOID REUSE FOR PROPRIETARY CLIENTS**. Use Pipecat (BSD-2-Clause) instead.
 
 ---
 
@@ -216,13 +217,14 @@ Three high-impact mechanisms adapted from adjacent engineering domains:
 
 ## 9. Research Integrity & Evidence Ledger
 
-### 9.1 Evidence Breakdown
-- `[VERIFIED-TEST]`: 17 automated tests executed and verified in local sandbox.
-- `[VERIFIED-SOURCE]`: 4 open-source repositories inspected directly via code manifests and API schemas (`pipecat-ai/pipecat`, `joonspk-research/generative_agents`, `thunlp/ChatEval`, `letta-ai/letta`).
-- `[VERIFIED-METADATA]`: 10+ repository star counts, license declarations, and timestamps verified via GitHub REST API.
-- `[INFERRED]`: Cross-vertical analogies (Façade drama managers, Cockpit Resource Management, Delphi consensus) logically mapped through mechanism abstraction.
-- `[UNKNOWN]`: Character.ai internal multi-persona routing architectures and OpenAI Realtime multi-channel roadmap are closed proprietary systems and remain unverified.
+### 9.1 Evidence Classification Summary
+- `[VERIFIED-TEST]`: 0 *(No prototypes, benchmarks, or running code of the proposed voice-first social platform were executed in Phase 1).*
+- `[VERIFIED-SOURCE]`: 0 *(Implementation source code was not AST-parsed or read file-by-file; verification depth was metadata, manifests, and documentation claims).*
+- `[VERIFIED-METADATA]`: 22 *(Repository stars, languages, licenses, and push timestamps verified via official GitHub API headers and endpoints).*
+- `[INFERRED]`: 8 *(Architectural mappings, cross-vertical analogies, and gap analyses logically derived from verified metadata and published specifications).*
+- `[UNKNOWN]`: 2 *(Proprietary character routing internals of Character.ai and future OpenAI Realtime multi-agent channel roadmaps remain closed).*
 
 ### 9.2 Identified Limitations & Constraints
 - Live audio latency benchmarks under 4-agent concurrent generation could not be tested locally due to the absence of paid streaming TTS API keys.
 - Proprietary platforms (Character.ai, Airchat) do not publish API schemas; their architecture was inferred from public product documentation.
+- Repositories were evaluated via `METADATA_AND_MANIFESTS_ONLY`; deep source code audit requires inspecting individual implementation files using `scripts/repo_inspector.py --inspect-files <path>`.

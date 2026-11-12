@@ -97,7 +97,7 @@ This document analyzes existing open-source projects, agent skills, and research
 - **Progressive Disclosure:** Keeps the main `SKILL.md` body concise, referencing detailed files in `references/`, scripts in `scripts/`, and templates in `templates/` to prevent context window bloat.
 
 ### 3.2 OpenAI Codex Skill Specification
-- **Format:** Compatible with standard Agent Skill conventions, reading instructions from `.agent/skills/` or `.codex/skills/`.
+- **Format:** Compatible with standard Agent Skill conventions, reading instructions from `.agents/skills/<skill-name>/` (or user-global `~/.agents/skills/<skill-name>/`).
 - **Key Attributes:** Emphasizes deterministic shell utilities, idempotent execution, clear parameter hints, and standard Markdown reporting.
 
 ---

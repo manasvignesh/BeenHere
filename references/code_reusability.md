@@ -31,18 +31,26 @@ A technical component cannot be considered reusable if integrating it creates co
 - **Restrictions:** Modifications to the library's own files must be open-sourced under the same license.
 - **Verdict:** **CONDITIONAL REUSE PERMITTED**. Safe as an external package dependency. Dangerous if extracting or modifying internal code without maintaining open-source boundaries.
 
-### Tier 3: Strong Copyleft Licenses (Red Clearance / Warning)
-- **Licenses:** `GPL-2.0`, `GPL-3.0`, `AGPL-3.0`, `OSL-3.0`
-- **Restrictions:** Any software that links to, incorporates, or derives from GPL/AGPL code must itself be released under GPL/AGPL.
-- **Network Trigger (AGPL):** Under AGPL-3.0, providing access over a network (e.g., a SaaS web API) triggers the obligation to make the entire application source code publicly available.
-- **Verdict:** **RESTRICTED**. Reusable only if the target project intends to be 100% open-source under identical copyleft terms. Disallowed for proprietary or commercial SaaS components.
+### Tier 3: Reciprocal Copyleft Licenses on Distribution (Orange Clearance)
+- **Licenses:** `GPL-2.0`, `GPL-3.0`
+- **Permissions:** Full commercial use, private internal company deployment, and commercial hosting are explicitly permitted.
+- **Obligations upon Distribution:** If the application or derivative work is distributed to external users (as binaries, installed desktop software, or mobile apps), the complete corresponding source code must be made available under the same GPL terms.
+- **Crucial SaaS Nuance:** Standard `GPL-2.0` and `GPL-3.0` do **not** trigger source code disclosure for backend SaaS / network services that are accessed over an API or web browser without distributing executable client binaries.
+- **Incompatibilities:** Cannot be combined with proprietary closed-source distributed software, and cannot be combined with conflicting licenses (e.g., Apache-2.0 is incompatible with GPL-2.0).
+- **Verdict:** **RECIPROCAL ON DISTRIBUTION**. Reusable for server-side SaaS or open-source projects; requires careful review if client-side distribution is planned.
 
-### Tier 4: Source-Available & Non-Commercial (Commercial Blocker)
+### Tier 4: Network-Triggered Copyleft Licenses (Red Clearance / SaaS Warning)
+- **Licenses:** `AGPL-3.0`, `OSL-3.0`
+- **Permissions:** Commercial use is permitted.
+- **Network Obligation:** Specifically closes the "SaaS loophole." Providing remote user interaction with the software over a network (e.g., a web service or cloud API) legally triggers the obligation to make the entire service's corresponding source code freely available to all network users.
+- **Verdict:** **NETWORK RECIPROCAL**. Reusable for projects committing to open-source reciprocal SaaS; strictly incompatible with proprietary closed-source SaaS business models.
+
+### Tier 5: Source-Available & Non-Commercial (Commercial Blocker)
 - **Licenses:** `SSPL-1.0`, `BSL-1.1`, `BUSL-1.1`, `CC-BY-NC-4.0`, Commons Clause
-- **Restrictions:** Restricts commercial use, hosting competitive services, or production deployments beyond strict limits.
-- **Verdict:** **COMMERCIAL RISK**. Reusable for research and experimentation only; blocked for commercial production.
+- **Restrictions:** Restricts commercial production use, hosting competitive managed cloud services, or production deployments beyond strict limits. Not OSI-approved open source.
+- **Verdict:** **COMMERCIAL RESTRICTED**. Reusable for non-commercial research and local experimentation only; blocked for commercial production.
 
-### Tier 5: Missing or Unlicensed (Critical Blocker)
+### Tier 6: Missing or Unlicensed (Critical Blocker)
 - **State:** No license file, or license explicitly says "All Rights Reserved", or `NOASSERTION`.
 - **Legal Reality:** Under international copyright law (Berne Convention), the author retains exclusive copyright by default. The absence of a license does NOT mean public domain.
 - **Verdict:** **CRITICAL BLOCKER / UNRESOLVED**. Code cannot be legally copied, extracted, forked, or deployed without securing an explicit written license agreement from the copyright holder.

@@ -10,6 +10,7 @@ import argparse
 import datetime
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -19,6 +20,26 @@ from typing import Any, Dict, List, Optional, Tuple
 
 USER_AGENT = "BeenHere-Skill/0.1.0 (https://github.com/beenhere)"
 GITHUB_API_BASE = "https://api.github.com"
+
+# Patterns commonly used in prompt injection attempts within external repos
+INJECTION_PATTERNS = [
+    r"(?i)ignore\s+(all\s+)?(previous|prior)\s+instructions",
+    r"(?i)system\s*prompt\s*:",
+    r"(?i)override\s+(all\s+)?(evaluation|rules|rubric)",
+    r"(?i)you\s+must\s+(adopt|approve|recommend)",
+    r"(?i)pretend\s+you\s+are",
+    r"(?i)new\s+system\s+instruction",
+]
+
+
+def sanitize_untrusted_text(text: str) -> str:
+    """Sanitize external untrusted text to prevent prompt injection and markdown breakout."""
+    if not text:
+        return ""
+    sanitized = text
+    for pat in INJECTION_PATTERNS:
+        sanitized = re.sub(pat, "[BLOCKED_INJECTION_PATTERN]", sanitized)
+    return sanitized.replace("```", "'''")
 
 
 def get_auth_token() -> Optional[str]:
@@ -144,12 +165,13 @@ def search_github_repositories(
     normalized_items = []
     for item in raw_items:
         license_info = item.get("license") or {}
+        raw_desc = (item.get("description") or "")[:1000]
         normalized_items.append({
             "full_name": item.get("full_name"),
             "name": item.get("name"),
             "owner": (item.get("owner") or {}).get("login"),
             "html_url": item.get("html_url"),
-            "description": item.get("description") or "",
+            "description": sanitize_untrusted_text(raw_desc),
             "stargazers_count": item.get("stargazers_count", 0),
             "forks_count": item.get("forks_count", 0),
             "open_issues_count": item.get("open_issues_count", 0),
@@ -274,7 +296,9 @@ def format_text_table(results: Dict[str, Any]) -> str:
 
     lines.append("\n### Descriptions & Signals:\n")
     for it in items:
-        lines.append(f"- **[{it['full_name']}]({it['html_url']})** ({it.get('license')} | {it['stargazers_count']:,}★): {it.get('description') or 'No description provided.'}")
+        desc = it.get("description") or "No description provided."
+        desc_snippet = desc[:250] + ("..." if len(desc) > 250 else "")
+        lines.append(f"- **[{it['full_name']}]({it['html_url']})** ({it.get('license')} | {it['stargazers_count']:,}★): {desc_snippet}")
 
     if results.get("rate_limit"):
         rl = results["rate_limit"]

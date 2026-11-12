@@ -80,11 +80,16 @@ mkdir -p ~/.claude/skills/beenhere
 cp -r * ~/.claude/skills/beenhere/
 ```
 
-#### OpenAI Codex / AGY
-Place the skill in your agent skills folder:
+#### OpenAI Codex
+Place the skill in your project or user agent skills folder following current official Codex specifications:
 ```bash
-mkdir -p .agent/skills/beenhere
-cp -r * .agent/skills/beenhere/
+# Per-project installation:
+mkdir -p .agents/skills/beenhere
+cp -r * .agents/skills/beenhere/
+
+# Or user global installation:
+mkdir -p ~/.agents/skills/beenhere
+cp -r * ~/.agents/skills/beenhere/
 ```
 
 See [docs/INSTALLATION.md](docs/INSTALLATION.md) for full instructions.

@@ -22,11 +22,12 @@ from typing import Any, Dict, List, Optional, Tuple
 USER_AGENT = "BeenHere-Skill/0.1.0 (https://github.com/beenhere)"
 GITHUB_API_BASE = "https://api.github.com"
 
-# Known license categories
+# Known license categories with precise legal classification
 LICENSE_CATEGORIES = {
     "permissive": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unlicense", "CC0-1.0"],
     "weak_copyleft": ["LGPL-2.1", "LGPL-3.0", "MPL-2.0", "EPL-2.0"],
-    "strong_copyleft": ["GPL-2.0", "GPL-3.0", "AGPL-3.0", "OSL-3.0"],
+    "strong_copyleft": ["GPL-2.0", "GPL-3.0"],
+    "network_copyleft": ["AGPL-3.0", "OSL-3.0"],
     "source_available": ["BSL-1.1", "SSPL-1.0", "BUSL-1.1", "Elastic-2.0"],
 }
 
@@ -43,6 +44,16 @@ MANIFEST_FILES = [
     "pubspec.yaml",
     "CMakeLists.txt",
     "composer.json",
+]
+
+# Patterns commonly used in prompt injection attempts within external repos
+INJECTION_PATTERNS = [
+    r"(?i)ignore\s+(all\s+)?(previous|prior)\s+instructions",
+    r"(?i)system\s*prompt\s*:",
+    r"(?i)override\s+(all\s+)?(evaluation|rules|rubric)",
+    r"(?i)you\s+must\s+(adopt|approve|recommend)",
+    r"(?i)pretend\s+you\s+are",
+    r"(?i)new\s+system\s+instruction",
 ]
 
 
@@ -89,16 +100,39 @@ def make_request(url: str, token: Optional[str] = None) -> Tuple[int, Dict[str, 
         raise RuntimeError(f"Network error accessing GitHub API: {e.reason}") from e
 
 
+def sanitize_untrusted_text(text: str) -> Tuple[str, bool]:
+    """
+    Sanitize external untrusted text to prevent prompt injection and markdown breakout.
+    Returns (sanitized_text, injection_detected).
+    """
+    if not text:
+        return "", False
+
+    injection_detected = False
+    sanitized = text
+
+    for pat in INJECTION_PATTERNS:
+        if re.search(pat, sanitized):
+            injection_detected = True
+            sanitized = re.sub(pat, "[BLOCKED_INJECTION_PATTERN]", sanitized)
+
+    # Disarm markdown triple backtick fences that try to escape code blocks
+    sanitized = sanitized.replace("```", "'''")
+
+    return sanitized, injection_detected
+
+
 def categorize_license(spdx_id: Optional[str]) -> Tuple[str, str, str]:
     """
     Categorize license into (category, clearance_tier, rationale).
+    Accurately distinguishes commercial use permissions from reciprocal obligations.
     Returns (category, clearance, rationale).
     """
     if not spdx_id or spdx_id in ("NOASSERTION", "NONE", "Unknown"):
         return (
             "unresolved",
             "CRITICAL_BLOCKER",
-            "No recognized open-source license detected. Under standard copyright law, All Rights Reserved applies. Code cannot be legally reused, forked, or copied without explicit author permission.",
+            "No recognized open-source license detected. Under international copyright law, All Rights Reserved applies by default. Reusing, copying, or distributing this code without an explicit written license from the copyright holder is copyright infringement.",
         )
 
     for cat, spdx_list in LICENSE_CATEGORIES.items():
@@ -107,25 +141,31 @@ def categorize_license(spdx_id: Optional[str]) -> Tuple[str, str, str]:
                 return (
                     "permissive",
                     "CLEAR",
-                    f"Permissive license ({spdx_id}). Grants broad rights to adopt, modify, integrate, and distribute in open-source or commercial projects, subject to copyright and license notice retention.",
+                    f"Permissive license ({spdx_id}). Grants broad commercial and non-commercial rights to adopt, modify, integrate, sublicense, and distribute without reciprocal source code disclosure obligations. Retain original copyright and license notice.",
                 )
             elif cat == "weak_copyleft":
                 return (
                     "weak_copyleft",
-                    "CONDITIONAL",
-                    f"Weak copyleft license ({spdx_id}). Modifications to the covered files/library must be released under same terms, but dynamic linking or integration with proprietary code is generally permitted.",
+                    "CONDITIONAL_RECIPROCAL",
+                    f"Weak copyleft license ({spdx_id}). Commercial use is permitted. Modifications to the library's own files must be shared under {spdx_id}, but dynamic linking, importing as an external dependency, or combining with separate proprietary modules does not infect the broader application.",
                 )
             elif cat == "strong_copyleft":
                 return (
                     "strong_copyleft",
-                    "RESTRICTED",
-                    f"Strong copyleft license ({spdx_id}). Any derivative work or combined application must be released under the same license terms. Potential viral risk for closed-source or differently licensed projects.",
+                    "RECIPROCAL_ON_DISTRIBUTION",
+                    f"Reciprocal copyleft license ({spdx_id}). Commercial use, internal company deployment, and SaaS/network hosting are permitted without triggering source disclosure. However, if the software or derivative works are distributed as compiled binaries or distributed software, complete corresponding source code must be made available under the same GPL terms.",
+                )
+            elif cat == "network_copyleft":
+                return (
+                    "network_copyleft",
+                    "NETWORK_RECIPROCAL",
+                    f"Network-triggered copyleft license ({spdx_id}). Commercial use is permitted, but interacting with the software remotely over a computer network (e.g. SaaS/web service) legally triggers the obligation to make the complete corresponding source code of the entire service available to all network users.",
                 )
             elif cat == "source_available":
                 return (
                     "source_available",
-                    "COMMERCIAL_RISK",
-                    f"Source-available or business-source license ({spdx_id}). Not OSI-approved open source; restricts commercial use, hosting, or competitive deployment.",
+                    "COMMERCIAL_RESTRICTED",
+                    f"Source-available license ({spdx_id}). Not OSI-approved open source. Specifically restricts commercial production deployment, managed hosting, or competitive service provision.",
                 )
 
     return (
@@ -138,7 +178,6 @@ def categorize_license(spdx_id: Optional[str]) -> Tuple[str, str, str]:
 def compute_maintenance_signals(repo_data: Dict[str, Any]) -> Dict[str, Any]:
     """Evaluate maintenance vitals based on repository timestamps and state."""
     pushed_at_str = repo_data.get("pushed_at")
-    created_at_str = repo_data.get("created_at")
 
     now = datetime.datetime.now(datetime.timezone.utc)
     days_since_push = None
@@ -180,17 +219,27 @@ def compute_maintenance_signals(repo_data: Dict[str, Any]) -> Dict[str, Any]:
 def inspect_repository(
     owner: str,
     repo: str,
+    source_paths: Optional[List[str]] = None,
     token: Optional[str] = None,
     mock_data: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
-    Programmatically inspect repository metadata, languages, license, and manifest files.
+    Programmatically inspect repository metadata, languages, license, manifest files,
+    and optionally inspect specific implementation source files.
     """
+    inspected_sources = []
+    injection_warnings = []
+
     if mock_data is not None:
         repo_data = mock_data.get("repo", {})
         languages = mock_data.get("languages", {})
         root_files = mock_data.get("root_files", [])
         readme_snippet = mock_data.get("readme_snippet", "")
+        mock_source_files = mock_data.get("source_files", {})
+        if source_paths:
+            for sp in source_paths:
+                if sp in mock_source_files:
+                    inspected_sources.append(mock_source_files[sp])
     else:
         # 1. Fetch main repo metadata
         repo_url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}"
@@ -234,11 +283,54 @@ def inspect_repository(
                 content_b64 = r_json.get("content", "")
                 if content_b64:
                     raw_readme = base64.b64decode(content_b64).decode("utf-8", errors="replace")
-                    # Clean up first 1000 characters
-                    lines = [ln.strip() for ln in raw_readme.splitlines() if ln.strip() and not ln.startswith("[!")]
+                    sanitized_readme, injected = sanitize_untrusted_text(raw_readme)
+                    if injected:
+                        injection_warnings.append("README contained potential prompt injection patterns that were neutralized.")
+                    lines = [ln.strip() for ln in sanitized_readme.splitlines() if ln.strip() and not ln.startswith("[!")]
                     readme_snippet = "\n".join(lines[:15])
         except Exception:
             pass
+
+        # 5. Fetch specific source files if requested
+        if source_paths:
+            for sp in source_paths:
+                sp_clean = sp.strip().lstrip("/")
+                f_url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}/contents/{sp_clean}"
+                try:
+                    f_status, _, f_body = make_request(f_url, token=token)
+                    if f_status == 200:
+                        f_json = json.loads(f_body.decode("utf-8", errors="replace"))
+                        if f_json.get("type") == "file" and f_json.get("content"):
+                            decoded = base64.b64decode(f_json["content"]).decode("utf-8", errors="replace")
+                            sanitized_src, src_inj = sanitize_untrusted_text(decoded)
+                            if src_inj:
+                                injection_warnings.append(f"Source file '{sp_clean}' contained potential prompt injection patterns.")
+
+                            # Extract discovered imports
+                            discovered_imports = re.findall(r'^(?:from|import)\s+([a-zA-Z0-9_\.]+)', decoded, re.MULTILINE)
+                            inspected_sources.append({
+                                "path": sp_clean,
+                                "size_bytes": f_json.get("size", len(decoded)),
+                                "lines_count": len(decoded.splitlines()),
+                                "discovered_imports": sorted(list(set(discovered_imports)))[:10],
+                                "sample_snippet": "\n".join(sanitized_src.splitlines()[:20]),
+                            })
+                    else:
+                        inspected_sources.append({
+                            "path": sp_clean,
+                            "error": f"Failed to fetch file (HTTP {f_status})",
+                        })
+                except Exception as e:
+                    inspected_sources.append({
+                        "path": sp_clean,
+                        "error": str(e),
+                    })
+
+    # Sanitize description
+    raw_desc = repo_data.get("description") or ""
+    sanitized_desc, desc_inj = sanitize_untrusted_text(raw_desc)
+    if desc_inj:
+        injection_warnings.append("Description contained prompt injection patterns that were neutralized.")
 
     # Process licenses
     lic_meta = repo_data.get("license") or {}
@@ -273,18 +365,24 @@ def inspect_repository(
 
     # Identify reuse blockers
     blockers = []
-    if clearance in ("CRITICAL_BLOCKER", "RESTRICTED", "COMMERCIAL_RISK"):
+    if clearance in ("CRITICAL_BLOCKER", "COMMERCIAL_RESTRICTED"):
         blockers.append(f"Legal/License Risk: {rationale}")
+    elif clearance == "NETWORK_RECIPROCAL":
+        blockers.append(f"Network Copyleft Obligation (AGPL): Exposing service over network requires full source disclosure.")
     if maint["is_archived"]:
         blockers.append("Upstream is officially archived (read-only).")
     if maint["status"] == "DORMANT":
         blockers.append(f"Maintenance abandonment risk (inactive for {maint['days_since_last_push']} days).")
 
+    # Accurate Verification Depth Reporting
+    verification_depth = "SOURCE_CODE_INSPECTED" if inspected_sources else "METADATA_AND_MANIFESTS_ONLY"
+
     return {
         "status": "success",
         "repository": repo_data.get("full_name", f"{owner}/{repo}"),
         "html_url": repo_data.get("html_url", f"https://github.com/{owner}/{repo}"),
-        "description": repo_data.get("description") or "",
+        "description": sanitized_desc,
+        "verification_depth": verification_depth,
         "primary_language": primary_lang,
         "languages": language_pcts,
         "stargazers_count": repo_data.get("stargazers_count", 0),
@@ -304,6 +402,8 @@ def inspect_repository(
         "modularity_estimate": modularity,
         "maintenance": maint,
         "reuse_blockers": blockers,
+        "inspected_source_files": inspected_sources,
+        "security_warnings": injection_warnings,
         "readme_excerpt": readme_snippet,
     }
 
@@ -319,7 +419,19 @@ def format_inspection_report(res: Dict[str, Any]) -> str:
     lines = []
     lines.append(f"# Repository Inspection: {res['repository']}\n")
     lines.append(f"**URL:** {res['html_url']}")
-    lines.append(f"**Description:** {res['description'] or 'None'}\n")
+    lines.append(f"**Description:** {res['description'] or 'None'}")
+    lines.append(f"**Verification Depth:** `{res['verification_depth']}`")
+    if res["verification_depth"] == "METADATA_AND_MANIFESTS_ONLY":
+        lines.append("*(Note: Deep source code implementation has NOT been inspected; conclusions are based on official API metadata, manifests, and documentation claims).*")
+    else:
+        lines.append(f"*(Examined {len(res['inspected_source_files'])} specified source files directly).*")
+    lines.append("")
+
+    if res.get("security_warnings"):
+        lines.append("## ⚠️ Security Notice (Untrusted External Data)")
+        for w in res["security_warnings"]:
+            lines.append(f"- 🛡️ {w}")
+        lines.append("")
 
     lines.append("## 1. Legal & License Clearance")
     lines.append(f"- **SPDX ID:** `{lic['spdx_id']}` ({lic['name']})")
@@ -343,17 +455,32 @@ def format_inspection_report(res: Dict[str, Any]) -> str:
 
     lines.append("## 4. Reusability Verdict & Blockers")
     if res.get("reuse_blockers"):
-        lines.append("**Identified Blockers:**")
+        lines.append("**Identified Blockers / Obligations:**")
         for b in res["reuse_blockers"]:
             lines.append(f"- ⚠️ {b}")
     else:
-        lines.append("✅ **No critical legal or maintenance blockers detected.** Feasible candidate for reuse.")
+        lines.append("✅ **No critical legal blockers detected.** Permissive reuse allowed.")
+
+    if res.get("inspected_source_files"):
+        lines.append("\n## 5. Implementation Source Code Inspection")
+        for src in res["inspected_source_files"]:
+            if src.get("error"):
+                lines.append(f"- `{src['path']}`: ❌ {src['error']}")
+            else:
+                lines.append(f"- `{src['path']}` ({src['lines_count']} lines, {src['size_bytes']} bytes)")
+                if src.get("discovered_imports"):
+                    lines.append(f"  - **Imports:** {', '.join(src['discovered_imports'])}")
+                lines.append("  ```text")
+                lines.append("  " + src["sample_snippet"][:300].replace("\n", "\n  "))
+                lines.append("  ```")
 
     if res.get("readme_excerpt"):
-        lines.append("\n## 5. README Excerpt (Primary Claims)")
-        lines.append("```markdown")
+        lines.append("\n## 6. README Excerpt (Untrusted External Content)")
+        lines.append("<untrusted_external_content>")
+        lines.append("'''markdown")
         lines.append(res["readme_excerpt"][:600] + ("..." if len(res["readme_excerpt"]) > 600 else ""))
-        lines.append("```")
+        lines.append("'''")
+        lines.append("</untrusted_external_content>")
 
     return "\n".join(lines)
 
@@ -361,6 +488,7 @@ def format_inspection_report(res: Dict[str, Any]) -> str:
 def main():
     parser = argparse.ArgumentParser(description="Deterministic Repository Inspector for BeenHere")
     parser.add_argument("--repo", "-r", required=True, help="Repository slug (owner/repo) or GitHub URL")
+    parser.add_argument("--inspect-files", "-i", nargs="+", help="Specific source files within repository to inspect")
     parser.add_argument("--json", action="store_true", help="Output raw structured JSON to stdout")
     parser.add_argument("--output", "-o", type=str, help="Save report to specified file path")
 
@@ -373,7 +501,12 @@ def main():
         sys.exit(1)
 
     token = get_auth_token()
-    inspection = inspect_repository(owner, repo_name, token=token)
+    inspection = inspect_repository(
+        owner=owner,
+        repo=repo_name,
+        source_paths=args.inspect_files,
+        token=token,
+    )
 
     if args.json:
         out_content = json.dumps(inspection, indent=2)
