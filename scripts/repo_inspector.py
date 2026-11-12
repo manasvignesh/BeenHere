@@ -244,12 +244,26 @@ def inspect_repository(
         # 1. Fetch main repo metadata
         repo_url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}"
         status, headers, body = make_request(repo_url, token=token)
-        if status != 200:
+        repo_data = None
+        if status == 200:
+            repo_data = json.loads(body.decode("utf-8", errors="replace"))
+        elif status == 403:
+            # Fallback to GitHub Search API which operates under a separate rate limit bucket
+            search_url = f"{GITHUB_API_BASE}/search/repositories?q=repo:{owner}/{repo}"
+            try:
+                s_status, _, s_body = make_request(search_url, token=token)
+                if s_status == 200:
+                    s_data = json.loads(s_body.decode("utf-8", errors="replace"))
+                    if s_data.get("items"):
+                        repo_data = s_data["items"][0]
+            except Exception:
+                pass
+
+        if not repo_data:
             return {
                 "error": f"Failed to retrieve repository '{owner}/{repo}' (HTTP {status})",
                 "status_code": status,
             }
-        repo_data = json.loads(body.decode("utf-8", errors="replace"))
 
         # 2. Fetch languages breakdown
         languages = {}
@@ -260,6 +274,9 @@ def inspect_repository(
                 languages = json.loads(l_body.decode("utf-8", errors="replace"))
         except Exception:
             pass
+
+        if not languages and repo_data.get("language"):
+            languages = {repo_data["language"]: 10000}
 
         # 3. Check root contents for manifests
         root_files = []
@@ -272,6 +289,18 @@ def inspect_repository(
                     root_files = [f.get("name") for f in c_json if f.get("name")]
         except Exception:
             pass
+
+        if not root_files:
+            common_manifests = ["package.json", "pyproject.toml", "Cargo.toml", "go.mod", "pom.xml", "Gemfile"]
+            for m in common_manifests:
+                try:
+                    m_req = urllib.request.Request(f"https://raw.githubusercontent.com/{owner}/{repo}/HEAD/{m}", method="HEAD")
+                    m_req.add_header("User-Agent", USER_AGENT)
+                    with urllib.request.urlopen(m_req, timeout=5) as m_resp:
+                        if m_resp.status == 200:
+                            root_files.append(m)
+                except Exception:
+                    pass
 
         # 4. Fetch README snippet
         readme_snippet = ""
@@ -291,11 +320,27 @@ def inspect_repository(
         except Exception:
             pass
 
+        if not readme_snippet:
+            try:
+                r_req = urllib.request.Request(f"https://raw.githubusercontent.com/{owner}/{repo}/HEAD/README.md")
+                r_req.add_header("User-Agent", USER_AGENT)
+                with urllib.request.urlopen(r_req, timeout=5) as r_resp:
+                    if r_resp.status == 200:
+                        raw_readme = r_resp.read().decode("utf-8", errors="replace")
+                        sanitized_readme, injected = sanitize_untrusted_text(raw_readme)
+                        if injected:
+                            injection_warnings.append("README contained potential prompt injection patterns that were neutralized.")
+                        lines = [ln.strip() for ln in sanitized_readme.splitlines() if ln.strip() and not ln.startswith("[!")]
+                        readme_snippet = "\n".join(lines[:15])
+            except Exception:
+                pass
+
         # 5. Fetch specific source files if requested
         if source_paths:
             for sp in source_paths:
                 sp_clean = sp.strip().lstrip("/")
                 f_url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}/contents/{sp_clean}"
+                fetched = False
                 try:
                     f_status, _, f_body = make_request(f_url, token=token)
                     if f_status == 200:
@@ -315,16 +360,42 @@ def inspect_repository(
                                 "discovered_imports": sorted(list(set(discovered_imports)))[:10],
                                 "sample_snippet": "\n".join(sanitized_src.splitlines()[:20]),
                             })
-                    else:
+                            fetched = True
+                except Exception:
+                    pass
+
+                if not fetched:
+                    # Fallback to direct raw CDN fetch
+                    try:
+                        raw_url = f"https://raw.githubusercontent.com/{owner}/{repo}/HEAD/{sp_clean}"
+                        raw_req = urllib.request.Request(raw_url)
+                        raw_req.add_header("User-Agent", USER_AGENT)
+                        with urllib.request.urlopen(raw_req, timeout=8) as raw_resp:
+                            if raw_resp.status == 200:
+                                decoded = raw_resp.read().decode("utf-8", errors="replace")
+                                sanitized_src, src_inj = sanitize_untrusted_text(decoded)
+                                if src_inj:
+                                    injection_warnings.append(f"Source file '{sp_clean}' contained potential prompt injection patterns.")
+
+                                discovered_imports = re.findall(r'^(?:from|import)\s+([a-zA-Z0-9_\.]+)', decoded, re.MULTILINE)
+                                inspected_sources.append({
+                                    "path": sp_clean,
+                                    "size_bytes": len(decoded.encode("utf-8")),
+                                    "lines_count": len(decoded.splitlines()),
+                                    "discovered_imports": sorted(list(set(discovered_imports)))[:10],
+                                    "sample_snippet": "\n".join(sanitized_src.splitlines()[:20]),
+                                })
+                                fetched = True
+                            else:
+                                inspected_sources.append({
+                                    "path": sp_clean,
+                                    "error": f"Failed to fetch file (HTTP {raw_resp.status})",
+                                })
+                    except Exception as e:
                         inspected_sources.append({
                             "path": sp_clean,
-                            "error": f"Failed to fetch file (HTTP {f_status})",
+                            "error": str(e),
                         })
-                except Exception as e:
-                    inspected_sources.append({
-                        "path": sp_clean,
-                        "error": str(e),
-                    })
 
     # Sanitize description
     raw_desc = repo_data.get("description") or ""
