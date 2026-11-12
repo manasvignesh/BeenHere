@@ -1,0 +1,330 @@
+{
+  "benchmark_version": "1.0.0",
+  "description": "Standardized benchmark suite of 10 diverse software concepts across unrelated categories for BeenHere Phase 2 intelligence evaluation.",
+  "cases": [
+    {
+      "id": "synthetic_social_platform",
+      "category": "Consumer AI & Social",
+      "concept": "Voice-first social platform where users converse in real time with synthetic AI personalities, participate in group discussions, challenge assumptions, and evaluate ideas.",
+      "core_problems": [
+        "Concurrent multi-speaker audio collision and turn-taking latency",
+        "Context drift and sycophantic persona inconsistency over extended conversations",
+        "Evaluating unstructured conversational arguments for logical fallacies"
+      ],
+      "expected_search_directions": [
+        "Full-duplex WebRTC audio streaming pipelines",
+        "Multi-speaker floor control and turn-taking arbiters",
+        "Episodic memory streams and belief-desire-intention architectures",
+        "Multi-agent debate frameworks and dialectical scoring"
+      ],
+      "known_relevant_technical_concepts": [
+        "WebRTC WHIP/WHEP",
+        "Voice Activity Detection (VAD)",
+        "Toulmin Argumentation Model",
+        "Delphi Consensus Method",
+        "Episodic Memory Retrieval"
+      ],
+      "relevant_adjacent_industries": [
+        "Interactive Drama & Video Game AI (Façade, Dwarf Fortress)",
+        "Commercial Avionics (Cockpit Resource Management sterile channel)",
+        "Sociology & Policy Forecasting (Delphi method panels)",
+        "High-Performance CPU Architecture (Speculative branch execution)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "pipecat-ai/pipecat (realtime multimodal voice agents)",
+        "letta-ai/letta (stateful persistent agent memory)",
+        "joonspk-research/generative_agents (social simulation reflection memory)",
+        "thunlp/ChatEval (multi-agent debate referee scoring)"
+      ]
+    },
+    {
+      "id": "offline_first_collaborative_notes",
+      "category": "Productivity & Developer Tools",
+      "concept": "Offline-first collaborative knowledge base and note-taking application with peer-to-peer end-to-end encrypted synchronization.",
+      "core_problems": [
+        "Merging divergent concurrent document edits without data loss while offline",
+        "Peer discovery and NAT traversal in decentralized network topologies",
+        "Cryptographic access revocation in peer-to-peer storage without central servers"
+      ],
+      "expected_search_directions": [
+        "Conflict-free Replicated Data Types (CRDTs) for rich text",
+        "Local-first database engines and indexed storage",
+        "Peer-to-peer gossip protocols and DHT discovery",
+        "Forward-secret ratcheting group key exchange"
+      ],
+      "known_relevant_technical_concepts": [
+        "Yjs / Automerge CRDT",
+        "SQLite WASM / OPFS",
+        "libp2p / WebRTC DataChannels",
+        "Messaging Layer Security (MLS) protocol"
+      ],
+      "relevant_adjacent_industries": [
+        "Distributed Version Control Systems (Git DAG merge resolution)",
+        "Avionics Black-Box Data Recording (Append-only write logs)",
+        "Military Ad-Hoc Mesh Communications (Delay-tolerant networking)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "yjs/yjs (shared editing CRDT framework)",
+        "automerge/automerge (data structure for local-first software)",
+        "rxdb/rxdb (offline-first reactive database)",
+        "inkandswitch/local-first (research papers on local-first software)"
+      ]
+    },
+    {
+      "id": "autonomous_software_testing",
+      "category": "Developer Tools & DevOps",
+      "concept": "Autonomous testing system that explores web applications, automatically discovers edge-case bugs, synthesizes minimal reproduction scripts, and verifies fixes.",
+      "core_problems": [
+        "State space explosion in interactive multi-step web user flows",
+        "Distinguishing intentional application behavior from unexpected defects without formal specs",
+        "Flaky test generation and brittle selector drift across UI redesigns"
+      ],
+      "expected_search_directions": [
+        "Model-based UI testing and directed crawl graphs",
+        "Symbolic execution and concolic fuzzing for client-side JavaScript",
+        "Self-healing DOM locators and computer-vision UI grounding",
+        "Delta debugging for test minimization"
+      ],
+      "known_relevant_technical_concepts": [
+        "Directed Acyclic Graph (DAG) state exploration",
+        "Playwright / Puppeteer automation protocol",
+        "Delta Debugging algorithm (Zeller)",
+        "Metamorphic Testing relations"
+      ],
+      "relevant_adjacent_industries": [
+        "Aerospace & Nuclear Safety (Formal methods & model checking)",
+        "Video Game Automated QA (Bot pathfinding & navigation meshes)",
+        "Hardware Verification (Fuzzing and scan-chain test vectors)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "microsoft/playwright (reliable web automation primitives)",
+        "zeller/delta-debugging (automated failure minimization)",
+        "rohit-g/ui-crawler (autonomous web exploration)"
+      ]
+    },
+    {
+      "id": "privacy_preserving_personal_search",
+      "category": "Security & Search",
+      "concept": "Local-first personal search engine indexing emails, documents, chats, and browser history with zero plaintext cloud indexing or external telemetry.",
+      "core_problems": [
+        "Memory footprint of embedding models and vector indexes on consumer laptops",
+        "Incremental document indexing without battery or CPU starvation",
+        "Cross-modal semantic ranking combining BM25 keyword matching with dense vector embeddings"
+      ],
+      "expected_search_directions": [
+        "Quantized on-device embedding models",
+        "Embedded vector and hybrid search engines",
+        "Privacy-preserving inverted index encryption",
+        "OS background resource pacing"
+      ],
+      "known_relevant_technical_concepts": [
+        "Quantized GGUF / ONNX Runtime",
+        "Reciprocal Rank Fusion (RRF)",
+        "HNSW (Hierarchical Navigable Small World)",
+        "Searchable Symmetric Encryption (SSE)"
+      ],
+      "relevant_adjacent_industries": [
+        "Medical Record Systems (HIPAA-compliant on-premise document search)",
+        "Intelligence & Defense (Air-gapped document triage and discovery)",
+        "Embedded Automotive Firmware (Low-power sensor search)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "tantivy-search/tantivy (Rust full-text search engine library)",
+        "chroma-core/chroma (embedded vector database)",
+        "sqlite/sqlite-fts5 (embedded full-text search module)"
+      ]
+    },
+    {
+      "id": "ai_assisted_socratic_education",
+      "category": "EdTech & Cognitive Science",
+      "concept": "Interactive educational platform that guides students through complex mathematics and physics by asking Socratic questions rather than providing direct answers.",
+      "core_problems": [
+        "Preventing conversational models from answering homework problems directly",
+        "Estimating student cognitive state and Zone of Proximal Development (ZPD)",
+        "Verifying mathematical soundness of intermediate reasoning steps"
+      ],
+      "expected_search_directions": [
+        "Socratic dialogue management and pedagogical scaffolding",
+        "Knowledge tracing algorithms and student skill mastery modeling",
+        "Computer algebra systems (CAS) integration for step-by-step verification",
+        "Goal-oriented prompt constraints and jailbreak prevention"
+      ],
+      "known_relevant_technical_concepts": [
+        "Bayesian Knowledge Tracing (BKT)",
+        "Item Response Theory (IRT)",
+        "SymPy / Lean formal theorem proving",
+        "Cognitive Tutor architecture (Carnegie Mellon ACT-R)"
+      ],
+      "relevant_adjacent_industries": [
+        "Clinical Psychology & Therapy (Motivational interviewing protocols)",
+        "Flight Simulator Flight Instruction (Graduated flight debriefing)",
+        "Chess Coaching Systems (Blunder analysis and candidate-move prompting)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "sympy/sympy (Python library for symbolic mathematics)",
+        "big-data-cup/knowledge-tracing (Bayesian and Deep Knowledge Tracing)",
+        "leanprover/lean4 (interactive theorem prover)"
+      ]
+    },
+    {
+      "id": "developer_doc_automation",
+      "category": "Developer Tools",
+      "concept": "Continuous documentation intelligence engine that monitors git pull requests, identifies outdated API documentation, and drafts verified documentation updates.",
+      "core_problems": [
+        "Detecting semantic documentation drift that linters and compilers miss",
+        "Extracting runnable code examples and verifying that code blocks compile against new APIs",
+        "Mapping code diffs to relevant documentation pages across multi-repo architectures"
+      ],
+      "expected_search_directions": [
+        "Abstract Syntax Tree (AST) API diffing",
+        "Executable documentation and literate programming test runners",
+        "Docstring coverage analysis and semantic similarity",
+        "Git webhook changelog synthesis"
+      ],
+      "known_relevant_technical_concepts": [
+        "Tree-sitter parser grammars",
+        "Doctest execution pipelines",
+        "Documentation Knowledge Graphs",
+        "Semantic Changelog AST matching"
+      ],
+      "relevant_adjacent_industries": [
+        "Pharmaceutical Regulatory Compliance (Document revision audit trails)",
+        "Contract Law & Legal Tech (Redline diffing and clause propagation)",
+        "Engineering CAD Blueprint Management (ECO engineering change orders)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "tree-sitter/tree-sitter (incremental parsing system)",
+        "facebook/docusaurus (modern documentation infrastructure)",
+        "sourcegraph/scip (code intelligence protocol)"
+      ]
+    },
+    {
+      "id": "community_medical_scheduling",
+      "category": "HealthTech & Operations",
+      "concept": "Decentralized community medical appointment coordination platform that matches patient urgency with specialist cancellations in real time.",
+      "core_problems": [
+        "High cancellation and no-show rates causing wasted clinical capacity",
+        "Patient clinical triage without human bias or safety violations",
+        "Strict HIPAA/GDPR health privacy and cryptographic consent management"
+      ],
+      "expected_search_directions": [
+        "Dynamic queueing theory and clinical appointment overbooking models",
+        "Automated clinical urgency classification",
+        "Zero-knowledge patient identity and consent verification",
+        "Real-time push notification cascades"
+      ],
+      "known_relevant_technical_concepts": [
+        "Erlang-C queueing model",
+        "Fast Healthcare Interoperability Resources (FHIR) API",
+        "Two-sided matching markets (Gale-Shapley stable marriage)",
+        "Zero-Knowledge Proofs (ZKP) for medical credential verification"
+      ],
+      "relevant_adjacent_industries": [
+        "Commercial Airline Seat Standby Allocation (Dynamic waitlist clearing)",
+        "Emergency 911 Dispatch (Computer-Aided Dispatch triage priority)",
+        "Ride-Hailing Surge Matching (Spatial-temporal driver dispatching)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "smart-on-fhir/client-py (FHIR healthcare API interoperability)",
+        "networkx/networkx (bipartite matching algorithms)",
+        "medplum/medplum (open-source healthcare platform)"
+      ]
+    },
+    {
+      "id": "realtime_multiplayer_learning_game",
+      "category": "Gaming & EdTech",
+      "concept": "Real-time multiplayer educational game where players collaboratively solve systems engineering and physics puzzles under simulated resource scarcity.",
+      "core_problems": [
+        "Deterministic physics simulation across heterogeneous mobile and desktop clients",
+        "Preventing cheating and state manipulation in peer-to-peer or client-authoritative games",
+        "Dynamic game difficulty balancing based on collective group competency"
+      ],
+      "expected_search_directions": [
+        "Lockstep and rollback multiplayer netcode",
+        "Deterministic 2D/3D physics engines",
+        "Collaborative problem-solving game mechanics",
+        "Real-time game analytics and difficulty curves"
+      ],
+      "known_relevant_technical_concepts": [
+        "GGPO rollback netcode architecture",
+        "Deterministic fixed-point arithmetic",
+        "Entity-Component-System (ECS) pattern",
+        "Elo/Glicko multiplayer skill rating"
+      ],
+      "relevant_adjacent_industries": [
+        "Financial High-Frequency Trading (Deterministic timestamp ordering)",
+        "Military War Gaming & Tactical Training (Distributed simulation protocol DIS)",
+        "Robotics Swarm Coordination (Distributed task assignment)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "dimforge/rapier (fast 2D/3D physics engine for the web)",
+        "godotengine/godot (open-source cross-platform game engine)",
+        "spectorjs/spector (realtime webgl state inspection)"
+      ]
+    },
+    {
+      "id": "distributed_energy_optimization",
+      "category": "CleanTech & Distributed Systems",
+      "concept": "Distributed scheduler that schedules batch computing workloads, ML training jobs, and data pipelines to align with regional renewable energy grid surpluses.",
+      "core_problems": [
+        "Forecasting carbon intensity and solar/wind surplus across geographic grid nodes",
+        "Stateful workload migration and checkpointing without task failure",
+        "Balancing carbon savings against compute SLA completion deadlines"
+      ],
+      "expected_search_directions": [
+        "Carbon-aware computing scheduling algorithms",
+        "Container and VM live migration protocols",
+        "Electrical grid carbon intensity APIs",
+        "Multi-objective constraint optimization"
+      ],
+      "known_relevant_technical_concepts": [
+        "Linear Programming / Mixed Integer Programming (MIP)",
+        "Kubernetes custom scheduler and Kueue batch queuing",
+        "Electricity Maps / WattTime carbon intensity data feeds",
+        "Spot instance interruption checkpointing"
+      ],
+      "relevant_adjacent_industries": [
+        "Electric Vehicle Fleet Charging (Dynamic demand-response smart charging)",
+        "Cold Storage Refrigeration Logistics (Thermal energy storage pre-cooling)",
+        "Supply Chain Routing (Time-window constrained vehicle routing)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "green-software-foundation/carbon-aware-sdk (carbon-aware scheduler API)",
+        "kubernetes-sigs/kueue (Kubernetes native batch queueing)",
+        "scipy/scipy.optimize (linear and constraint solvers)"
+      ]
+    },
+    {
+      "id": "automated_accessibility_auditing",
+      "category": "Developer Tools & Accessibility",
+      "concept": "Continuous accessibility testing platform that evaluates web applications for WCAG 2.2 AA/AAA compliance using headless browser navigation, screen-reader audio simulation, and contrast geometry analysis.",
+      "core_problems": [
+        "Automated linters miss 70%+ of dynamic interactive accessibility barriers (e.g. keyboard focus traps)",
+        "Evaluating cognitive and motor accessibility beyond static color contrast checks",
+        "Synthesizing actionable, exact CSS/HTML remediations rather than generic compliance warnings"
+      ],
+      "expected_search_directions": [
+        "Accessibility tree (AOM) automated traversal and audit",
+        "Headless screen-reader simulation and virtual audio speech graph generation",
+        "Computer-vision based perceptual color contrast and touch target measurement",
+        "Interactive keyboard focus path cycle detection"
+      ],
+      "known_relevant_technical_concepts": [
+        "Chrome DevTools Protocol (CDP) Accessibility domain",
+        "WCAG 2.2 APCA (Advanced Perceptual Contrast Algorithm)",
+        "Graph cycle detection for keyboard focus traps",
+        "ARIA authoring practices design patterns"
+      ],
+      "relevant_adjacent_industries": [
+        "Industrial Ergonomics & Physical Architecture (ADA wheelchair ramp gradients)",
+        "Automotive Instrument Cluster Safety (Driver visual distraction analysis)",
+        "Aviation Cockpit Instrument Illumination (Night-vision contrast standards)"
+      ],
+      "examples_of_findings_worth_investigating": [
+        "dequelabs/axe-core (accessibility testing engine for web)",
+        "GoogleChrome/lighthouse (automated web quality audits)",
+        "pa11y/pa11y (automated accessibility testing tool)"
+      ]
+    }
+  ]
+}
