@@ -22,7 +22,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/beenhere/beenhere; mailto:open-source@beenhere.local)"
+USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/manasvignesh/BeenHere; mailto:open-source@beenhere.local)"
 
 OPENALEX_API_BASE = "https://api.openalex.org"
 SEMANTIC_SCHOLAR_API_BASE = "https://api.semanticscholar.org/graph/v1"

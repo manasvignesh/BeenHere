@@ -67,8 +67,8 @@ BeenHere requires **Python 3.8+** (standard library only). No third-party packag
 ### Method 1: Using the Agent Skills CLI (Recommended)
 Install directly from GitHub or a local directory into Claude Code, Codex, or all supported environments:
 ```bash
-# Public installation from GitHub (replace <github-owner> with the published repository owner):
-npx skills add <github-owner>/beenhere --agent claude-code codex
+# Public installation from GitHub:
+npx skills add manasvignesh/BeenHere --agent claude-code codex
 
 # Or install from a local checkout:
 npx skills add ./path-to-beenhere --agent claude-code codex

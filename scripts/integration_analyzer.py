@@ -29,7 +29,7 @@ try:
 except ImportError:
     tomllib = None  # type: ignore
 
-USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/beenhere/beenhere)"
+USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/manasvignesh/BeenHere)"
 GITHUB_API_BASE = "https://api.github.com"
 
 # Injection defenses for untrusted code comments, docstrings, and manifests
