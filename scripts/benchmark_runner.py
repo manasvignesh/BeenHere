@@ -177,7 +177,7 @@ def format_benchmark_report(results: Dict[str, Any]) -> str:
     lines.append("| :--- | :--- | :---: | :---: | :---: | :--- |")
 
     for c in results.get("cases", []):
-        sym = "✅ PASS" if c["status"] == "PASS" else "❌ FAIL"
+        sym = "[PASS]" if c["status"] == "PASS" else "[FAIL]"
         m = c.get("metrics", {})
         q_count = str(m.get("total_queries_generated", "-"))
         h_count = str(m.get("hypotheses_count", "-"))
@@ -188,6 +188,16 @@ def format_benchmark_report(results: Dict[str, Any]) -> str:
 
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+    if hasattr(sys.stderr, "reconfigure"):
+        try:
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     parser = argparse.ArgumentParser(
         description="Deterministic Benchmark Suite Runner for BeenHere"
     )

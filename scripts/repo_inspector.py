@@ -70,7 +70,9 @@ def parse_repo_slug(raw_input: str) -> Tuple[str, str]:
     elif "github.com/" in clean:
         clean = clean.split("github.com/")[1]
 
-    clean = clean.rstrip("/").removesuffix(".git")
+    clean = clean.rstrip("/")
+    if clean.endswith(".git"):
+        clean = clean[:-4]
     parts = clean.split("/")
     if len(parts) < 2:
         raise ValueError(f"Invalid repository specification: '{raw_input}'. Expected 'owner/repo' or GitHub URL.")
