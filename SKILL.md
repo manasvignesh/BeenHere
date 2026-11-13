@@ -4,7 +4,7 @@ description: Explores prior art, open-source repositories, academic papers, and 
 license: MIT
 compatibility: Requires Python 3.8+ (standard library only). Optional git, gh CLI, or GITHUB_TOKEN for elevated rate limits.
 metadata:
-  version: "0.3.0"
+  version: "1.0.0-rc1"
   author: "BeenHere Open Source Project"
 allowed-tools: Bash, Read, Grep, Glob, WebSearch
 ---
@@ -24,6 +24,31 @@ Activate this skill when:
 - The user is debating whether to build a custom solution from scratch or adopt/fork/integrate existing projects.
 - You need deep integration analysis, interface symbol extraction, dependency constraints, or license risk checks for candidate repositories.
 - You are prompted with phrases like: *"has this been built?"*, *"explore prior art"*, *"find existing tools"*, *"reusability audit"*, *"integration blueprint"*, or `/beenhere`.
+
+---
+
+## Invocation Modes & User Interaction Guidelines
+
+BeenHere supports two operating modes tailored to user needs:
+
+### 1. Mode A: Quick Exploration (`/beenhere <idea>`)
+Use this mode by default when the user casually pitches an idea or asks "has this been built?".
+- **Speed & Economy:** Run Steps 1–3, 6, and 11 rapidly without flooding the context window.
+- **Immediate Value:** Deliver a concise 4-part inline assessment:
+  1. **Top 3 Discovered Repositories:** Confirmed slugs, verified star counts, license clearance, and current maintenance status.
+  2. **Core Reusable Components:** What already exists off-the-shelf vs what must actually be built.
+  3. **Critical Hazards:** Potential license restrictions (AGPL/BSL), architectural friction, or dead projects.
+  4. **Initial Build Recommendation:** Defensible posture (*Adopt, Fork, Integrate, Build from Scratch*).
+- **Concise Clarification Rule:** **Never** subject the user to an exhaustive 10-question questionnaire before starting research. If an idea is underspecified, proceed immediately with sensible defaults and ask at most **1–2 high-leverage clarifying questions** (e.g., target language/ecosystem or commercial license requirements) alongside your initial findings.
+- Offer to proceed into a Deep Investigation if the user wants comprehensive documentation.
+
+### 2. Mode B: Deep Investigation (`/beenhere --deep <idea>`)
+Use this mode when the user requests an exhaustive evaluation, full prior-art landscape, or technical blueprint.
+- Runs the complete 14-step protocol.
+- Performs cross-vertical domain mapping, academic discovery, deep symbol inspection, and dependency conflict analysis.
+- Generates structured markdown deliverables:
+  - `IDEA_LANDSCAPE.md` (15 standardized sections following [templates/IDEA_LANDSCAPE.md](templates/IDEA_LANDSCAPE.md))
+  - `INTEGRATION_BLUEPRINT.md` (architecture boundaries and protocols following [templates/INTEGRATION_BLUEPRINT.md](templates/INTEGRATION_BLUEPRINT.md))
 
 ---
 

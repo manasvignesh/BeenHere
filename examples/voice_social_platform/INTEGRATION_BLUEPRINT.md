@@ -111,7 +111,10 @@
 - **Serialization Overhead:** Zero (in-memory object reference, <0.1ms).
 
 ### 5.2 Floor Director $\leftrightarrow$ Letta Agent Service (HTTP/REST JSON)
-- **Protocol:** HTTP/1.1 or HTTP/2 over local loopback (`http://127.0.0.1:8283`).
+> [!NOTE] Cross-Language IPC & Process Boundary
+> `letta-code` is authored in TypeScript / Bun (`@letta-ai/letta-client`). There is no native in-process Python bridge for the full Letta Agent runtime. Therefore, integration requires running `letta server` as an independent local HTTP sidecar process (or containerized service) and bridging via loopback REST requests (`http://127.0.0.1:8283`) or the official Python `letta-client` HTTP wrapper. This is a deliberate cross-process architectural boundary, not an out-of-the-box in-process module import.
+
+- **Protocol:** HTTP/1.1 or HTTP/2 over local loopback (`http://127.0.0.1:8283`) or WebSocket stream.
 - **Data Payload:**
   ```json
   {
