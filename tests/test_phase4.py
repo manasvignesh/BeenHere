@@ -89,36 +89,36 @@ class TestSkillInstaller(unittest.TestCase):
     """Test suite for agent skill installation and uninstallation."""
 
     def setUp(self):
-        self.temp_dir = tempfile.mkdtemp(prefix="beenhere_install_test_")
-        self.repo_root = Path(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+        self.temp_dir = os.path.realpath(tempfile.mkdtemp(prefix="beenhere_install_test_"))
+        self.repo_root = Path(os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))).resolve()
 
     def tearDown(self):
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_resolve_paths_local_claude_and_codex(self):
         """Verify destination paths for claude, codex, and all in a local project."""
-        target = Path(self.temp_dir)
+        target = Path(os.path.realpath(self.temp_dir)).resolve()
         paths_claude = install_skill.resolve_install_paths(str(target), "claude", False)
         self.assertEqual(len(paths_claude), 1)
-        self.assertEqual(paths_claude[0][1], target / ".claude" / "skills" / "beenhere")
+        self.assertEqual(paths_claude[0][1].resolve(), (target / ".claude" / "skills" / "beenhere").resolve())
 
         paths_codex = install_skill.resolve_install_paths(str(target), "codex", False)
         self.assertEqual(len(paths_codex), 1)
-        self.assertEqual(paths_codex[0][1], target / ".agents" / "skills" / "beenhere")
+        self.assertEqual(paths_codex[0][1].resolve(), (target / ".agents" / "skills" / "beenhere").resolve())
 
         paths_all = install_skill.resolve_install_paths(str(target), "all", False)
         self.assertEqual(len(paths_all), 2)
 
     def test_resolve_paths_global(self):
         """Verify global paths resolve to user home directory."""
-        home = Path.home()
+        home = Path(os.path.realpath(Path.home())).resolve()
         paths = install_skill.resolve_install_paths(".", "all", True)
-        self.assertEqual(paths[0][1], home / ".claude" / "skills" / "beenhere")
-        self.assertEqual(paths[1][1], home / ".agents" / "skills" / "beenhere")
+        self.assertEqual(paths[0][1].resolve(), (home / ".claude" / "skills" / "beenhere").resolve())
+        self.assertEqual(paths[1][1].resolve(), (home / ".agents" / "skills" / "beenhere").resolve())
 
     def test_install_and_uninstall_in_mock_project(self):
         """Perform end-to-end local installation and clean uninstallation in mock project."""
-        target = Path(self.temp_dir)
+        target = Path(os.path.realpath(self.temp_dir)).resolve()
         paths = install_skill.resolve_install_paths(str(target), "all", False)
 
         # 1. Install via copy

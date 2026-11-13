@@ -1,6 +1,6 @@
 # BeenHere 🧭 — Explore Every Angle Before You Build
 
-[![Test Suite](https://img.shields.io/badge/tests-74%20passing-brightgreen.svg)](tests/)
+[![Test Suite](https://img.shields.io/badge/tests-82%20passing-brightgreen.svg)](tests/)
 [![Benchmarks](https://img.shields.io/badge/benchmarks-10%2F10%20passing-brightgreen.svg)](scripts/benchmark_runner.py)
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -184,7 +184,7 @@ BeenHere is built around strict research integrity and defensible claims:
 BeenHere is continuously tested using standard Python unittest and automated benchmark suites:
 
 ```bash
-# Run all 74 automated unit tests:
+# Run all 82 automated unit tests:
 python -m unittest discover tests -v
 
 # Run the 10-case benchmark evaluation suite:

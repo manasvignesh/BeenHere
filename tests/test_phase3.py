@@ -106,15 +106,27 @@ def _special_private_export():
     def test_python_env_vars_detected(self):
         code = '''
 import os
+from os import environ, getenv
 
 token = os.environ["DEEPGRAM_API_KEY"]
 url = os.environ.get("PIPECAT_GATEWAY_URL", "default")
 port = os.getenv("PORT", "8080")
+direct_env = environ["DIRECT_VAR"]
+direct_get = environ.get("DIRECT_GET_VAR", "def")
+direct_fn = getenv("DIRECT_FN_VAR")
+
+# Non-environ calls that should NOT be detected
+my_dict = {"foo": "bar"}
+ignored = my_dict.get("NOT_AN_ENV_VAR")
 '''
         res = integration_analyzer.parse_python_source(code, "config.py")
         self.assertIn("DEEPGRAM_API_KEY", res["env_vars_detected"])
         self.assertIn("PIPECAT_GATEWAY_URL", res["env_vars_detected"])
         self.assertIn("PORT", res["env_vars_detected"])
+        self.assertIn("DIRECT_VAR", res["env_vars_detected"])
+        self.assertIn("DIRECT_GET_VAR", res["env_vars_detected"])
+        self.assertIn("DIRECT_FN_VAR", res["env_vars_detected"])
+        self.assertNotIn("NOT_AN_ENV_VAR", res["env_vars_detected"])
 
     def test_python_syntax_error_resilience(self):
         malformed_code = '''
@@ -291,6 +303,60 @@ wasm-bindgen = { version = "0.2", optional = true }
         crates = {d["crate"]: d["version"] for d in res["dependencies"]}
         self.assertEqual(crates["serde"], "1.0")
         self.assertEqual(crates["wasm-bindgen"], "0.2")
+
+    def test_toml_fallback_pyproject_without_tomllib(self):
+        """Verify pyproject.toml parsing when tomllib is absent (Python < 3.11 fallback)."""
+        orig_tomllib = integration_analyzer.tomllib
+        try:
+            integration_analyzer.tomllib = None
+            toml_content = '''
+[project]
+name = "pipecat-core"
+version = "0.0.45"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.9.0,<4",
+    "numpy>=1.26.0",
+    "loguru~=0.7.2",
+]
+
+[build-system]
+build-backend = "setuptools.build_meta"
+'''
+            res = integration_analyzer.parse_pyproject_toml(toml_content)
+            self.assertEqual(res["name"], "pipecat-core")
+            self.assertEqual(res["version"], "0.0.45")
+            self.assertEqual(res["requires_python"], ">=3.11")
+            self.assertEqual(len(res["dependencies"]), 3)
+            self.assertEqual(res["build_backend"], "setuptools.build_meta")
+        finally:
+            integration_analyzer.tomllib = orig_tomllib
+
+    def test_toml_fallback_cargo_without_tomllib(self):
+        """Verify Cargo.toml parsing when tomllib is absent (Python < 3.11 fallback)."""
+        orig_tomllib = integration_analyzer.tomllib
+        try:
+            integration_analyzer.tomllib = None
+            cargo = '''
+[package]
+name = "automerge-crdt"
+version = "0.5.2"
+edition = "2021"
+
+[dependencies]
+serde = "1.0"
+wasm-bindgen = { version = "0.2", optional = true }
+'''
+            res = integration_analyzer.parse_cargo_toml(cargo)
+            self.assertEqual(res["name"], "automerge-crdt")
+            self.assertEqual(res["version"], "0.5.2")
+            self.assertEqual(res["edition"], "2021")
+            self.assertEqual(len(res["dependencies"]), 2)
+            crates = {d["crate"]: d["version"] for d in res["dependencies"]}
+            self.assertEqual(crates["serde"], "1.0")
+            self.assertEqual(crates["wasm-bindgen"], "0.2")
+        finally:
+            integration_analyzer.tomllib = orig_tomllib
 
 
 class TestLicenseRiskAndProvenance(unittest.TestCase):

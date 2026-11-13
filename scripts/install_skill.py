@@ -30,15 +30,15 @@ def resolve_install_paths(
 ) -> List[Tuple[str, Path]]:
     """Determine destination paths for selected agents."""
     if is_global:
-        base_dir = Path.home()
+        base_dir = Path(os.path.realpath(Path.home())).resolve()
     else:
-        base_dir = Path(target_dir).resolve()
+        base_dir = Path(os.path.realpath(target_dir)).resolve()
         
     paths = []
     if agent in ("claude", "all"):
-        paths.append(("Claude Code", base_dir / ".claude" / "skills" / "beenhere"))
+        paths.append(("Claude Code", (base_dir / ".claude" / "skills" / "beenhere").resolve()))
     if agent in ("codex", "all"):
-        paths.append(("OpenAI Codex", base_dir / ".agents" / "skills" / "beenhere"))
+        paths.append(("OpenAI Codex", (base_dir / ".agents" / "skills" / "beenhere").resolve()))
         
     return paths
 

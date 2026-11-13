@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0-beta.1] - 2026-11-13 (Phase 5: Final Hardening & Public Beta Preparation)
 
 ### Added
+- **Pure-Python Standard Library TOML Parser Fallback:** Implemented a robust, zero-dependency TOML parser in `scripts/integration_analyzer.py` supporting multiline arrays and inline tables for environments without `tomllib` (Python 3.8, 3.9, and 3.10).
+- **Python 3.8 AST Compatibility:** Added AST slice unwrapping (`ast.Index`) and `ast.Str` support for environment variable and `__all__` extraction in `scripts/integration_analyzer.py`.
+- **Cross-Platform Canonical Path Normalization:** Standardized installer path resolution in `scripts/install_skill.py` and test fixtures in `tests/test_phase4.py` to handle Windows 8.3 short paths (`RUNNER~1`) and macOS symlinked directories (`/var` -> `/private/var`).
+- **Expanded Test Suite:** Added dedicated regression unit tests for `tomllib` absence and fallback handling, bringing the total suite to 82 passing tests.
 - **Preserved Real-World Codex Execution Audit (`docs/CODEX_END_TO_END_TEST.md`):** Comprehensive documentation of a real end-to-end execution of BeenHere inside OpenAI Codex on an AI-powered recruitment platform, including exact commands, generated artifacts, PyMuPDF licensing discoveries, and network fallback validation.
 - **Subprocess Sandbox Socket Denial Fallback:** Added graceful detection for `[WinError 10013]` / `WSAEACCES` socket permission denials in `scripts/github_search.py`, `scripts/repo_inspector.py`, and `scripts/paper_search.py`, providing actionable fallback recommendations for host agents to leverage native tools.
 - **Formally Recognized `[UNVERIFIED-MARKETING-CLAIM]`:** Added explicit support for auditing commercial marketing claims in `scripts/verify_sources.py`, `SKILL.md`, and `references/evaluation_rubric.md`.

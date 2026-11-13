@@ -35,7 +35,7 @@ This checklist must be executed and verified before tagging and publishing any r
   ```bash
   python -m unittest discover tests -v
   ```
-  *Requirement:* 100% passing (74/74 unit tests).
+  *Requirement:* 100% passing (82/82 unit tests).
 - [x] **Benchmark Evaluation Suite:**
   ```bash
   python scripts/benchmark_runner.py

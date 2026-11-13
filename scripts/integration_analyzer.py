@@ -62,6 +62,22 @@ def sanitize_untrusted_text(text: str) -> Tuple[str, bool]:
     return sanitized, injected
 
 
+def _extract_ast_str(node: Any) -> Optional[str]:
+    """Extract string value from an AST node across Python 3.8 - 3.14+."""
+    if node is None:
+        return None
+    # Python 3.8 ast.Index wrapper around slice
+    if hasattr(ast, "Index") and isinstance(node, ast.Index):
+        node = node.value
+    # Python 3.8+ ast.Constant
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    # Python 3.8 legacy ast.Str
+    if hasattr(ast, "Str") and isinstance(node, ast.Str):
+        return getattr(node, "s", None)
+    return None
+
+
 # ==============================================================================
 # 1. STATIC SYMBOL & INTERFACE ANALYZER (PYTHON & JS/TS)
 # ==============================================================================
@@ -103,8 +119,9 @@ def parse_python_source(code: str, file_path: str = "") -> Dict[str, Any]:
                 if isinstance(target, ast.Name) and target.id == "__all__":
                     if isinstance(node.value, (ast.List, ast.Tuple)):
                         for elt in node.value.elts:
-                            if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
-                                result["exported_symbols"].append(elt.value)
+                            s = _extract_ast_str(elt)
+                            if s:
+                                result["exported_symbols"].append(s)
 
     # Check if __all__ was explicitly declared
     has_dunder_all = bool(result["exported_symbols"])
@@ -159,6 +176,8 @@ def parse_python_source(code: str, file_path: str = "") -> Dict[str, Any]:
                         ret_annotation = node.returns.id
                     elif isinstance(node.returns, ast.Constant):
                         ret_annotation = str(node.returns.value)
+                    elif hasattr(ast, "Str") and isinstance(node.returns, ast.Str):
+                        ret_annotation = getattr(node.returns, "s", "")
 
                 result["functions"].append({
                     "name": node.name,
@@ -184,18 +203,41 @@ def parse_python_source(code: str, file_path: str = "") -> Dict[str, Any]:
     # Detect environment variables: os.environ, os.environ.get, os.getenv
     env_vars: Set[str] = set()
     for node in ast.walk(tree):
-        # os.environ['VAR'] or os.environ.get('VAR')
+        # os.environ['VAR'] or environ['VAR']
         if isinstance(node, ast.Subscript):
+            is_environ = False
             if isinstance(node.value, ast.Attribute) and node.value.attr == "environ":
-                if isinstance(node.slice, ast.Constant) and isinstance(node.slice.value, str):
-                    env_vars.add(node.slice.value)
+                is_environ = True
+            elif isinstance(node.value, ast.Name) and node.value.id == "environ":
+                is_environ = True
+            if is_environ:
+                var_name = _extract_ast_str(node.slice)
+                if var_name:
+                    env_vars.add(var_name)
         elif isinstance(node, ast.Call):
-            # os.getenv('VAR') or os.environ.get('VAR')
-            if isinstance(node.func, ast.Attribute):
-                if node.func.attr in ("getenv", "get") and node.args:
-                    first_arg = node.args[0]
-                    if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
-                        env_vars.add(first_arg.value)
+            # os.getenv('VAR') or getenv('VAR')
+            if isinstance(node.func, ast.Attribute) and node.func.attr == "getenv":
+                if node.args:
+                    var_name = _extract_ast_str(node.args[0])
+                    if var_name:
+                        env_vars.add(var_name)
+            elif isinstance(node.func, ast.Name) and node.func.id == "getenv":
+                if node.args:
+                    var_name = _extract_ast_str(node.args[0])
+                    if var_name:
+                        env_vars.add(var_name)
+            # os.environ.get('VAR') or environ.get('VAR')
+            elif isinstance(node.func, ast.Attribute) and node.func.attr == "get":
+                target_val = node.func.value
+                is_environ_get = False
+                if isinstance(target_val, ast.Attribute) and target_val.attr == "environ":
+                    is_environ_get = True
+                elif isinstance(target_val, ast.Name) and target_val.id == "environ":
+                    is_environ_get = True
+                if is_environ_get and node.args:
+                    var_name = _extract_ast_str(node.args[0])
+                    if var_name:
+                        env_vars.add(var_name)
 
     result["env_vars_detected"] = sorted(list(env_vars))
     return result
@@ -491,23 +533,179 @@ def parse_cargo_toml(content: str) -> Dict[str, Any]:
     }
 
 
+def _strip_toml_comment(line: str) -> str:
+    """Strip comments not enclosed in quotes."""
+    in_single = False
+    in_double = False
+    for i, ch in enumerate(line):
+        if ch == '"' and not in_single:
+            if i == 0 or line[i - 1] != '\\':
+                in_double = not in_double
+        elif ch == "'" and not in_double:
+            if i == 0 or line[i - 1] != '\\':
+                in_single = not in_single
+        elif ch == '#' and not in_single and not in_double:
+            return line[:i].strip()
+    return line.strip()
+
+
+def _split_top_level(text: str, delimiter: str = ",") -> List[str]:
+    """Split text by delimiter only at the top level (outside quotes, brackets, and braces)."""
+    parts = []
+    curr: List[str] = []
+    in_single = False
+    in_double = False
+    bracket_depth = 0
+    brace_depth = 0
+
+    for i, ch in enumerate(text):
+        if ch == '"' and not in_single:
+            if i == 0 or text[i - 1] != '\\':
+                in_double = not in_double
+            curr.append(ch)
+        elif ch == "'" and not in_double:
+            if i == 0 or text[i - 1] != '\\':
+                in_single = not in_single
+            curr.append(ch)
+        elif not in_single and not in_double:
+            if ch == '[':
+                bracket_depth += 1
+                curr.append(ch)
+            elif ch == ']':
+                bracket_depth -= 1
+                curr.append(ch)
+            elif ch == '{':
+                brace_depth += 1
+                curr.append(ch)
+            elif ch == '}':
+                brace_depth -= 1
+                curr.append(ch)
+            elif ch == delimiter and bracket_depth == 0 and brace_depth == 0:
+                parts.append("".join(curr).strip())
+                curr = []
+            else:
+                curr.append(ch)
+        else:
+            curr.append(ch)
+
+    if curr:
+        remainder = "".join(curr).strip()
+        if remainder:
+            parts.append(remainder)
+    return parts
+
+
+def _parse_toml_value(val_str: str) -> Any:
+    """Parse scalar, inline array, or inline table TOML value."""
+    val_str = val_str.strip()
+    if not val_str:
+        return ""
+    if val_str.startswith('"') and val_str.endswith('"') and len(val_str) >= 2:
+        return val_str[1:-1]
+    if val_str.startswith("'") and val_str.endswith("'") and len(val_str) >= 2:
+        return val_str[1:-1]
+    if val_str.lower() == "true":
+        return True
+    if val_str.lower() == "false":
+        return False
+    if val_str.startswith("{") and val_str.endswith("}"):
+        inner = val_str[1:-1].strip()
+        table: Dict[str, Any] = {}
+        if inner:
+            for part in _split_top_level(inner, ","):
+                if "=" in part:
+                    k, v = part.split("=", 1)
+                    table[k.strip().strip('"\'')] = _parse_toml_value(v.strip())
+        return table
+    if val_str.startswith("[") and val_str.endswith("]"):
+        inner = val_str[1:-1].strip()
+        items: List[Any] = []
+        if inner:
+            for part in _split_top_level(inner, ","):
+                if part:
+                    items.append(_parse_toml_value(part))
+        return items
+    try:
+        return int(val_str)
+    except ValueError:
+        try:
+            return float(val_str)
+        except ValueError:
+            return val_str
+
+
 def _minimal_toml_fallback(content: str) -> Dict[str, Any]:
-    """Lightweight key-value extractor when tomllib is absent."""
-    result: Dict[str, Any] = {"project": {}, "build-system": {}, "package": {}, "dependencies": {}}
-    current_section = None
-    for line in content.splitlines():
+    """
+    Robust pure standard-library TOML parser fallback for Python < 3.11.
+    Parses sections, multiline arrays, inline tables, booleans, and scalar values.
+    """
+    result: Dict[str, Any] = {}
+    current_section = result
+
+    lines = []
+    buffer = ""
+    bracket_depth = 0
+    brace_depth = 0
+    in_single = False
+    in_double = False
+
+    for raw_line in content.splitlines():
+        line = _strip_toml_comment(raw_line)
+        if not buffer and not line:
+            continue
+
+        for i, ch in enumerate(line):
+            if ch == '"' and not in_single:
+                if i == 0 or line[i - 1] != '\\':
+                    in_double = not in_double
+            elif ch == "'" and not in_double:
+                if i == 0 or line[i - 1] != '\\':
+                    in_single = not in_single
+            elif not in_single and not in_double:
+                if ch == '[':
+                    bracket_depth += 1
+                elif ch == ']':
+                    bracket_depth -= 1
+                elif ch == '{':
+                    brace_depth += 1
+                elif ch == '}':
+                    brace_depth -= 1
+
+        if buffer:
+            buffer += " " + line
+        else:
+            buffer = line
+
+        if bracket_depth <= 0 and brace_depth <= 0:
+            lines.append(buffer)
+            buffer = ""
+            bracket_depth = 0
+            brace_depth = 0
+
+    if buffer:
+        lines.append(buffer)
+
+    for line in lines:
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         if line.startswith("[") and line.endswith("]"):
-            current_section = line[1:-1].strip()
+            sec_name = line[1:-1].strip()
+            parts = sec_name.split(".")
+            target = result
+            for p in parts:
+                p = p.strip().strip('"\'')
+                if p not in target or not isinstance(target[p], dict):
+                    target[p] = {}
+                target = target[p]
+            current_section = target
             continue
-        if "=" in line and current_section:
+
+        if "=" in line:
             k, v = line.split("=", 1)
-            k = k.strip()
-            v = v.strip().strip('"').strip("'")
-            if current_section in result:
-                result[current_section][k] = v
+            k = k.strip().strip('"\'')
+            current_section[k] = _parse_toml_value(v)
+
     return result
 
 
