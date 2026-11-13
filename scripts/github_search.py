@@ -18,7 +18,7 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional, Tuple
 
-USER_AGENT = "BeenHere-Skill/0.1.0 (https://github.com/beenhere)"
+USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/beenhere/beenhere)"
 GITHUB_API_BASE = "https://api.github.com"
 
 # Patterns commonly used in prompt injection attempts within external repos
@@ -69,8 +69,9 @@ def make_request(url: str, token: Optional[str] = None) -> Tuple[int, Dict[str, 
         headers = {k.lower(): v for k, v in e.headers.items()} if e.headers else {}
         body = e.read() if hasattr(e, "read") else b""
         return e.code, headers, body
-    except urllib.error.URLError as e:
-        raise RuntimeError(f"Network error accessing GitHub API: {e.reason}") from e
+    except (urllib.error.URLError, OSError) as e:
+        reason = getattr(e, "reason", e)
+        raise RuntimeError(f"Network error accessing GitHub API: {reason}") from e
 
 
 def parse_rate_limit(headers: Dict[str, str]) -> Dict[str, Any]:
@@ -260,7 +261,25 @@ def multi_query_search(
 
     latest_rate_limit = rate_limits[-1] if rate_limits else {}
 
-    return {
+    is_socket_restriction = any(
+        any(k in str(err).lower() for k in ("10013", "wsaeacces", "eacces", "forbidden by its access permissions", "permission denied"))
+        for err in errors
+    )
+    fallback_rec = None
+    if errors and not final_items:
+        if is_socket_restriction:
+            fallback_rec = (
+                "Subprocess network socket access was restricted by the host/sandbox environment ([WinError 10013]/WSAEACCES). "
+                "Host AI agent: please fall back to your native tools (e.g. host WebSearch, GitHub CLI 'gh search', "
+                "or native HTTP fetch) to discover repositories directly."
+            )
+        else:
+            fallback_rec = (
+                "Subprocess network queries encountered errors. "
+                "Host AI agent: please fall back to your native WebSearch or GitHub CLI ('gh') to discover candidate repositories."
+            )
+
+    result = {
         "status": "partial_success" if errors and final_items else ("error" if errors and not final_items else "success"),
         "total_unique_discovered": len(aggregated_items),
         "returned_count": len(final_items),
@@ -269,6 +288,9 @@ def multi_query_search(
         "rate_limit": latest_rate_limit,
         "items": final_items,
     }
+    if fallback_rec:
+        result["fallback_recommendation"] = fallback_rec
+    return result
 
 
 def format_text_table(results: Dict[str, Any]) -> str:
@@ -278,6 +300,8 @@ def format_text_table(results: Dict[str, Any]) -> str:
         msg = "No repositories found."
         if results.get("errors"):
             msg += "\nErrors:\n" + "\n".join(f" - {e}" for e in results["errors"])
+        if results.get("fallback_recommendation"):
+            msg += f"\n\n> [!WARNING] Subprocess Network Restriction:\n> {results['fallback_recommendation']}"
         return msg
 
     lines = []

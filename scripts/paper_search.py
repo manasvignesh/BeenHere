@@ -22,7 +22,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-USER_AGENT = "BeenHere-Skill/0.2.0 (https://github.com/beenhere; mailto:open-source@beenhere.local)"
+USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/beenhere/beenhere; mailto:open-source@beenhere.local)"
 
 OPENALEX_API_BASE = "https://api.openalex.org"
 SEMANTIC_SCHOLAR_API_BASE = "https://api.semanticscholar.org/graph/v1"
@@ -95,8 +95,9 @@ def make_http_request(
         resp_headers = {k.lower(): v for k, v in e.headers.items()} if e.headers else {}
         body = e.read() if hasattr(e, "read") else b""
         return e.code, resp_headers, body
-    except urllib.error.URLError as e:
-        raise RuntimeError(f"Network error accessing '{url}': {e.reason}") from e
+    except (urllib.error.URLError, OSError) as e:
+        reason = getattr(e, "reason", e)
+        raise RuntimeError(f"Network error accessing '{url}': {reason}") from e
 
 
 def query_openalex(query: str, limit: int = 5) -> Dict[str, Any]:
@@ -355,7 +356,25 @@ def search_academic_papers(
     aggregated_papers.sort(key=lambda p: (p.get("year") or 0), reverse=True)
     final_papers = aggregated_papers[:limit]
 
-    return {
+    is_socket_restriction = any(
+        any(k in str(err).lower() for k in ("10013", "wsaeacces", "eacces", "forbidden by its access permissions", "permission denied"))
+        for err in errors
+    )
+    fallback_rec = None
+    if errors and not final_papers:
+        if is_socket_restriction:
+            fallback_rec = (
+                "Subprocess network socket access was restricted by the host/sandbox environment ([WinError 10013]/WSAEACCES). "
+                "Host AI agent: please fall back to your native tools (e.g. host WebSearch, arXiv/OpenAlex web queries) "
+                "to retrieve academic papers directly."
+            )
+        else:
+            fallback_rec = (
+                "Subprocess academic queries encountered network errors. "
+                "Host AI agent: please fall back to your native WebSearch to discover academic papers directly."
+            )
+
+    result = {
         "status": "success" if final_papers else ("partial_error" if errors else "no_results"),
         "total_unique_discovered": len(aggregated_papers),
         "returned_count": len(final_papers),
@@ -365,6 +384,9 @@ def search_academic_papers(
         "errors": errors,
         "items": final_papers,
     }
+    if fallback_rec:
+        result["fallback_recommendation"] = fallback_rec
+    return result
 
 
 def format_academic_table(results: Dict[str, Any]) -> str:
@@ -374,6 +396,8 @@ def format_academic_table(results: Dict[str, Any]) -> str:
         msg = "No academic papers found."
         if results.get("errors"):
             msg += "\nProvider Warnings / Errors:\n" + "\n".join(f" - {e}" for e in results["errors"])
+        if results.get("fallback_recommendation"):
+            msg += f"\n\n> [!WARNING] Subprocess Network Restriction:\n> {results['fallback_recommendation']}"
         return msg
 
     lines = []

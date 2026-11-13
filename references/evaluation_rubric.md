@@ -104,6 +104,7 @@ To maintain absolute research integrity and eliminate hallucinations, every anal
 | **`[VERIFIED-TEST]`** | Confirmed by executing automated unit/integration tests or code in an active runtime environment. | *"The WebRTC transport achieves 120ms roundtrip audio latency in local loopback tests [VERIFIED-TEST]."* |
 | **`[VERIFIED-SOURCE]`** | Confirmed by reading raw source code files, ASTs, or package manifests (`package.json`, `Cargo.toml`). | *"The repository does not import external vector databases; memory is stored in an in-memory dictionary [VERIFIED-SOURCE]."* |
 | **`[VERIFIED-METADATA]`** | Confirmed via official API headers, package registry records, or HTTP status codes. | *"Repository has an Apache-2.0 license and 4,120 stars as of 2026-03 [VERIFIED-METADATA]."* |
+| **`[UNVERIFIED-MARKETING-CLAIM]`** | Vendor-published product capability, pricing sheet, or marketing claim that has not been verified in source code or independent trials. | *"Vendor marketing states conversational screening reduces scheduling overhead by 50% [UNVERIFIED-MARKETING-CLAIM]."* |
 | **`[INFERRED]`** | Logical deduction derived from verified technical evidence; reasoning must be explicitly stated. | *"Because the framework lacks Redis or database adapters in source code, sessions will not survive process restarts [INFERRED]."* |
 | **`[UNKNOWN]`** | Information that cannot be verified due to missing documentation, paywalls, or closed source. | *"The token latency and internal model weights of the proprietary API remain unknown [UNKNOWN]."* |
 

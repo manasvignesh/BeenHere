@@ -18,12 +18,19 @@ This guide covers installing and configuring **BeenHere** for **Anthropic Claude
 The official `skills` CLI provides a unified way to install BeenHere directly into your agent configurations:
 
 ```bash
-# Install BeenHere into both Claude Code and OpenAI Codex in the current project:
-npx skills add <repository-url-or-local-path> --agent claude-code codex
+# Install BeenHere from GitHub (once published, replacing <github-owner>):
+npx skills add <github-owner>/beenhere --agent claude-code codex
+
+# Install BeenHere into both Claude Code and OpenAI Codex from a local clone:
+npx skills add /path/to/beenhere --agent claude-code codex
 
 # Install globally across all user projects:
-npx skills add <repository-url-or-local-path> --global --agent claude-code codex
+npx skills add <github-owner>/beenhere --global --agent claude-code codex
 ```
+
+> [!NOTE] Runtime Execution Status
+> - **OpenAI Codex:** Verified in real-world end-to-end execution on an AI recruitment platform in an isolated project (see [docs/CODEX_END_TO_END_TEST.md](docs/CODEX_END_TO_END_TEST.md)).
+> - **Anthropic Claude Code:** Verified structurally and discovered by `npx skills`, but live authenticated runtime execution in Claude Code has not yet been performed.
 
 ---
 

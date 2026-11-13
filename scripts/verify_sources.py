@@ -16,12 +16,13 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-USER_AGENT = "BeenHere-Verifier/0.1.0 (https://github.com/beenhere)"
+USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/beenhere/beenhere)"
 
 EVIDENCE_TAGS = [
     "[VERIFIED-TEST]",
     "[VERIFIED-SOURCE]",
     "[VERIFIED-METADATA]",
+    "[UNVERIFIED-MARKETING-CLAIM]",
     "[INFERRED]",
     "[UNKNOWN]",
 ]
@@ -94,13 +95,14 @@ def check_url_reachability(url: str, timeout: int = 10) -> Dict[str, Any]:
             "status_code": e.code,
             "error": f"HTTP {e.code}",
         }
-    except urllib.error.URLError as e:
+    except (urllib.error.URLError, OSError) as e:
+        reason = getattr(e, "reason", str(e))
         return {
             "url": url,
             "status": "network_error",
             "reachable": False,
             "status_code": None,
-            "error": str(e.reason),
+            "error": str(reason),
         }
     except Exception as e:
         return {

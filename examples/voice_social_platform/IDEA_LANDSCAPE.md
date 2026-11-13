@@ -58,7 +58,7 @@ Deconstructing the concept into foundational computer science and social primiti
 
 ## 4. Direct Competitors and Implementations (Commercial & Closed-Source)
 
-Discovered and evaluated via the commercial product discovery protocol ([references/product_discovery.md](file:///C:/Users/Manas/BeenHere/references/product_discovery.md)):
+Discovered and evaluated via the commercial product discovery protocol ([references/product_discovery.md](../../references/product_discovery.md)):
 
 | Product / Service | Competitor Tier | Core Approach & Tech Stack | Overlap with Target Idea | Pricing / Availability | Evidence Tier |
 | :--- | :---: | :--- | :--- | :--- | :--- |
@@ -105,7 +105,7 @@ Discovered via deterministic `scripts/paper_search.py` querying OpenAlex, arXiv,
 
 ## 7. Cross-Vertical Discoveries (Mandatory Differentiator)
 
-Applying the cross-vertical methodology ([references/cross_vertical_research.md](file:///C:/Users/Manas/BeenHere/references/cross_vertical_research.md)) reveals that unrelated fields have already engineered solutions for these exact constraints:
+Applying the cross-vertical methodology ([references/cross_vertical_research.md](../../references/cross_vertical_research.md)) reveals that unrelated fields have already engineered solutions for these exact constraints:
 
 ### 7.1 Video Game AI & Interactive Drama (Façade & Dwarf Fortress)
 - **Source Industry:** Autonomous character pacing and interactive drama management.
@@ -140,7 +140,7 @@ Applying the cross-vertical methodology ([references/cross_vertical_research.md]
 
 ## 8. Transferability Assessments
 
-Evaluation of cross-vertical mechanism candidates under the 10-point audit ([references/transferability_rubric.md](file:///C:/Users/Manas/BeenHere/references/transferability_rubric.md)):
+Evaluation of cross-vertical mechanism candidates under the 10-point audit ([references/transferability_rubric.md](../../references/transferability_rubric.md)):
 
 | Mechanism Candidate | Source Industry | Shared Mechanism | Required Adaptation & Software Reality | Transferability Classification | Evidence Tier |
 | :--- | :--- | :--- | :--- | :---: | :--- |
@@ -153,7 +153,7 @@ Evaluation of cross-vertical mechanism candidates under the 10-point audit ([ref
 
 ## 9. Code-Reusability Recommendations
 
-Comprehensive reusability audit conducted via `scripts/repo_inspector.py` following [references/code_reusability.md](file:///C:/Users/Manas/BeenHere/references/code_reusability.md):
+Comprehensive reusability audit conducted via `scripts/repo_inspector.py` following [references/code_reusability.md](../../references/code_reusability.md):
 
 ### 9.1 Repository: [pipecat-ai/pipecat](https://github.com/pipecat-ai/pipecat)
 - **Verification Depth:** `METADATA_AND_MANIFESTS_ONLY`
@@ -212,7 +212,7 @@ Structured mapping of target requirements against existing solutions:
 
 ## 11. Missing Functionality (Gaps vs. Intentional Trade-offs)
 
-Detailed diagnosis following [references/feature_gap_analysis.md](file:///C:/Users/Manas/BeenHere/references/feature_gap_analysis.md):
+Detailed diagnosis following [references/feature_gap_analysis.md](../../references/feature_gap_analysis.md):
 
 1. **Gap 1: Dynamic Multi-Speaker Conversational Floor Controller**
    - **Nature:** *Genuine Technical Whitespace*

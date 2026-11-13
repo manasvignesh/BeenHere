@@ -29,7 +29,7 @@ try:
 except ImportError:
     tomllib = None  # type: ignore
 
-USER_AGENT = "BeenHere-IntegrationAnalyzer/0.3.0 (https://github.com/beenhere)"
+USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/beenhere/beenhere)"
 GITHUB_API_BASE = "https://api.github.com"
 
 # Injection defenses for untrusted code comments, docstrings, and manifests
@@ -407,11 +407,19 @@ def parse_pyproject_toml(content: str) -> Dict[str, Any]:
     }
 
 
+KNOWN_SENSITIVE_DEPENDENCIES = {
+    "pymupdf": "Dual-licensed under AGPL-3.0 and Artifex commercial terms. Poses strong copyleft/reciprocal risk for commercial applications.",
+    "fitz": "PyMuPDF alias. Dual-licensed under AGPL-3.0 and Artifex commercial terms.",
+    "redis": "Redis >= 7.4 is dual-licensed under RSALv2 / SSPL (source-available, non-OSI).",
+}
+
+
 def parse_requirements_txt(content: str) -> Dict[str, Any]:
     """Parse pip requirements.txt file extracting packages, constraints, and git URLs."""
     sanitized, _ = sanitize_untrusted_text(content)
     packages = []
     git_dependencies = []
+    license_warnings = []
 
     for line in sanitized.splitlines():
         line = line.strip()
@@ -429,18 +437,24 @@ def parse_requirements_txt(content: str) -> Dict[str, Any]:
             pkg_name = m.group(1)
             constraint = m.group(2).strip() if m.group(2) else "unconstrained"
             packages.append({"package": pkg_name, "constraint": constraint})
+            pkg_lower = pkg_name.lower().replace("-", "_")
+            if pkg_lower in KNOWN_SENSITIVE_DEPENDENCIES:
+                license_warnings.append(f"⚠️ High-Risk License Dependency: '{pkg_name}' — {KNOWN_SENSITIVE_DEPENDENCIES[pkg_lower]}")
         else:
             packages.append({"package": line, "constraint": "raw"})
+
+    considerations = [
+        f"Parsed {len(packages)} dependencies",
+        f"Git-pinned dependencies detected: {len(git_dependencies)}",
+    ]
+    considerations.extend(license_warnings)
 
     return {
         "manifest_type": "requirements.txt",
         "total_packages": len(packages),
         "packages": packages,
         "git_dependencies": git_dependencies,
-        "integration_considerations": [
-            f"Parsed {len(packages)} dependencies",
-            f"Git-pinned dependencies detected: {len(git_dependencies)}",
-        ],
+        "integration_considerations": considerations,
     }
 
 

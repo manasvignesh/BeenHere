@@ -19,7 +19,7 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional, Tuple
 
-USER_AGENT = "BeenHere-Skill/0.1.0 (https://github.com/beenhere)"
+USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/beenhere/beenhere)"
 GITHUB_API_BASE = "https://api.github.com"
 
 # Known license categories with precise legal classification
@@ -96,8 +96,9 @@ def make_request(url: str, token: Optional[str] = None) -> Tuple[int, Dict[str, 
         headers = {k.lower(): v for k, v in e.headers.items()} if e.headers else {}
         body = e.read() if hasattr(e, "read") else b""
         return e.code, headers, body
-    except urllib.error.URLError as e:
-        raise RuntimeError(f"Network error accessing GitHub API: {e.reason}") from e
+    except (urllib.error.URLError, OSError) as e:
+        reason = getattr(e, "reason", e)
+        raise RuntimeError(f"Network error accessing GitHub API: {reason}") from e
 
 
 def sanitize_untrusted_text(text: str) -> Tuple[str, bool]:
@@ -243,21 +244,37 @@ def inspect_repository(
     else:
         # 1. Fetch main repo metadata
         repo_url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}"
-        status, headers, body = make_request(repo_url, token=token)
+        status = 0
         repo_data = None
-        if status == 200:
-            repo_data = json.loads(body.decode("utf-8", errors="replace"))
-        elif status == 403:
-            # Fallback to GitHub Search API which operates under a separate rate limit bucket
-            search_url = f"{GITHUB_API_BASE}/search/repositories?q=repo:{owner}/{repo}"
-            try:
-                s_status, _, s_body = make_request(search_url, token=token)
-                if s_status == 200:
-                    s_data = json.loads(s_body.decode("utf-8", errors="replace"))
-                    if s_data.get("items"):
-                        repo_data = s_data["items"][0]
-            except Exception:
-                pass
+        try:
+            status, headers, body = make_request(repo_url, token=token)
+            if status == 200:
+                repo_data = json.loads(body.decode("utf-8", errors="replace"))
+            elif status == 403:
+                # Fallback to GitHub Search API which operates under a separate rate limit bucket
+                search_url = f"{GITHUB_API_BASE}/search/repositories?q=repo:{owner}/{repo}"
+                try:
+                    s_status, _, s_body = make_request(search_url, token=token)
+                    if s_status == 200:
+                        s_data = json.loads(s_body.decode("utf-8", errors="replace"))
+                        if s_data.get("items"):
+                            repo_data = s_data["items"][0]
+                except Exception:
+                    pass
+        except Exception as e:
+            is_sock = any(k in str(e).lower() for k in ("10013", "wsaeacces", "eacces", "access permissions", "permission denied"))
+            fallback = (
+                "Subprocess network socket access was denied ([WinError 10013]/WSAEACCES). "
+                "Host AI agent: please use your native tools (e.g. host WebSearch, gh repo view, or native fetch) "
+                "to inspect this repository directly."
+                if is_sock else
+                f"Network error retrieving repository '{owner}/{repo}': {e}. Host agent: please fall back to native tools."
+            )
+            return {
+                "error": f"Failed to retrieve repository '{owner}/{repo}': {e}",
+                "status_code": 0,
+                "fallback_recommendation": fallback,
+            }
 
         if not repo_data:
             return {
@@ -482,7 +499,10 @@ def inspect_repository(
 def format_inspection_report(res: Dict[str, Any]) -> str:
     """Format repository inspection results into readable markdown."""
     if res.get("error"):
-        return f"Inspection Error: {res['error']}"
+        msg = f"Inspection Error: {res['error']}"
+        if res.get("fallback_recommendation"):
+            msg += f"\n\n> [!WARNING] Subprocess Network Restriction:\n> {res['fallback_recommendation']}"
+        return msg
 
     lic = res["license"]
     maint = res["maintenance"]
@@ -572,12 +592,27 @@ def main():
         sys.exit(1)
 
     token = get_auth_token()
-    inspection = inspect_repository(
-        owner=owner,
-        repo=repo_name,
-        source_paths=args.inspect_files,
-        token=token,
-    )
+    try:
+        inspection = inspect_repository(
+            owner=owner,
+            repo=repo_name,
+            source_paths=args.inspect_files,
+            token=token,
+        )
+    except Exception as e:
+        is_sock = any(k in str(e).lower() for k in ("10013", "wsaeacces", "eacces", "access permissions", "permission denied"))
+        fallback = (
+            "Subprocess network socket access was denied ([WinError 10013]/WSAEACCES). "
+            "Host AI agent: please use your native tools (e.g. host WebSearch, gh repo view, or native fetch) "
+            "to inspect this repository directly."
+            if is_sock else
+            f"Network error retrieving repository '{owner}/{repo_name}': {e}. Host agent: please fall back to native tools."
+        )
+        inspection = {
+            "error": f"Failed to retrieve repository '{owner}/{repo_name}': {e}",
+            "status_code": 0,
+            "fallback_recommendation": fallback,
+        }
 
     if args.json:
         out_content = json.dumps(inspection, indent=2)

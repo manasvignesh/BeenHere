@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0-beta.1] - 2026-11-13 (Phase 5: Final Hardening & Public Beta Preparation)
+
+### Added
+- **Preserved Real-World Codex Execution Audit (`docs/CODEX_END_TO_END_TEST.md`):** Comprehensive documentation of a real end-to-end execution of BeenHere inside OpenAI Codex on an AI-powered recruitment platform, including exact commands, generated artifacts, PyMuPDF licensing discoveries, and network fallback validation.
+- **Subprocess Sandbox Socket Denial Fallback:** Added graceful detection for `[WinError 10013]` / `WSAEACCES` socket permission denials in `scripts/github_search.py`, `scripts/repo_inspector.py`, and `scripts/paper_search.py`, providing actionable fallback recommendations for host agents to leverage native tools.
+- **Formally Recognized `[UNVERIFIED-MARKETING-CLAIM]`:** Added explicit support for auditing commercial marketing claims in `scripts/verify_sources.py`, `SKILL.md`, and `references/evaluation_rubric.md`.
+- **Known License-Sensitive Package Advisory:** Enhanced `scripts/integration_analyzer.py` with automatic detection for high-risk dual-licensed dependencies (such as `pymupdf` AGPL/Artifex commercial terms and `redis` RSALv2/SSPL).
+
+### Changed
+- Standardized version identifier to `v1.0.0-beta.1` across `SKILL.md`, `README.md`, `docs/INSTALLATION.md`, and `CHANGELOG.md`.
+- Updated `SECURITY.md` and `SKILL.md` to avoid exaggerated security claims, explicitly disclosing residual prompt injection risks.
+- Clearly disclosed agent execution status: verified end-to-end in OpenAI Codex; verified structurally in Anthropic Claude Code and Agent Skills CLI.
+
+---
+
 ## [1.0.0-rc1] - 2026-11-13 (Phase 4: Usability, Installation & Release Candidate)
 
 ### Added

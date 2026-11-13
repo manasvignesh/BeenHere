@@ -5,30 +5,33 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-stdlib%20only-orange.svg)](scripts/)
-[![Agent Skills](https://img.shields.io/badge/skills-Codex%20%26%20Claude%20Code-purple.svg)](SKILL.md)
+[![Release Candidate](https://img.shields.io/badge/release-v1.0.0--beta.1-blueviolet.svg)](CHANGELOG.md)
 
-> **Discover what's built. Explore what's possible. Reuse what works. Improve what's missing. Build only what matters.**
+> **BeenHere — Explore every angle before you build.**  
+> *Discover existing products, reusable code, academic research, and unexpected approaches from other industries before writing new software.*
 
 ---
 
-**BeenHere** is a portable, zero-dependency Agent Skill for AI coding environments (**Anthropic Claude Code**, **OpenAI Codex**, and the **Agent Skills CLI**).
+**BeenHere** is a free, open-source Agent Skill for AI coding environments. Before you write a single line of boilerplate or spend weeks building from scratch, BeenHere conducts an objective, multi-angle investigation across:
+- **Existing Open-Source Repositories:** Finds candidate libraries, inspects actual source code (not just README claims), checks maintenance activity, and audits license obligations.
+- **Academic Research:** Discovers peer-reviewed papers and theoretical foundations across OpenAlex, arXiv, and Semantic Scholar.
+- **Commercial & SaaS Products:** Identifies established products, pricing models, and documented feature sets to assess true market differentiation.
+- **Cross-Vertical Engineering:** Uncovers proven mechanisms from unrelated industries (gaming, robotics, simulation, avionics) solving identical computational primitives.
+- **Interface & Dependency Extraction:** Statically parses exported symbols, public APIs, environment variables, and dependency conflicts to formulate concrete **Integration Blueprints**.
 
-Before you write a single line of code or commit weeks to building a new feature, BeenHere investigates your idea across:
-- **Existing Open-Source Repositories:** Discovers candidate libraries, verifies actual source code (not just README claims), checks maintenance vitals, and audits license obligations.
-- **Academic Research:** Searches peer-reviewed literature, preprints, and algorithmic foundations across OpenAlex, arXiv, and Semantic Scholar.
-- **Commercial & Adjacent Products:** Maps direct, partial, and adjacent market solutions with verified documentation.
-- **Cross-Vertical Engineering:** Uncovers battle-tested mechanisms from unrelated industries (gaming, simulation, aerospace, robotics) that solve identical computational primitives.
-- **Interface & Dependency Extraction:** Statically parses exported symbols, public APIs, environment variables, and dependency conflicts to formulate concrete, step-by-step **Integration Blueprints**.
+> [!NOTE] Verified Agent Compatibility Disclosure
+> - **OpenAI Codex:** Fully verified in real-world end-to-end execution in an isolated project (see [docs/CODEX_END_TO_END_TEST.md](docs/CODEX_END_TO_END_TEST.md)).
+> - **Anthropic Claude Code:** Structural discovery (`.claude/skills/beenhere`) and Agent Skills CLI registration (`npx skills`) verified. Full live runtime execution in Claude Code has not yet been tested in an authenticated session.
 
 ---
 
 ## The Problem: The Reinvention Loop
 
-Developers and AI agents routinely reinvent existing software:
-- **Siloed Searches:** Quitting after a single GitHub keyword query fails to find an exact match, mistakenly concluding an idea is novel.
+Developers and AI coding assistants routinely reinvent existing software:
+- **Siloed Searches:** Quitting after a single GitHub keyword query fails to return an exact match, mistakenly concluding an idea is novel.
 - **Unverified README Trust:** Blindly assuming a library works as advertised without verifying exported interfaces, activity, or breaking dependencies.
 - **Hidden Legal Traps:** Ingesting AGPL, SSPL, or BSL-1.1 code into proprietary or commercial SaaS products without understanding copyleft triggers or non-compete clauses.
-- **Architectural Reinvention:** Solving synchronization, turn arbitration, or caching problems from scratch when proven patterns exist in adjacent fields.
+- **Architectural Reinvention:** Solving synchronization, turn arbitration, or caching problems from scratch when battle-tested patterns already exist in adjacent fields.
 
 BeenHere breaks this cycle by providing **deterministic, evidence-backed intelligence** before development begins.
 
@@ -46,10 +49,10 @@ Designed for rapid, lightweight conversational ideation.
   2. **Core Reusable Components:** What already exists off-the-shelf vs what must actually be built.
   3. **Critical Hazards:** Potential license friction (AGPL/BSL) or unmaintained dependencies.
   4. **Initial Build Recommendation:** Defensible posture (*Adopt, Fork, Integrate, Build from Scratch*).
-- Asks at most **1–2 high-leverage clarifying questions** if technical trade-offs are ambiguous.
+- Asks at most **1–2 high-leverage clarifying trade-off questions** if technical choices are ambiguous.
 
 ### 2. Deep Investigation Mode (`/beenhere --deep <idea>`)
-Designed for rigorous product architecture and architectural planning.
+Designed for rigorous product architecture and engineering planning.
 - Runs the full **14-Step Research & Integration Protocol**.
 - Generates exhaustive, structured markdown deliverables:
   - `IDEA_LANDSCAPE.md`: 15-section exhaustive market, academic, and cross-vertical analysis.
@@ -62,14 +65,17 @@ Designed for rigorous product architecture and architectural planning.
 BeenHere requires **Python 3.8+** (standard library only). No third-party packages or paid API keys are required.
 
 ### Method 1: Using the Agent Skills CLI (Recommended)
-Install directly into Claude Code, Codex, or all supported environments:
+Install directly from GitHub or a local directory into Claude Code, Codex, or all supported environments:
 ```bash
-# Add to Claude Code & Codex
-npx skills add <repository-url-or-local-path> --agent claude-code codex
+# Public installation from GitHub (replace <github-owner> with the published repository owner):
+npx skills add <github-owner>/beenhere --agent claude-code codex
+
+# Or install from a local checkout:
+npx skills add ./path-to-beenhere --agent claude-code codex
 ```
 
-### Method 2: Using the Built-In Installer Script
-BeenHere includes a standalone Python installer that works on Windows, macOS, and Linux:
+### Method 2: Using the Built-In Python Installer
+BeenHere includes a standalone cross-platform installer script:
 ```bash
 # Install locally in current project for all agents:
 python scripts/install_skill.py
@@ -98,7 +104,7 @@ python scripts/install_skill.py --uninstall
 
 ```
 beenhere/
-├── SKILL.md                          # Canonical Agent Skill specification (v1.0.0-rc1)
+├── SKILL.md                          # Canonical Agent Skill specification (v1.0.0-beta.1)
 ├── README.md                         # Project overview and documentation
 ├── LICENSE                           # MIT License
 ├── CONTRIBUTING.md                   # Development guide and contribution standards
@@ -144,6 +150,7 @@ beenhere/
 └── docs/                             # Technical architecture and release documentation
     ├── ARCHITECTURE.md               # Architecture design & progressive disclosure model
     ├── INSTALLATION.md               # Detailed installation and agent integration guide
+    ├── CODEX_END_TO_END_TEST.md      # Real-world Codex execution audit and test findings
     ├── DEMO_WALKTHROUGH.md           # Reproducible demo walkthrough and video script
     └── RELEASE_CHECKLIST.md          # Pre-release verification checklist
 ```
@@ -155,14 +162,16 @@ beenhere/
 BeenHere is built around strict research integrity and defensible claims:
 
 1. **Strict Evidence Tagging Hierarchy:**
-   - `[VERIFIED-TEST]`: Confirmed by running code or automated unit/integration tests in a local environment.
-   - `[VERIFIED-SOURCE]`: Confirmed by inspecting implementation source files directly.
+   - `[VERIFIED-TEST]`: Confirmed by running code or automated unit/integration tests in an active environment.
+   - `[VERIFIED-SOURCE]`: Confirmed by inspecting implementation source files or manifests directly.
    - `[VERIFIED-METADATA]`: Confirmed via official API headers, manifests, or academic DOIs.
+   - `[UNVERIFIED-MARKETING-CLAIM]`: Vendor-published capability or marketing page, not independently verified in code.
    - `[INFERRED]`: Deductive reasoning derived from verified technical evidence.
    - `[UNKNOWN]`: Data points that could not be verified due to access restrictions.
-2. **Prompt Injection & Untrusted Data Defense:**
+2. **Untrusted External Data & Prompt Injection Defenses:**
    - All external repository descriptions, README excerpts, academic abstracts, commit messages, and issue comments are treated as **untrusted data**.
-   - Input sanitizers disarm prompt injection attempts (`ignore previous instructions`, `system prompt:`) and quarantine external text within `<untrusted_external_content>` tags.
+   - Input sanitizers disarm direct prompt injection patterns (`ignore previous instructions`, `system prompt:`) and quarantine external text within `<untrusted_external_content>` tags.
+   - *Residual Risk Disclosure:* Pattern disarming mitigates common prompt hijacking attempts, but no static pattern sanitizer guarantees complete immunity against novel or indirect adversarial prompts. Host agents must treat all third-party text as untrusted data.
 3. **No Arbitrary Percentages:**
    - BeenHere rejects pseudo-quantitative scores (e.g., "78% reusable"). All reusability assessments are qualitative, grounded in exported symbols, dependency friction, and explicit license grants.
 4. **Zero Compulsory Paid APIs:**

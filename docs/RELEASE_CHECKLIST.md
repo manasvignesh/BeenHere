@@ -16,11 +16,16 @@ This checklist must be executed and verified before tagging and publishing any r
   - Valid YAML delimited by `---`.
   - Fields present: `name`, `description`, `license`, `compatibility`, `metadata.version`, `allowed-tools`.
 - [x] **Evidence Standards Enforced:**
-  - Standardized evidence tagging (`[VERIFIED-TEST]`, `[VERIFIED-SOURCE]`, `[VERIFIED-METADATA]`, `[INFERRED]`, `[UNKNOWN]`).
+  - Standardized evidence tagging (`[VERIFIED-TEST]`, `[VERIFIED-SOURCE]`, `[VERIFIED-METADATA]`, `[UNVERIFIED-MARKETING-CLAIM]`, `[INFERRED]`, `[UNKNOWN]`).
   - No arbitrary percentage estimations.
-- [x] **Prompt Injection Defenses Active:**
+- [x] **Prompt Injection Defenses & Realistic Security Disclosures:**
   - Input text from external READMEs, manifests, and issues is sanitized for system prompt overrides.
   - External excerpts wrapped within `<untrusted_external_content>` tags.
+  - Residual risk disclosures explicitly stated (no claims of 100% prompt injection immunity).
+- [x] **Real-World Agent Execution & Sandbox Fallback:**
+  - Verified in OpenAI Codex (`docs/CODEX_END_TO_END_TEST.md`).
+  - Graceful socket permission error handling (`[WinError 10013]`) with fallback recommendations.
+  - Accurate disclosure that live authenticated Claude Code execution has not yet occurred.
 
 ---
 
@@ -73,5 +78,5 @@ This checklist must be executed and verified before tagging and publishing any r
 
 ## 5. Release Approval Sign-Off
 
-- **Target Version:** `v1.0.0-rc1`
-- **Release Status:** Ready for local Git tag and commit. (No remote push or unverified publish).
+- **Target Version:** `v1.0.0-beta.1`
+- **Release Status:** Ready for local Git commit. (No remote push, public publish, or public tag).
