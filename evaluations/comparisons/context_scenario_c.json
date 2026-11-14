@@ -1,0 +1,5 @@
+{
+  "target_language": "JavaScript",
+  "deployment_model": "Developer Testing CLI",
+  "required_capability": "Accessibility auditing engine"
+}

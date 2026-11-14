@@ -1,0 +1,5 @@
+{
+  "target_language": "JavaScript",
+  "deployment_model": "Proprietary SaaS",
+  "required_capability": "Real-time collaborative editing"
+}

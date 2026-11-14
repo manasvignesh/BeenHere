@@ -1,0 +1,140 @@
+[
+  {
+    "slug": "yjs/yjs",
+    "name": "yjs",
+    "purpose": "Shared data types for building collaborative real-time web applications using CRDTs.",
+    "target_capability": "Real-time conflict-free collaborative note synchronization",
+    "language": "JavaScript",
+    "ecosystem": "npm",
+    "stars": 16000,
+    "architecture_type": "modular_library",
+    "license_info": {
+      "declared_spdx": "MIT",
+      "category": "PERMISSIVE",
+      "copyleft_tier": "NONE",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/yjs/yjs/main/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 3,
+      "is_archived": false,
+      "open_issues": 140,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "Doc", "type": "class", "file": "src/utils/Doc.js" },
+      { "name": "Text", "type": "class", "file": "src/types/YText.js" },
+      { "name": "Array", "type": "class", "file": "src/types/YArray.js" },
+      { "name": "Map", "type": "class", "file": "src/types/YMap.js" },
+      { "name": "applyUpdate", "type": "function", "file": "src/utils/encoding.js" },
+      { "name": "encodeStateAsUpdate", "type": "function", "file": "src/utils/encoding.js" }
+    ],
+    "dependencies": [
+      { "name": "lib0", "version": "^0.2.98" }
+    ],
+    "known_limitations": [
+      "Memory growth from tombstone metadata in long-lived continuously mutated documents without document compaction."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  },
+  {
+    "slug": "automerge/automerge",
+    "name": "automerge",
+    "purpose": "A JSON-like data structure that can be concurrently modified by multiple users and merged automatically.",
+    "target_capability": "Real-time conflict-free collaborative note synchronization",
+    "language": "Rust",
+    "ecosystem": "cargo / npm (WASM)",
+    "stars": 19000,
+    "architecture_type": "modular_library",
+    "available_bindings": ["JavaScript", "TypeScript", "Python", "Swift"],
+    "license_info": {
+      "declared_spdx": "MIT",
+      "category": "PERMISSIVE",
+      "copyleft_tier": "NONE",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/automerge/automerge/main/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 8,
+      "is_archived": false,
+      "open_issues": 110,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "init", "type": "function", "file": "rust/automerge/src/lib.rs" },
+      { "name": "change", "type": "function", "file": "rust/automerge/src/lib.rs" },
+      { "name": "save", "type": "function", "file": "rust/automerge/src/lib.rs" },
+      { "name": "load", "type": "function", "file": "rust/automerge/src/lib.rs" },
+      { "name": "fork", "type": "function", "file": "rust/automerge/src/lib.rs" },
+      { "name": "merge", "type": "function", "file": "rust/automerge/src/lib.rs" }
+    ],
+    "dependencies": [],
+    "known_limitations": [
+      "WASM bridging serialization overhead when executing high-frequency keystrokes inside JavaScript runtimes."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  },
+  {
+    "slug": "loro-dev/loro",
+    "name": "loro",
+    "purpose": "High-performance CRDT library supporting rich text, tree, and map data structures with fractional indexing.",
+    "target_capability": "Real-time conflict-free collaborative note synchronization",
+    "language": "Rust",
+    "ecosystem": "cargo / npm (WASM)",
+    "stars": 3800,
+    "architecture_type": "modular_library",
+    "available_bindings": ["JavaScript", "TypeScript"],
+    "license_info": {
+      "declared_spdx": "MIT",
+      "category": "PERMISSIVE",
+      "copyleft_tier": "NONE",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/loro-dev/loro/main/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 5,
+      "is_archived": false,
+      "open_issues": 35,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "LoroDoc", "type": "class", "file": "crates/loro-internal/src/loro.rs" },
+      { "name": "LoroText", "type": "class", "file": "crates/loro-internal/src/container/text.rs" },
+      { "name": "LoroTree", "type": "class", "file": "crates/loro-internal/src/container/tree.rs" },
+      { "name": "export_updates", "type": "function", "file": "crates/loro-internal/src/encoding.rs" },
+      { "name": "import_batch", "type": "function", "file": "crates/loro-internal/src/encoding.rs" }
+    ],
+    "dependencies": [],
+    "known_limitations": [
+      "Younger ecosystem; fewer out-of-the-box UI rich-text editor bindings compared to Yjs."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  }
+]

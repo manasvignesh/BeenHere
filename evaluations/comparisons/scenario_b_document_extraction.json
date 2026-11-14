@@ -1,0 +1,131 @@
+[
+  {
+    "slug": "docling-project/docling",
+    "name": "docling",
+    "purpose": "Deep learning layout-aware document parser and converter for PDF, DOCX, and scanned documents.",
+    "target_capability": "Multi-column resume parsing and table extraction for recruitment ATS",
+    "language": "Python",
+    "ecosystem": "PyPI",
+    "stars": 70000,
+    "architecture_type": "modular_library",
+    "license_info": {
+      "declared_spdx": "MIT",
+      "category": "PERMISSIVE",
+      "copyleft_tier": "NONE",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/docling-project/docling/main/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 2,
+      "is_archived": false,
+      "open_issues": 180,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "DocumentConverter", "type": "class", "file": "docling/document_converter.py" },
+      { "name": "PdfFormatOption", "type": "class", "file": "docling/datamodel/pipeline_options.py" },
+      { "name": "DoclingDocument", "type": "class", "file": "docling/datamodel/document.py" }
+    ],
+    "dependencies": [
+      { "name": "pydantic", "version": "^2.6" },
+      { "name": "torch", "version": ">=2.0" },
+      { "name": "transformers", "version": ">=4.38" }
+    ],
+    "known_limitations": [
+      "Heavy container image footprint (~2.5GB) due to PyTorch and vision-model weights; requires CPU/GPU memory allocation."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  },
+  {
+    "slug": "py-pdf/pypdf",
+    "name": "pypdf",
+    "purpose": "A free and open-source pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files.",
+    "target_capability": "Multi-column resume parsing and table extraction for recruitment ATS",
+    "language": "Python",
+    "ecosystem": "PyPI",
+    "stars": 8200,
+    "architecture_type": "modular_library",
+    "license_info": {
+      "declared_spdx": "BSD-3-Clause",
+      "category": "PERMISSIVE",
+      "copyleft_tier": "NONE",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/py-pdf/pypdf/main/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 10,
+      "is_archived": false,
+      "open_issues": 45,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "PdfReader", "type": "class", "file": "pypdf/_reader.py" },
+      { "name": "PdfWriter", "type": "class", "file": "pypdf/_writer.py" },
+      { "name": "PageObject", "type": "class", "file": "pypdf/_page.py" }
+    ],
+    "dependencies": [],
+    "known_limitations": [
+      "Unstructured text stream extraction; completely scrambles 2-column resume text order and fails on visual tables."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  },
+  {
+    "slug": "horilla/horilla-hr",
+    "name": "horilla-hr",
+    "purpose": "An open source HRMS software designed to streamline HR processes and automate recruitment workflows.",
+    "target_capability": "Multi-column resume parsing and table extraction for recruitment ATS",
+    "language": "Python",
+    "ecosystem": "standalone application",
+    "stars": 3500,
+    "architecture_type": "monolithic_application",
+    "license_info": {
+      "declared_spdx": "LGPL-2.1",
+      "category": "WEAK_COPYLEFT",
+      "copyleft_tier": "FILE_LEVEL_RECIPROCAL",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/horilla/horilla-hr/main/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": ["PyMuPDF (AGPL-3.0 / Artifex Commercial)"]
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 4,
+      "is_archived": false,
+      "open_issues": 60,
+      "recent_release": true
+    },
+    "exported_symbols": [],
+    "dependencies": [
+      { "name": "django", "version": "4.2" },
+      { "name": "pymupdf", "version": "1.23" }
+    ],
+    "known_limitations": [
+      "Monolithic Django application coupling database models, auth, and UI; mandatory PyMuPDF AGPL-3.0 copyleft dependency."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  }
+]

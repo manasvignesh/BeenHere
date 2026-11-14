@@ -70,7 +70,7 @@ IDEA
   ├─► 9. Transferability Evaluation (references/transferability_rubric.md)
   ├─► 10. Feature Gap & Enhancement Analysis (references/feature_gap_analysis.md)
   ├─► 11. Code Reusability & License Clearance Audit (scripts/repo_inspector.py)
-  ├─► 12. Strategic Build Decision & Landscape Report (templates/IDEA_LANDSCAPE.md)
+  ├─► 12. Candidate Comparison & Reuse Engine (scripts/repo_comparator.py)
   ├─► 13. Deep Interface & Integration Point Analysis (scripts/integration_analyzer.py)
   └─► 14. Architecture Integration Blueprint (templates/INTEGRATION_BLUEPRINT.md)
 ```
@@ -138,7 +138,11 @@ Transform raw discoveries into defensible technical intelligence:
 ---
 
 ### Phase 4: Strategy Formulation & Architecture Integration (Steps 12–14)
-1. **Formulate Build Decision:** Select a defensible posture (*Adopt, Fork, Extend, Extract, Integrate, Build from Scratch, or Investigate Further*) using [references/evaluation_rubric.md](references/evaluation_rubric.md).
+1. **Candidate Comparison & Reuse Posture (Step 12):**
+   Compare candidate repositories using [scripts/repo_comparator.py](scripts/repo_comparator.py) to select a defensible posture (*Adopt, Fork, Extend, Extract, Integrate, Build from Scratch, or Investigate Further*) grounded in [references/evaluation_rubric.md](references/evaluation_rubric.md):
+   ```bash
+   python scripts/repo_comparator.py --input candidates.json --context context.json --blueprint
+   ```
 2. **Render Structured Landscape Report:** Populate [templates/IDEA_LANDSCAPE.md](templates/IDEA_LANDSCAPE.md) with verified findings across all 15 standardized sections.
 3. **Deep Interface & Dependency Analysis (Step 13):**
    Execute static symbol and manifest inspection for primary adoption candidates:

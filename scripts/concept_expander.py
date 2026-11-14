@@ -421,58 +421,60 @@ def extract_concept_tokens_and_phrases(concept: str) -> Tuple[List[str], List[st
     return tokens, content_words, n_grams
 
 
-def fallback_morphological_decomposition(clean_concept: str, tokens: List[str]) -> Dict[str, Any]:
+def fallback_morphological_decomposition(clean_concept: str, tokens: List[str], n_grams: List[str]) -> Dict[str, Any]:
     """
     Universal fallback for software concepts with zero catalog matches.
-    Decomposes tokens using grammatical, functional, and structural heuristics.
-    Never fabricates fake libraries or URLs. Clearly tags inferences as unverified.
+    Decomposes tokens using natural phrasing and domain-agnostic computational primitives.
+    Avoids attaching generic software jargon to unrelated physical or scientific nouns.
+    Clearly marks inferences as unverified with low confidence.
     """
     non_generic = [t for t in tokens if t.lower() not in GENERIC_ARTIFACT_TERMS]
     domain_terms = non_generic if non_generic else tokens
 
-    # Identify primary domain noun and action/modifier
-    primary_domain = " ".join(domain_terms[:2]) if domain_terms else clean_concept
-    spec_term = domain_terms[0] if domain_terms else clean_concept
-    secondary_term = domain_terms[1] if len(domain_terms) > 1 else "system"
+    primary_phrase = " ".join(domain_terms[:3]) if domain_terms else clean_concept
+    spec_noun = domain_terms[0] if domain_terms else clean_concept
 
+    # Problems grounded in computing fundamentals without robotic mad-libs
     core_problems = [
-        f"Data modeling, serialization, and representation for {primary_domain}",
-        f"Scalable throughput and latency bottlenecks in {spec_term} execution",
-        f"Error handling, fault tolerance, and state recovery under edge conditions",
-        f"Integration friction with existing developer ecosystems and standard APIs",
+        f"Computational state modeling and data structures for {primary_phrase}",
+        f"Simulation, numerical execution, or processing performance for {primary_phrase}",
+        f"Boundary constraints and validation edge conditions in {primary_phrase}",
+        f"API contract standardization and data exchange for {primary_phrase}",
     ]
 
+    # Real computational mechanisms that apply across novel domains
     implied_mechanisms = [
-        f"Modular {spec_term} pipeline architecture",
-        f"State machine and event lifecycle dispatching",
-        f"Configurable rule-based heuristic processing",
-        f"Data ingestion, validation, and transformation layer",
+        "Event-driven simulation loop",
+        "Graph-based network topology mapping",
+        "Deterministic state transition engine",
+        "Spatial coordinate indexing and diffusion",
     ]
 
+    # Domain-agnostic technical primitives commonly reused from open source
     technical_primitives = [
-        f"{spec_term} parser and serializer",
-        f"{spec_term} workflow runner",
-        f"Configurable {secondary_term} engine",
-        f"Integration adapter / client SDK",
+        "Discrete-event simulation engine",
+        "Graph traversal algorithm",
+        "Time-series data logger",
+        "Embedded persistence storage layer",
     ]
 
     adjacent_industries = [
-        "Distributed Systems & Stream Processing",
-        "Industrial Automation & Signal Processing",
-        "Aerospace & High-Reliability Telemetry",
-        "Compiler Design & AST Transformation",
+        "Scientific Computing & Simulation",
+        "Distributed Systems & Telemetry",
+        "Robotics & Sensor Networks",
+        "Complex Systems & Network Science",
     ]
 
     analogous_mechanisms = [
-        "Pipelined stream processing with backpressure",
-        "Event-driven publish-subscribe decoupling",
-        "Deterministic finite-state machine transitions",
+        "Agent-based spatial modeling",
+        "Publish-subscribe event decoupled streaming",
+        "Finite-state automaton transition matrices",
     ]
 
     academic_keywords = [
-        f"{spec_term} architecture survey",
-        f"{primary_domain} algorithmic benchmark",
-        f"{spec_term} state of the art",
+        f"{clean_concept} computational model",
+        f"{primary_phrase} simulation survey",
+        f"{spec_noun} algorithmic methods",
     ]
 
     return {
@@ -553,8 +555,9 @@ def build_research_plan(
 
     # 3. Universal Fallback if no taxonomy matched or if components are sparse
     expansion_mode = "taxonomy_matched" if matched_taxonomy_keys else "heuristic_morphological_fallback"
+    confidence = "high" if matched_taxonomy_keys else "low"
     if not matched_taxonomy_keys or len(aggregated_primitives) == 0:
-        fallback_data = fallback_morphological_decomposition(clean_concept, tokens)
+        fallback_data = fallback_morphological_decomposition(clean_concept, tokens, n_grams)
         for p in fallback_data["core_problems"]:
             if p not in aggregated_problems:
                 aggregated_problems.append(p)
@@ -670,12 +673,20 @@ def build_research_plan(
         "original_concept": clean_concept,
         "expansion_metadata": {
             "mode": expansion_mode,
+            "confidence": confidence,
             "provenance": "[INFERRED-HEURISTIC]",
             "matched_taxonomy_domains": matched_taxonomy_keys,
             "extracted_tokens": tokens,
             "heuristic_expansion_disclosure": (
                 "Decomposition derived via deterministic rule-based token decomposition without model reasoning. "
                 "Inferred queries must be verified by the host agent."
+            ),
+            "refinement_guidance": (
+                "Unfamiliar domain fallback (confidence: low). Host AI agent should inspect prompt context and "
+                "refine heuristic queries with domain-specific terms (e.g. simulation models, mathematical formalisms, "
+                "or hardware interfaces)."
+                if confidence == "low" else
+                "Taxonomy matched (confidence: high). Host AI agent should verify candidate repository availability."
             ),
         },
         "decomposition": {

@@ -1,0 +1,5 @@
+{
+  "target_language": "Python",
+  "deployment_model": "Proprietary SaaS",
+  "required_capability": "Resume parsing for recruitment ATS"
+}

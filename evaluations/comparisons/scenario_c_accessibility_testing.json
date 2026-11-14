@@ -1,0 +1,132 @@
+[
+  {
+    "slug": "dequelabs/axe-core",
+    "name": "axe-core",
+    "purpose": "Accessibility engine for automated Web UI accessibility testing across browsers and Node environments.",
+    "target_capability": "Automated WCAG 2.1/2.2 AA auditing engine for developer testing CLI",
+    "language": "JavaScript",
+    "ecosystem": "npm",
+    "stars": 5400,
+    "architecture_type": "modular_library",
+    "license_info": {
+      "declared_spdx": "MPL-2.0",
+      "category": "WEAK_COPYLEFT",
+      "copyleft_tier": "FILE_LEVEL_RECIPROCAL",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/dequelabs/axe-core/develop/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 1,
+      "is_archived": false,
+      "open_issues": 190,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "run", "type": "function", "file": "lib/core/index.js" },
+      { "name": "configure", "type": "function", "file": "lib/core/index.js" },
+      { "name": "getRules", "type": "function", "file": "lib/core/index.js" },
+      { "name": "reset", "type": "function", "file": "lib/core/index.js" }
+    ],
+    "dependencies": [],
+    "known_limitations": [
+      "Requires a live DOM / browser environment (Playwright, Puppeteer); automated checks catch at most 30–57% of WCAG failures."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  },
+  {
+    "slug": "pa11y/pa11y",
+    "name": "pa11y",
+    "purpose": "Pa11y runs accessibility tests on web pages via the command line or Node.js.",
+    "target_capability": "Automated WCAG 2.1/2.2 AA auditing engine for developer testing CLI",
+    "language": "JavaScript",
+    "ecosystem": "npm (CLI wrapper)",
+    "stars": 4200,
+    "architecture_type": "modular_library",
+    "license_info": {
+      "declared_spdx": "LGPL-3.0",
+      "category": "WEAK_COPYLEFT",
+      "copyleft_tier": "FILE_LEVEL_RECIPROCAL",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/pa11y/pa11y/main/LICENSE",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 20,
+      "is_archived": false,
+      "open_issues": 85,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "pa11y", "type": "function", "file": "lib/pa11y.js" }
+    ],
+    "dependencies": [
+      { "name": "axe-core", "version": "^4.8" },
+      { "name": "puppeteer", "version": "^21.0" }
+    ],
+    "known_limitations": [
+      "Wrapper around Axe-core; adds an extra subprocess abstraction layer without increasing WCAG rule coverage."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  },
+  {
+    "slug": "jsx-eslint/eslint-plugin-jsx-a11y",
+    "name": "eslint-plugin-jsx-a11y",
+    "purpose": "Static AST linter for accessibility rules on JSX elements to catch violations pre-commit.",
+    "target_capability": "Automated WCAG 2.1/2.2 AA auditing engine for developer testing CLI",
+    "language": "JavaScript",
+    "ecosystem": "npm",
+    "stars": 3800,
+    "architecture_type": "modular_library",
+    "license_info": {
+      "declared_spdx": "MIT",
+      "category": "PERMISSIVE",
+      "copyleft_tier": "NONE",
+      "verified_from_file": true,
+      "source_url": "https://raw.githubusercontent.com/jsx-eslint/eslint-plugin-jsx-a11y/main/LICENSE.md",
+      "discrepancy": null,
+      "transitive_license_risks": []
+    },
+    "maintenance": {
+      "status": "ACTIVE",
+      "last_pushed_days_ago": 12,
+      "is_archived": false,
+      "open_issues": 40,
+      "recent_release": true
+    },
+    "exported_symbols": [
+      { "name": "rules", "type": "object", "file": "src/index.js" },
+      { "name": "configs", "type": "object", "file": "src/index.js" }
+    ],
+    "dependencies": [
+      { "name": "aria-query", "version": "^5.3" },
+      { "name": "ast-types-flow", "version": "^0.0.8" }
+    ],
+    "known_limitations": [
+      "Static JSX AST linting only; cannot verify runtime DOM changes, computed CSS color contrast, or keyboard focus traps."
+    ],
+    "evidence_completeness": {
+      "license_inspected": true,
+      "manifest_inspected": true,
+      "source_inspected": true,
+      "runtime_tested": false,
+      "missing_evidence": []
+    }
+  }
+]
