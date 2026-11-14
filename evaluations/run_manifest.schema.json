@@ -8,6 +8,7 @@
     "run_id",
     "scenario_id",
     "condition",
+    "provenance_type",
     "timestamp",
     "environment",
     "prompt",
@@ -34,6 +35,18 @@
     "condition": {
       "type": "string",
       "enum": ["baseline", "beenhere"]
+    },
+    "provenance_type": {
+      "type": "string",
+      "enum": [
+        "synthetic_baseline_fixture",
+        "retrospective_reference_fixture",
+        "empirical_unblinded_trial",
+        "empirical_blinded_trial"
+      ]
+    },
+    "has_raw_transcript": {
+      "type": "boolean"
     },
     "timestamp": {
       "type": "string",
@@ -62,11 +75,19 @@
     },
     "evaluation": {
       "type": "object",
-      "required": ["evaluator", "evaluation_date", "scores", "dimension_justifications"],
+      "required": [
+        "evaluator",
+        "evaluation_date",
+        "is_blinded",
+        "evaluator_conflict_of_interest",
+        "scores",
+        "dimension_justifications"
+      ],
       "properties": {
         "evaluator": { "type": "string" },
         "evaluation_date": { "type": "string" },
         "is_blinded": { "type": "boolean" },
+        "evaluator_conflict_of_interest": { "type": "boolean" },
         "self_audit_disclosure": { "type": "string" },
         "scores": {
           "type": "object",

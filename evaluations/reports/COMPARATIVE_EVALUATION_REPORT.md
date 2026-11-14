@@ -1,18 +1,19 @@
-# BeenHere vs Baseline: Research Quality Comparative Evaluation
+# BeenHere vs Baseline: Calibrated Reference Benchmark Evaluation
 
 > **Evaluation Engine:** `evaluations/evaluate.py` (BeenHere v1.1 Evaluation Harness)  
 > **Rubric:** 6 Weighted Dimensions (0–5 scale, 0–100 Normalized Quality Index)  
-> **Methodology:** Side-by-side empirical audit across identical prompt scenarios.
+> **Methodology:** Calibrated reference matrix across standardized prompts.  
+> **Provenance Notice:** Baseline runs are synthetic archetypal fixtures; BeenHere runs are author-scored formative benchmarks. They validate harness functionality, not double-blind empirical superiority.
 
 ---
 
 ## 1. Executive Summary Table
 
-| Scenario | Baseline Index | BeenHere Index | Delta (Δ) | Baseline Grade | BeenHere Grade | Outcome |
+| Scenario | Baseline Index | BeenHere Index | Delta (Δ) | Baseline Grade | BeenHere Grade | Comparison |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| `accessibility_testing` | 43.5 | 90.5 | **+47.0** | F | **A+** | BeenHere Outperformed |
-| `ai_recruitment` | 43.5 | 93.0 | **+49.5** | F | **A+** | BeenHere Outperformed |
-| `offline_notes` | 45.5 | 91.2 | **+45.7** | F | **A+** | BeenHere Outperformed |
+| `accessibility_testing` | 44.5 | 90.5 | **+46.0** | F | **A+** | BeenHere Higher (Reference) |
+| `ai_recruitment` | 43.5 | 93.0 | **+49.5** | F | **A+** | BeenHere Higher (Reference) |
+| `offline_notes` | 46.0 | 91.4 | **+45.4** | F | **A+** | BeenHere Higher (Reference) |
 
 ---
 
@@ -22,16 +23,16 @@
 
 | Dimension | Weight | Baseline (0–5) | BeenHere (0–5) | Delta | Key Differentiator |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| Existing Solutions Discovered | 20% | 3.0 | **4.6** | +1.6 | Discovered axe-core (7.8k★), pa11y (4.6k★), eslint-plugin-jsx-a11y (3.6k★), m... |
-| Reusable Code & Integration | 20% | 2.0 | **4.4** | +2.4 | Directly inspected package.json (193 lines) and lib/core/index.js in axe-core... |
-| Accuracy & Evidence Traceability | 20% | 2.0 | **4.8** | +2.8 | Excised exaggerated claims; cited peer-reviewed empirical corpus (Veduis 2026... |
-| Licensing & Dependency Risks | 15% | 2.0 | **4.5** | +2.5 | Carefully distinguished MPL-2.0 in axe-core (weak file-level copyleft allowin... |
-| Cross-Industry Insight Quality | 15% | 1.5 | **4.2** | +2.7 | Abstracted keyboard navigation to directed graph cycle traversal from compile... |
-| Actionability of Recommendation | 10% | 2.5 | **4.6** | +2.1 | Decisive architectural blueprint: Adopt axe-core as the core rules engine; em... |
+| Existing Solutions Discovered | 20% | 2.5 | **4.5** | +2.0 | Discovered foundational evaluation engines (dequelabs/axe-core), CI runners (... |
+| Reusable Code & Integration | 20% | 2.0 | **4.4** | +2.4 | Statically parsed package.json across 5 repos. Inspected axe-core rule defini... |
+| Accuracy & Evidence Traceability | 20% | 2.0 | **4.7** | +2.7 | All 18 markdown links verified via verify_sources.py with 0 broken links. Cit... |
+| Licensing & Dependency Risks | 15% | 2.5 | **4.8** | +2.3 | Carefully distinguished axe-core's MPL-2.0 (file-level weak copyleft: modifyi... |
+| Cross-Industry Insight Quality | 15% | 2.0 | **4.1** | +2.1 | Adapted compiler AST optimization passes to automated accessibility remediati... |
+| Actionability of Recommendation | 10% | 2.5 | **4.7** | +2.2 | Provided decisive build blueprint: reuse axe-core engine embedded via Playwri... |
 
 **Critical Failure Modes & Traps:**
-- *Baseline Missed Traps:* Empirical coverage ceiling of automated rules engines (detects only 30-57% of WCAG criteria), Pa11y LGPL-3.0 copyleft obligations vs Axe-core MPL-2.0 npm package consumption, Conflating static JSX linting with computed runtime DOM color contrast
-- *BeenHere Caught Traps:* Axe-core MPL-2.0 weak copyleft vs Pa11y LGPL-3.0 subprocess invocation boundary, Empirical coverage ceiling of automated rules engines (30-57% WCAG criteria detection limit), Static JSX AST linting inability to compute dynamic rendered CSS background contrast, Accessibility Insights scanner extraction vs browser extension coupling
+- *Baseline Missed Traps:* Veduis (2026) empirical bound: automated tools detect only 30%–57% of WCAG failures, Pa11y LGPL-3.0 copyleft separation requirement, Axe-core headless browser execution latency in large test suites
+- *BeenHere Caught Traps:* Veduis (2026) empirical bound: automated testing detects only 30%–57% of WCAG failures, Axe-core MPL-2.0 file-level copyleft vs Pa11y LGPL-3.0 library boundary, AccessiBe marketing controversy: overlay widgets vs authentic semantic HTML
 
 ---
 
@@ -56,16 +57,16 @@
 
 | Dimension | Weight | Baseline (0–5) | BeenHere (0–5) | Delta | Key Differentiator |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| Existing Solutions Discovered | 20% | 3.0 | **4.8** | +1.8 | Discovered both canonical CRDT frameworks (Automerge, Yjs) and non-obvious re... |
-| Reusable Code & Integration | 20% | 2.0 | **4.5** | +2.5 | Directly inspected rust/automerge/src/lib.rs (335 lines) and core/rs/core/src... |
-| Accuracy & Evidence Traceability | 20% | 2.5 | **4.5** | +2.0 | Enforced strict evidence classification ([VERIFIED-SOURCE], [VERIFIED-METADAT... |
-| Licensing & Dependency Risks | 15% | 1.5 | **4.8** | +3.3 | Inspected Outline LICENSE (103 lines) and caught Business Source License 1.1 ... |
-| Cross-Industry Insight Quality | 15% | 2.0 | **4.2** | +2.2 | Abstracted problem to universal consensus and append-only state logs. Evaluat... |
-| Actionability of Recommendation | 10% | 2.5 | **4.5** | +2.0 | Delivered concrete strategic blueprint: Adopt Automerge or Yjs for in-editor ... |
+| Existing Solutions Discovered | 20% | 2.5 | **4.6** | +2.1 | Discovered both foundational CRDT engines (Yjs, Automerge, Diamond-types), re... |
+| Reusable Code & Integration | 20% | 2.0 | **4.5** | +2.5 | Targeted static inspection of Yjs and CR-SQLite exported interfaces (Y.Doc, Y... |
+| Accuracy & Evidence Traceability | 20% | 2.5 | **4.7** | +2.2 | All 18 markdown citations verified via verify_sources.py with reachability ch... |
+| Licensing & Dependency Risks | 15% | 2.0 | **4.8** | +2.8 | Deep audit of candidate licenses: Identified Outline's BSL-1.1 trap (not OSI-... |
+| Cross-Industry Insight Quality | 15% | 2.0 | **4.2** | +2.2 | Explored cross-vertical mechanisms: adapted aviation flight-data recorder del... |
+| Actionability of Recommendation | 10% | 3.0 | **4.6** | +1.6 | Provided decisive architecture recommendation: adopt Yjs + CR-SQLite, avoid B... |
 
 **Critical Failure Modes & Traps:**
-- *Baseline Missed Traps:* Outline Business Source License (BSL-1.1) commercial non-compete rider, Impedance mismatch storing document CRDT blobs in relational SQLite, Symmetric NAT firewall failure rates in pure WebRTC P2P mesh
-- *BeenHere Caught Traps:* Outline Business Source License (BSL-1.1) non-compete commercial restriction, Yjs API NOASSERTION resolved to permissive MIT via source inspection, Requirement for convergent relational extension (cr-sqlite) rather than raw JSON blobs, Pure P2P WebRTC NAT traversal firewall failure rate requiring hybrid sync server
+- *Baseline Missed Traps:* Outline BSL-1.1 production hosting restrictions, Logseq AGPL-3.0 copyleft boundary, CR-SQLite fractional indexing performance limits
+- *BeenHere Caught Traps:* Outline BSL-1.1 commercial hosting restriction, Logseq AGPL-3.0 network copyleft infection, CRDT memory tombstone growth in long-lived documents
 
 ---
 

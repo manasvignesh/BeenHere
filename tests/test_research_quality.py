@@ -29,6 +29,8 @@ class TestEvaluationHarnessUnit(unittest.TestCase):
             "run_id": "test_run_01",
             "scenario_id": "offline_notes",
             "condition": "beenhere",
+            "provenance_type": "retrospective_reference_fixture",
+            "has_raw_transcript": False,
             "timestamp": "2026-11-14T12:00:00Z",
             "environment": {
                 "agent_type": "unit-test-agent",
@@ -40,6 +42,8 @@ class TestEvaluationHarnessUnit(unittest.TestCase):
             "evaluation": {
                 "evaluator": "automated-suite",
                 "evaluation_date": "2026-11-14",
+                "is_blinded": False,
+                "evaluator_conflict_of_interest": True,
                 "scores": {
                     "d1_solutions_discovered": 4.5,
                     "d2_reusable_code": 4.0,
@@ -145,11 +149,12 @@ class TestEvaluationHarnessUnit(unittest.TestCase):
         self.assertEqual(scen["delta_index"], 51.5)
 
     def test_format_comparison_markdown(self):
-        """Check Markdown report generation for required sections."""
+        """Check Markdown report generation for required sections and provenance notices."""
         manifests = [self.sample_valid_manifest]
         comparison = evaluate.compare_runs(manifests)
         md = evaluate.format_comparison_markdown(comparison)
-        self.assertIn("# BeenHere vs Baseline: Research Quality Comparative Evaluation", md)
+        self.assertIn("# BeenHere vs Baseline: Calibrated Reference Benchmark Evaluation", md)
+        self.assertIn("Provenance Notice", md)
         self.assertIn("## 1. Executive Summary Table", md)
         self.assertIn("## 2. Dimension Breakdown by Scenario", md)
         self.assertIn("## 3. Disclosures, Missing Data & Empirical Uncertainties", md)
@@ -211,21 +216,40 @@ class TestRunManifestsQualityAndValidity(unittest.TestCase):
             errs = evaluate.validate_manifest(data)
             self.assertEqual(errs, [], f"Manifest {fname} failed validation: {errs}")
 
-    def test_pairwise_conditions_and_beenhere_superiority(self):
-        """Ensure each scenario has paired baseline and beenhere runs where BeenHere outperforms."""
+    def test_pairwise_conditions_and_provenance_integrity(self):
+        """
+        Verify that all scenarios have paired conditions and valid provenance metadata.
+        Tests mathematical reproducibility and provenance, NOT predetermined superiority.
+        """
         manifests = evaluate.load_all_manifests(self.RESULTS_DIR)
         self.assertEqual(len(manifests), 6)
 
         comparison = evaluate.compare_runs(manifests)
         self.assertEqual(len(comparison["scenarios"]), 3)
 
+        valid_provenance = {
+            "synthetic_baseline_fixture",
+            "retrospective_reference_fixture",
+            "empirical_unblinded_trial",
+            "empirical_blinded_trial",
+        }
+
         for scen in comparison["scenarios"]:
             self.assertIsNotNone(scen["baseline"], f"Missing baseline for {scen['scenario_id']}")
             self.assertIsNotNone(scen["beenhere"], f"Missing beenhere for {scen['scenario_id']}")
-            # Quality delta must be strongly positive (at least +40 points improvement)
-            self.assertGreater(scen["delta_index"], 40.0)
-            self.assertGreaterEqual(scen["beenhere"]["quality_index"], 90.0)
-            self.assertLessEqual(scen["baseline"]["quality_index"], 50.0)
+
+            b_manifest = scen["baseline_manifest"]
+            bh_manifest = scen["beenhere_manifest"]
+
+            # Provenance requirements
+            self.assertIn(b_manifest.get("provenance_type"), valid_provenance)
+            self.assertIn(bh_manifest.get("provenance_type"), valid_provenance)
+            self.assertIsInstance(b_manifest.get("evaluation", {}).get("is_blinded"), bool)
+            self.assertIsInstance(bh_manifest.get("evaluation", {}).get("is_blinded"), bool)
+
+            # Mathematical delta reproducibility: delta_index == round(beenhere_index - baseline_index, 1)
+            expected_delta = round(scen["beenhere"]["quality_index"] - scen["baseline"]["quality_index"], 1)
+            self.assertEqual(scen["delta_index"], expected_delta)
 
 
 class TestResearchReportLinters(unittest.TestCase):

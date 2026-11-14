@@ -25,8 +25,9 @@ evaluations/
 │   └── accessibility_testing_beenhere.json
 └── reports/                            # Generated evaluation reports and improvement backlogs
     ├── BENCHMARK_AUDIT.md              # In-depth audit of existing benchmarks vs research quality
-    ├── COMPARATIVE_EVALUATION_REPORT.md# Side-by-side empirical performance report
-    └── IMPROVEMENT_BACKLOG.md          # Prioritized v1.1 engineering backlog
+    ├── COMPARATIVE_EVALUATION_REPORT.md# Side-by-side reference performance report
+    ├── IMPROVEMENT_BACKLOG.md          # Prioritized v1.1 engineering backlog
+    └── PROVENANCE_AUDIT.md             # Formal provenance audit of evaluation manifests
 ```
 
 ---
@@ -86,3 +87,14 @@ To evaluate whether BeenHere produces genuinely superior engineering intelligenc
    - Evaluator identity and date are recorded in every manifest.
    - If an agent self-evaluates, a self-audit disclosure is mandatory.
    - Real empirical evidence from Phase 2.5 and Phase 5 real-world runs is preserved and cited.
+
+---
+
+## 5. Provenance Notice: Synthetic Fixtures vs Verified Experimental Results
+
+As documented in [`evaluations/reports/PROVENANCE_AUDIT.md`](reports/PROVENANCE_AUDIT.md):
+
+- **Baseline Manifests (`*_baseline.json`):** Designated as `provenance_type: "synthetic_baseline_fixture"`. They represent archetypal models of how typical conversational LLMs answer broad engineering questions without tools. They are **not** transcripts from third-party benchmark labs.
+- **BeenHere Manifests (`*_beenhere.json`):** Designated as `provenance_type: "retrospective_reference_fixture"` (or `"empirical_unblinded_trial"` for the real Codex run in `BeenHere-Test`). All rubric scores were assigned unblinded by the tool author.
+- **Intended Use:** These manifests serve as **calibrated reference fixtures** to validate harness calculations, schema compliance, and rubric sensitivity. They do not constitute peer-reviewed double-blind competitive proof. True empirical superiority claims require future independent double-blind evaluation with external human evaluators.
+

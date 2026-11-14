@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
 """
-scripts/concept_expander.py - Executable Concept Expansion & Research Planning Utility.
+scripts/concept_expander.py - Deterministic Concept Expansion & Research Planning Utility for BeenHere.
 
 Part of BeenHere: Explore every angle of an idea before you build it.
-Uses Python standard library only (no external dependencies).
+Uses Python standard library only (no external dependencies). Compatible with Python 3.8+.
+
+Transforms software ideas into structured, multi-tier research plans without requiring
+paid AI APIs or external network calls. Decomposes concepts into:
+- Core engineering problems
+- Underlying computational mechanisms
+- Technical primitives
+- Adjacent industry verticals
+- Analogous cross-domain mechanisms
+- Multi-tier query matrices (direct, primitive, cross-vertical, academic)
+- Structured, unverified research hypotheses
 """
 
 import argparse
@@ -11,47 +21,360 @@ import json
 import os
 import re
 import sys
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-# Universal mechanism to adjacent vertical mapping catalog
-UNIVERSAL_VERTICAL_CATALOG: Dict[str, Dict[str, Any]] = {
+KNOWN_ACRONYMS: Set[str] = {
+    "ai", "ml", "p2p", "db", "ui", "ux", "os", "ci", "cd", "ar", "vr",
+    "iot", "nlp", "cv", "k8s", "etl", "gis", "crdt", "e2ee", "ast", "dom",
+    "pdf", "ocr", "cad", "llm", "api", "sdk", "cli", "saas", "sql", "wasm",
+    "slam", "ros", "sast", "dast", "cve", "rbac", "abac", "wcag", "aria",
+}
+
+STOPWORDS: Set[str] = {
+    "a", "an", "the", "and", "or", "for", "with", "in", "on", "of", "to", "at",
+    "by", "from", "up", "about", "into", "over", "after", "is", "are", "was",
+    "were", "be", "been", "being", "have", "has", "had", "do", "does", "did",
+    "but", "if", "then", "else", "when", "where", "why", "how", "all", "any",
+    "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor",
+    "not", "only", "own", "same", "so", "than", "too", "very", "can", "will",
+    "just", "should", "now", "i", "we", "you", "my", "our", "your", "it", "its",
+    "want", "need", "like", "using", "use", "based", "new",
+}
+
+GENERIC_ARTIFACT_TERMS: Set[str] = {
+    "app", "application", "platform", "system", "tool", "tooling",
+    "software", "solution", "project", "service", "engine", "framework",
+    "builder", "suite", "module", "package", "library",
+}
+
+# Extensible Domain & Architectural Pattern Taxonomy
+EXTENDED_DOMAIN_TAXONOMY: Dict[str, Dict[str, Any]] = {
+    "recruitment_talent_matching": {
+        "triggers": {"recruit", "recruitment", "hiring", "candidate", "talent", "ats", "applicant", "resume", "cv", "job"},
+        "core_problems": [
+            "Unstructured resume document parsing",
+            "Candidate-job semantic matching",
+            "Algorithmic bias and disparate impact auditing",
+            "Applicant tracking system (ATS) workflow integration",
+        ],
+        "implied_mechanisms": [
+            "Two-stage semantic retrieval (bi-encoder + cross-encoder)",
+            "Layout-aware document structure decomposition",
+            "Disparate impact ratio metric auditing",
+            "Bipartite graph talent matching",
+        ],
+        "technical_primitives": [
+            "Vector similarity index",
+            "Layout-aware document parser",
+            "Fairness metric evaluation frame",
+            "ATS connector API",
+        ],
+        "adjacent_industries": [
+            "E-commerce Product Search",
+            "Legal Tech Discovery",
+            "Financial Credit Scoring",
+            "Computational Biology",
+        ],
+        "analogous_mechanisms": [
+            "Two-stage coarse-to-fine product re-ranking",
+            "Gale-Shapley stable marriage matching",
+            "Adverse impact statistical disparity tests",
+        ],
+        "academic_keywords": [
+            "resume information extraction",
+            "algorithmic fairness recruitment",
+            "bipartite matching candidate ranking",
+            "semantic candidate search",
+        ],
+    },
+    "accessibility_testing_compliance": {
+        "triggers": {"accessibility", "a11y", "wcag", "screenreader", "aria", "contrast", "keyboard navigation", "colorblind"},
+        "core_problems": [
+            "Automated WCAG rule conformance checking",
+            "Accessibility tree (a11y tree) and DOM state traversal",
+            "Interactive focus trap and keyboard flow verification",
+            "Visual color contrast ratio evaluation",
+        ],
+        "implied_mechanisms": [
+            "DOM and accessibility tree rule inspection",
+            "Headless browser automated audit runner",
+            "Declarative code linting with autofix",
+            "Color luminance contrast ratio calculation",
+        ],
+        "technical_primitives": [
+            "Accessibility rule engine",
+            "Headless browser DOM runner",
+            "A11y tree serializer",
+            "AST code transformer",
+        ],
+        "adjacent_industries": [
+            "Compiler Construction & Static Analysis",
+            "Aircraft Avionics Verification",
+            "Regulatory Financial Auditing",
+        ],
+        "analogous_mechanisms": [
+            "Abstract syntax tree linter passes",
+            "Formal methods invariant verification",
+            "Continuous compliance monitoring",
+        ],
+        "academic_keywords": [
+            "automated web accessibility evaluation",
+            "WCAG compliance automated testing detection rate",
+            "accessibility tree traversal",
+        ],
+    },
+    "offline_first_collaborative_sync": {
+        "triggers": {"offline", "offline-first", "crdt", "sync", "synchronization", "local-first", "p2p", "notes", "knowledge base"},
+        "core_problems": [
+            "Concurrent offline state mutation without data loss",
+            "Conflict-free state reconciliation across network partitions",
+            "Local embedded relational persistence",
+            "End-to-end encrypted peer synchronization",
+        ],
+        "implied_mechanisms": [
+            "Conflict-free Replicated Data Types (CRDT)",
+            "Causal event ordering via logical clocks",
+            "Delta-state synchronization",
+            "Authenticated symmetric ratcheting (E2EE)",
+        ],
+        "technical_primitives": [
+            "CRDT document engine",
+            "Hybrid logical clock / vector clock",
+            "Embedded SQLite storage engine",
+            "Peer-to-peer transport / WebRTC",
+        ],
+        "adjacent_industries": [
+            "Distributed Version Control",
+            "Avionics Flight Data Sync",
+            "Collaborative CAD & Spatial Mapping",
+        ],
+        "analogous_mechanisms": [
+            "Git DAG commit reconciliation",
+            "Flight-data recorder delta logging",
+            "Merkle tree delta state exchange",
+        ],
+        "academic_keywords": [
+            "conflict-free replicated data types",
+            "causal consistency distributed systems",
+            "local-first software architecture",
+        ],
+    },
+    "robotics_autonomous_control": {
+        "triggers": {"robot", "robotics", "drone", "actuator", "motor", "kinematics", "slam", "ros", "telemetry", "lidar", "sensor fusion"},
+        "core_problems": [
+            "Real-time sensor telemetry ingestion and fusion",
+            "Closed-loop motion control under physical constraints",
+            "Simultaneous localization and mapping (SLAM)",
+            "Hardware-in-the-loop safety watchdog monitoring",
+        ],
+        "implied_mechanisms": [
+            "Kalman filtering and state estimation",
+            "Proportional-Integral-Derivative (PID) feedback loop",
+            "Occupancy grid mapping",
+            "Deterministic state machine execution",
+        ],
+        "technical_primitives": [
+            "Extended Kalman filter (EKF)",
+            "Real-time pub/sub bus",
+            "Hardware abstraction layer (HAL)",
+            "Ring buffer telemetry recorder",
+        ],
+        "adjacent_industries": [
+            "Automotive Driver Assistance (ADAS)",
+            "Industrial CNC Manufacturing",
+            "Satellite Attitude Control",
+            "Biomedical Patient Monitoring",
+        ],
+        "analogous_mechanisms": [
+            "Dead-reckoning inertial navigation",
+            "Watchdog timer heartbeat fail-safes",
+            "Spacecraft fault-tolerant voter circuits",
+        ],
+        "academic_keywords": [
+            "sensor fusion kalman filter",
+            "autonomous robot trajectory planning",
+            "real-time embedded control systems",
+        ],
+    },
+    "supply_chain_logistics_forecasting": {
+        "triggers": {"supply", "supply-chain", "logistics", "inventory", "forecasting", "forecast", "procurement", "dispatch", "routing", "warehouse", "demand"},
+        "core_problems": [
+            "Non-stationary demand time-series forecasting",
+            "Multi-echelon inventory safety stock optimization",
+            "Vehicle routing under capacity and time window constraints",
+            "Supply chain disruption propagation modeling",
+        ],
+        "implied_mechanisms": [
+            "Hierarchical time-series forecasting",
+            "Mixed-Integer Linear Programming (MILP)",
+            "Constraint satisfaction heuristics",
+            "Buffer sizing under lead-time variance",
+        ],
+        "technical_primitives": [
+            "Time-series forecasting model",
+            "Constraint satisfaction solver",
+            "Graph-based routing optimizer",
+            "Discrete-event simulation engine",
+        ],
+        "adjacent_industries": [
+            "Telecommunications Bandwidth Scheduling",
+            "Airline Fleet Operations",
+            "Semiconductor Fab Scheduling",
+            "Epidemiological Resource Allocation",
+        ],
+        "analogous_mechanisms": [
+            "Dijkstra / Bellman-Ford constrained routing",
+            "Queueing network congestion backpressure",
+            "Safety stock replenishment policies",
+        ],
+        "academic_keywords": [
+            "supply chain inventory optimization",
+            "demand forecasting mixed integer linear programming",
+            "vehicle routing problem with time windows",
+        ],
+    },
+    "security_code_analysis_tooling": {
+        "triggers": {"security", "vulnerability", "scanner", "sast", "dast", "secret", "fuzzing", "exploit", "cve", "auth", "malware", "sandbox"},
+        "core_problems": [
+            "Static detection of source code vulnerabilities without excessive false positives",
+            "Taint propagation from untrusted inputs to execution sinks",
+            "Automated secret and API credential leak detection",
+            "Dependency vulnerability supply chain traversal",
+        ],
+        "implied_mechanisms": [
+            "Abstract syntax tree (AST) taint analysis",
+            "High-entropy string secret scanning",
+            "Control-flow graph (CFG) traversal",
+            "Software bill-of-materials (SBOM) dependency graph resolution",
+        ],
+        "technical_primitives": [
+            "AST visitor engine",
+            "Taint propagation graph",
+            "Entropy regex scanner",
+            "Package lockfile dependency parser",
+        ],
+        "adjacent_industries": [
+            "Airport Baggage Screening",
+            "Epidemiological Contact Tracing",
+            "Forensic Accounting & Fraud Auditing",
+        ],
+        "analogous_mechanisms": [
+            "Automated baggage tomography anomaly detection",
+            "Transaction ledger taint tracing",
+            "Signature-based threat hashing",
+        ],
+        "academic_keywords": [
+            "static taint analysis source code",
+            "automated vulnerability detection AST",
+            "software bill of materials vulnerability analysis",
+        ],
+    },
+    "document_parsing_information_extraction": {
+        "triggers": {"document", "pdf", "ocr", "layout", "extraction", "parser", "table extraction", "bounding box"},
+        "core_problems": [
+            "Multi-column unstructured layout reading order reconstruction",
+            "Visual table and key-value pair extraction",
+            "OCR noise and text segmentation correction",
+            "Domain-specific entity normalization",
+        ],
+        "implied_mechanisms": [
+            "Layout-aware visual object detection",
+            "Spatial bounding-box reading order sort",
+            "Optical character recognition (OCR) post-correction",
+            "Heuristic key-value schema alignment",
+        ],
+        "technical_primitives": [
+            "Layout-aware document parser",
+            "Bounding-box spatial sorter",
+            "OCR text segmentation engine",
+            "Schema validator",
+        ],
+        "adjacent_industries": [
+            "Digital Archival & Library Science",
+            "Financial Invoice & Receipt Accounting",
+            "Medical Records Digitization",
+        ],
+        "analogous_mechanisms": [
+            "Visual layout block segmentation",
+            "Form field coordinate mapping",
+            "Double-entry invoice validation",
+        ],
+        "academic_keywords": [
+            "document layout analysis",
+            "information extraction unstructured documents",
+            "multimodal document parsing reading order",
+        ],
+    },
+    # Preserved original catalog entries for backward compatibility
     "consensus": {
-        "adjacent_domains": ["Distributed Systems", "Sociology & Political Science", "Cryptographic Protocols"],
+        "triggers": {"consensus", "raft", "paxos", "byzantine"},
+        "core_problems": ["Distributed agreement under network partitions", "Byzantine node tolerance"],
+        "implied_mechanisms": ["Leader election", "Quorum consensus", "State machine replication"],
+        "technical_primitives": ["Raft state machine", "Gossip broadcast", "Vector clock"],
+        "adjacent_industries": ["Distributed Systems", "Sociology & Political Science", "Cryptographic Protocols"],
         "analogous_mechanisms": ["Raft/Paxos leader election", "Delphi method deliberation", "Byzantine fault tolerance"],
         "academic_keywords": ["consensus protocol", "delphi method", "social choice theory"],
     },
     "turn_taking": {
-        "adjacent_domains": ["Avionics & Aerospace", "Interactive Drama / Game AI", "Telecommunications"],
+        "triggers": {"turn_taking", "turn-taking", "conversational floor", "floor control"},
+        "core_problems": ["Channel collision avoidance", "Floor assignment latency"],
+        "implied_mechanisms": ["Floor arbitration state machine", "Token-bucket pacing"],
+        "technical_primitives": ["Floor control queue", "Media access controller"],
+        "adjacent_industries": ["Avionics & Aerospace", "Interactive Drama / Game AI", "Telecommunications"],
         "analogous_mechanisms": ["Cockpit Resource Management sterile channel", "Drama manager beat scheduling", "Token bucket media access control"],
         "academic_keywords": ["conversational floor control", "turn-taking state machine", "audio collision resolution"],
     },
     "arbitration": {
-        "adjacent_domains": ["Avionics", "Financial Exchanges", "Operating Systems"],
+        "triggers": {"arbitration", "conflict resolution", "clearing", "priority queue"},
+        "core_problems": ["Resource contention resolution", "Fair allocation under load"],
+        "implied_mechanisms": ["Triple modular redundancy voting", "Priority arbitration"],
+        "technical_primitives": ["Priority queue", "Fair queue scheduler", "Order book matcher"],
+        "adjacent_industries": ["Avionics", "Financial Exchanges", "Operating Systems"],
         "analogous_mechanisms": ["Triple modular redundancy voting", "Order book clearing arbiters", "Fair queuing schedulers"],
         "academic_keywords": ["priority arbitration", "conflict resolution algorithm", "resource scheduling"],
     },
     "memory": {
-        "adjacent_domains": ["Cognitive Science", "Database Systems", "Operating Systems"],
+        "triggers": {"memory", "caching", "cache", "retrieval", "vector storage"},
+        "core_problems": ["Associative retrieval latency", "Context window eviction"],
+        "implied_mechanisms": ["Tiered cache eviction", "Episodic memory chunking"],
+        "technical_primitives": ["Vector index", "LRU/LFU cache", "Associative memory stream"],
+        "adjacent_industries": ["Cognitive Science", "Database Systems", "Operating Systems"],
         "analogous_mechanisms": ["ACT-R cognitive memory chunking", "Multi-tiered caching (L1/L2/Disk)", "Virtual memory page eviction"],
         "academic_keywords": ["episodic memory stream", "associative retrieval", "cognitive architecture"],
     },
     "debate": {
-        "adjacent_domains": ["Formal Logic & Law", "Sociology", "Multi-Agent Reinforcement Learning"],
+        "triggers": {"debate", "argumentation", "dialectic", "adversarial"},
+        "core_problems": ["Adversarial reasoning validation", "Socratic dialectic loops"],
+        "implied_mechanisms": ["Toulmin argumentation model", "Adversarial self-play"],
+        "technical_primitives": ["Dialectic arbiter", "Argument graph validator"],
+        "adjacent_industries": ["Formal Logic & Law", "Sociology", "Multi-Agent Reinforcement Learning"],
         "analogous_mechanisms": ["Toulmin argumentation model", "Socratic dialectic loops", "Adversarial self-play"],
         "academic_keywords": ["multi-agent debate", "dialectical argumentation", "adversarial reasoning"],
     },
     "simulation": {
-        "adjacent_domains": ["Ecology & Epidemiology", "Video Game Systems", "Microeconomics"],
+        "triggers": {"simulation", "agent-based", "abm", "synthetic population"},
+        "core_problems": ["Emergent behavior modeling", "Large-scale agent step execution"],
+        "implied_mechanisms": ["Agent-based modeling (ABM)", "Utility AI / GOAP"],
+        "technical_primitives": ["Discrete-event simulator", "Spatial grid index"],
+        "adjacent_industries": ["Ecology & Epidemiology", "Video Game Systems", "Microeconomics"],
         "analogous_mechanisms": ["Agent-based modeling (ABM)", "Utility AI / GOAP", "Dynamic market equilibrium"],
         "academic_keywords": ["agent-based simulation", "artificial society", "emergent behavior"],
     },
     "streaming": {
-        "adjacent_domains": ["Signal Processing", "Telecommunications", "Industrial IoT"],
+        "triggers": {"streaming", "audio", "webrtc", "jitter buffer", "low latency"},
+        "core_problems": ["Packet jitter and buffer underrun", "Backpressure propagation"],
+        "implied_mechanisms": ["Ring buffer jitter management", "WebRTC RTP pacing"],
+        "technical_primitives": ["Jitter buffer", "RTP packetizer", "Ring buffer"],
+        "adjacent_industries": ["Signal Processing", "Telecommunications", "Industrial IoT"],
         "analogous_mechanisms": ["Ring buffer jitter management", "WebRTC RTP packet pacing", "Backpressure flow control"],
         "academic_keywords": ["real-time audio pipeline", "low latency streaming", "voice activity detection"],
     },
     "collaboration": {
-        "adjacent_domains": ["Distributed Version Control", "Urban Planning", "Aviation"],
+        "triggers": {"collaboration", "collaborative", "multi-user", "shared editor"},
+        "core_problems": ["Concurrent editing divergence", "Distributed state reconciliation"],
+        "implied_mechanisms": ["Conflict-free Replicated Data Types", "Operational transformation"],
+        "technical_primitives": ["CRDT state engine", "Vector clock", "WebSocket broadcast"],
+        "adjacent_industries": ["Distributed Version Control", "Urban Planning", "Aviation"],
         "analogous_mechanisms": ["Conflict-free Replicated Data Types (CRDT)", "Collaborative spatial mapping", "Crew resource management"],
         "academic_keywords": ["real-time collaborative editing", "operational transformation", "distributed state synchronization"],
     },
@@ -62,13 +385,104 @@ def sanitize_input(text: str) -> str:
     """Trim and sanitize raw text input."""
     if not text:
         return ""
-    # Strip dangerous characters and excessive whitespace
     return re.sub(r"\s+", " ", text.strip())
 
 
 def normalize_keyword(kw: str) -> str:
     """Normalize keyword for deduplication."""
     return kw.strip().lower()
+
+
+def extract_concept_tokens_and_phrases(concept: str) -> Tuple[List[str], List[str], List[str]]:
+    """
+    Extract meaningful individual tokens, content bi-grams, and tri-grams from a concept string.
+    Preserves critical short technical acronyms while filtering stopword noise.
+    """
+    raw_words = re.findall(r"\b[A-Za-z0-9_\-]+\b", concept)
+    tokens: List[str] = []
+    content_words: List[str] = []
+
+    for w in raw_words:
+        w_lower = w.lower()
+        if w_lower in KNOWN_ACRONYMS or len(w_lower) >= 3:
+            if w_lower not in STOPWORDS:
+                tokens.append(w)
+                content_words.append(w)
+
+    # Extract 2-grams and 3-grams from content words
+    n_grams: List[str] = []
+    for i in range(len(content_words) - 1):
+        bi = f"{content_words[i]} {content_words[i+1]}"
+        n_grams.append(bi)
+    for i in range(len(content_words) - 2):
+        tri = f"{content_words[i]} {content_words[i+1]} {content_words[i+2]}"
+        n_grams.append(tri)
+
+    return tokens, content_words, n_grams
+
+
+def fallback_morphological_decomposition(clean_concept: str, tokens: List[str]) -> Dict[str, Any]:
+    """
+    Universal fallback for software concepts with zero catalog matches.
+    Decomposes tokens using grammatical, functional, and structural heuristics.
+    Never fabricates fake libraries or URLs. Clearly tags inferences as unverified.
+    """
+    non_generic = [t for t in tokens if t.lower() not in GENERIC_ARTIFACT_TERMS]
+    domain_terms = non_generic if non_generic else tokens
+
+    # Identify primary domain noun and action/modifier
+    primary_domain = " ".join(domain_terms[:2]) if domain_terms else clean_concept
+    spec_term = domain_terms[0] if domain_terms else clean_concept
+    secondary_term = domain_terms[1] if len(domain_terms) > 1 else "system"
+
+    core_problems = [
+        f"Data modeling, serialization, and representation for {primary_domain}",
+        f"Scalable throughput and latency bottlenecks in {spec_term} execution",
+        f"Error handling, fault tolerance, and state recovery under edge conditions",
+        f"Integration friction with existing developer ecosystems and standard APIs",
+    ]
+
+    implied_mechanisms = [
+        f"Modular {spec_term} pipeline architecture",
+        f"State machine and event lifecycle dispatching",
+        f"Configurable rule-based heuristic processing",
+        f"Data ingestion, validation, and transformation layer",
+    ]
+
+    technical_primitives = [
+        f"{spec_term} parser and serializer",
+        f"{spec_term} workflow runner",
+        f"Configurable {secondary_term} engine",
+        f"Integration adapter / client SDK",
+    ]
+
+    adjacent_industries = [
+        "Distributed Systems & Stream Processing",
+        "Industrial Automation & Signal Processing",
+        "Aerospace & High-Reliability Telemetry",
+        "Compiler Design & AST Transformation",
+    ]
+
+    analogous_mechanisms = [
+        "Pipelined stream processing with backpressure",
+        "Event-driven publish-subscribe decoupling",
+        "Deterministic finite-state machine transitions",
+    ]
+
+    academic_keywords = [
+        f"{spec_term} architecture survey",
+        f"{primary_domain} algorithmic benchmark",
+        f"{spec_term} state of the art",
+    ]
+
+    return {
+        "core_problems": core_problems,
+        "implied_mechanisms": implied_mechanisms,
+        "technical_primitives": technical_primitives,
+        "adjacent_industries": adjacent_industries,
+        "analogous_mechanisms": analogous_mechanisms,
+        "academic_keywords": academic_keywords,
+    }
 
 
 def build_research_plan(
@@ -82,107 +496,165 @@ def build_research_plan(
 ) -> Dict[str, Any]:
     """
     Generate an actionable, deterministic research plan and query matrix
-    from a structured idea decomposition.
+    from a software idea.
     """
     clean_concept = sanitize_input(concept)
     if not clean_concept:
         raise ValueError("Concept description cannot be empty.")
 
-    problems = [sanitize_input(p) for p in (problems or []) if sanitize_input(p)]
-    mechanisms = [sanitize_input(m) for m in (mechanisms or []) if sanitize_input(m)]
-    primitives = [sanitize_input(p) for p in (technical_primitives or []) if sanitize_input(p)]
-    patterns = [sanitize_input(p) for p in (behavioral_patterns or []) if sanitize_input(p)]
-    verticals = [sanitize_input(v) for v in (adjacent_verticals or []) if sanitize_input(v)]
+    user_problems = [sanitize_input(p) for p in (problems or []) if sanitize_input(p)]
+    user_mechanisms = [sanitize_input(m) for m in (mechanisms or []) if sanitize_input(m)]
+    user_primitives = [sanitize_input(p) for p in (technical_primitives or []) if sanitize_input(p)]
+    user_patterns = [sanitize_input(p) for p in (behavioral_patterns or []) if sanitize_input(p)]
+    user_verticals = [sanitize_input(v) for v in (adjacent_verticals or []) if sanitize_input(v)]
 
-    # Detect implied mechanisms from catalog if mechanisms are sparse
-    detected_catalog_matches: Dict[str, Dict[str, Any]] = {}
-    searchable_text = f"{clean_concept} {' '.join(problems)} {' '.join(mechanisms)}".lower()
+    # 1. Conservative Tokenization
+    tokens, content_words, n_grams = extract_concept_tokens_and_phrases(clean_concept)
+    searchable_text = f"{clean_concept} {' '.join(user_problems)} {' '.join(user_mechanisms)}".lower()
 
-    for key, data in UNIVERSAL_VERTICAL_CATALOG.items():
-        if key in searchable_text:
-            detected_catalog_matches[key] = data
+    # 2. Match against Extended Taxonomy
+    matched_taxonomy_keys: List[str] = []
+    aggregated_problems: List[str] = list(user_problems)
+    aggregated_mechanisms: List[str] = list(user_mechanisms)
+    aggregated_primitives: List[str] = list(user_primitives)
+    aggregated_verticals: Set[str] = set(user_verticals)
+    suggested_analogous_mechanisms: List[str] = []
+    academic_keywords: List[str] = []
 
-    # Merge adjacent domains and academic keywords from matched mechanisms
-    computed_verticals = set(verticals)
-    suggested_analogous_mechanisms = []
-    academic_keywords = []
+    for key, data in EXTENDED_DOMAIN_TAXONOMY.items():
+        triggers = data.get("triggers", {key})
+        is_match = False
+        for trig in triggers:
+            # Word boundary matching or substring for multi-word triggers
+            if " " in trig or "-" in trig:
+                if trig in searchable_text:
+                    is_match = True
+                    break
+            else:
+                if re.search(r"\b" + re.escape(trig), searchable_text):
+                    is_match = True
+                    break
 
-    for key, data in detected_catalog_matches.items():
-        for dom in data["adjacent_domains"]:
-            computed_verticals.add(dom)
-        suggested_analogous_mechanisms.extend(data["analogous_mechanisms"])
-        academic_keywords.extend(data["academic_keywords"])
+        if is_match:
+            matched_taxonomy_keys.append(key)
+            for p in data.get("core_problems", []):
+                if p not in aggregated_problems:
+                    aggregated_problems.append(p)
+            for m in data.get("implied_mechanisms", []):
+                if m not in aggregated_mechanisms:
+                    aggregated_mechanisms.append(m)
+            for tp in data.get("technical_primitives", []):
+                if tp not in aggregated_primitives:
+                    aggregated_primitives.append(tp)
+            for dom in data.get("adjacent_industries", []):
+                aggregated_verticals.add(dom)
+            suggested_analogous_mechanisms.extend(data.get("analogous_mechanisms", []))
+            academic_keywords.extend(data.get("academic_keywords", []))
 
-    # Build Direct Queries (GitHub & Product)
-    direct_queries: Set[str] = set()
-    concept_tokens = [w for w in re.findall(r"\b[A-Za-z0-9_-]+\b", clean_concept) if len(w) > 3]
+    # 3. Universal Fallback if no taxonomy matched or if components are sparse
+    expansion_mode = "taxonomy_matched" if matched_taxonomy_keys else "heuristic_morphological_fallback"
+    if not matched_taxonomy_keys or len(aggregated_primitives) == 0:
+        fallback_data = fallback_morphological_decomposition(clean_concept, tokens)
+        for p in fallback_data["core_problems"]:
+            if p not in aggregated_problems:
+                aggregated_problems.append(p)
+        for m in fallback_data["implied_mechanisms"]:
+            if m not in aggregated_mechanisms:
+                aggregated_mechanisms.append(m)
+        for tp in fallback_data["technical_primitives"]:
+            if tp not in aggregated_primitives:
+                aggregated_primitives.append(tp)
+        for dom in fallback_data["adjacent_industries"]:
+            aggregated_verticals.add(dom)
+        suggested_analogous_mechanisms.extend(fallback_data["analogous_mechanisms"])
+        academic_keywords.extend(fallback_data["academic_keywords"])
 
-    if len(concept_tokens) >= 2:
-        direct_queries.add(" ".join(concept_tokens[:4]))
-        direct_queries.add(f"{concept_tokens[0]} {concept_tokens[1]}")
+    # 4. Multi-Tier Query Construction
+    all_emitted_queries: Set[str] = set()
 
-    for p in problems[:3]:
-        direct_queries.add(p)
+    # Tier A: Direct Queries (GitHub & Existing Products)
+    direct_queries: List[str] = []
+    # Seed 1: The full concept or cleaned core concept
+    direct_queries.append(clean_concept)
+    # Seed 2: 2-grams and 3-grams from content words
+    for ng in n_grams[:4]:
+        if ng.lower() != clean_concept.lower():
+            direct_queries.append(ng)
+    # Seed 3: Explicit problems/mechanisms
+    for p in aggregated_problems[:2]:
+        direct_queries.append(p)
+    for m in aggregated_mechanisms[:2]:
+        direct_queries.append(m)
 
-    for m in mechanisms[:3]:
-        direct_queries.add(m)
+    # Clean and register direct queries
+    clean_direct: List[str] = []
+    for q in direct_queries:
+        q_clean = sanitize_input(q)
+        q_norm = normalize_keyword(q_clean)
+        if q_clean and q_norm not in all_emitted_queries:
+            all_emitted_queries.add(q_norm)
+            clean_direct.append(q_clean)
 
-    all_emitted_queries = set(direct_queries)
+    # Tier B: Technical Primitive Queries (excluding direct)
+    clean_primitives: List[str] = []
+    for prim in aggregated_primitives[:6]:
+        prim_clean = sanitize_input(prim)
+        prim_norm = normalize_keyword(prim_clean)
+        if prim_clean and prim_norm not in all_emitted_queries:
+            all_emitted_queries.add(prim_norm)
+            clean_primitives.append(prim_clean)
 
-    # Build Technical Primitives Queries (excluding direct queries)
-    primitive_queries: Set[str] = set()
-    for prim in primitives:
-        if prim not in all_emitted_queries:
-            primitive_queries.add(prim)
-        for m in mechanisms[:2]:
-            combo = f"{prim} {m}"
-            if combo not in all_emitted_queries:
-                primitive_queries.add(combo)
-
-    all_emitted_queries.update(primitive_queries)
-
-    # Build Cross-Vertical Queries (excluding direct and primitive queries)
-    cross_vertical_queries: Set[str] = set()
-    for vert in list(computed_verticals)[:4]:
-        for m in (mechanisms or list(detected_catalog_matches.keys()))[:3]:
+    # Tier C: Cross-Vertical Queries (excluding direct and primitive)
+    clean_cross: List[str] = []
+    vertical_list = sorted(list(aggregated_verticals))
+    mechanism_subset = aggregated_mechanisms[:3] or user_mechanisms[:3]
+    for vert in vertical_list[:3]:
+        for m in mechanism_subset[:2]:
             combo = f"{vert} {m}"
-            if combo not in all_emitted_queries:
-                cross_vertical_queries.add(combo)
-        for anal in suggested_analogous_mechanisms[:3]:
+            combo_norm = normalize_keyword(combo)
+            if combo_norm not in all_emitted_queries:
+                all_emitted_queries.add(combo_norm)
+                clean_cross.append(combo)
+        for anal in suggested_analogous_mechanisms[:2]:
             combo = f"{vert} {anal}"
-            if combo not in all_emitted_queries:
-                cross_vertical_queries.add(combo)
+            combo_norm = normalize_keyword(combo)
+            if combo_norm not in all_emitted_queries:
+                all_emitted_queries.add(combo_norm)
+                clean_cross.append(combo)
 
-    all_emitted_queries.update(cross_vertical_queries)
-
-    # Build Academic Queries (excluding prior queries)
-    academic_queries: Set[str] = set()
+    # Tier D: Academic Research Queries (excluding prior queries)
+    clean_academic: List[str] = []
     for ak in academic_keywords[:6]:
-        if ak not in all_emitted_queries:
-            academic_queries.add(ak)
-    for m in mechanisms[:3]:
+        ak_clean = sanitize_input(ak)
+        ak_norm = normalize_keyword(ak_clean)
+        if ak_clean and ak_norm not in all_emitted_queries:
+            all_emitted_queries.add(ak_norm)
+            clean_academic.append(ak_clean)
+
+    for m in aggregated_mechanisms[:2]:
         alg_query = f"{m} algorithm"
-        if alg_query not in all_emitted_queries:
-            academic_queries.add(alg_query)
-        fw_query = f"{m} framework"
-        if fw_query not in all_emitted_queries:
-            academic_queries.add(fw_query)
+        alg_norm = normalize_keyword(alg_query)
+        if alg_norm not in all_emitted_queries:
+            all_emitted_queries.add(alg_norm)
+            clean_academic.append(alg_query)
 
-    # Research Hypotheses to Verify (Distinguished from facts)
-    hypotheses = [
-        f"Hypothesis: The core mechanism '{m}' has prior open-source implementations outside the primary domain."
-        for m in (mechanisms or list(detected_catalog_matches.keys()))[:3]
-    ]
-    if computed_verticals:
-        hypotheses.append(
-            f"Hypothesis: Architectural constraints from {list(computed_verticals)[0]} can transfer to resolve bottlenecks in this concept."
-        )
+    # 5. Formulate Unverified Hypotheses (Distinguished from facts)
+    hypotheses: List[Dict[str, str]] = []
+    top_mechanisms = (aggregated_mechanisms or ["core pipeline"])[:3]
+    for m in top_mechanisms:
+        hypotheses.append({
+            "hypothesis": f"Hypothesis: The mechanism '{m}' has battle-tested open-source implementations outside the primary domain.",
+            "verification_status": "UNVERIFIED_HYPOTHESIS",
+            "evidence_required": "Source inspection of candidate repositories or working proof-of-concept.",
+        })
 
-    # Deduplicate queries cleanly
-    clean_direct = sorted(list(direct_queries))[:8]
-    clean_cross = sorted(list(cross_vertical_queries))[:10]
-    clean_academic = sorted(list(academic_queries))[:8]
-    clean_primitives = sorted(list(primitive_queries))[:6]
+    if vertical_list:
+        primary_vert = vertical_list[0]
+        hypotheses.append({
+            "hypothesis": f"Hypothesis: Architectural constraints from {primary_vert} can transfer to resolve throughput and reliability bottlenecks in this concept.",
+            "verification_status": "UNVERIFIED_HYPOTHESIS",
+            "evidence_required": "Empirical comparison of architectural state machines between domains.",
+        })
 
     default_priorities = research_priorities or [
         "1. Identify existing open-source projects providing direct turnkey solutions.",
@@ -196,29 +668,32 @@ def build_research_plan(
         "status": "success",
         "plan_type": "concept_expansion_and_research_plan",
         "original_concept": clean_concept,
+        "expansion_metadata": {
+            "mode": expansion_mode,
+            "provenance": "[INFERRED-HEURISTIC]",
+            "matched_taxonomy_domains": matched_taxonomy_keys,
+            "extracted_tokens": tokens,
+            "heuristic_expansion_disclosure": (
+                "Decomposition derived via deterministic rule-based token decomposition without model reasoning. "
+                "Inferred queries must be verified by the host agent."
+            ),
+        },
         "decomposition": {
-            "core_problems": problems,
-            "mechanisms": mechanisms,
-            "technical_primitives": primitives,
-            "behavioral_patterns": patterns,
-            "adjacent_industries": sorted(list(computed_verticals)),
-            "suggested_analogous_mechanisms": sorted(list(set(suggested_analogous_mechanisms))),
+            "core_problems": aggregated_problems[:5],
+            "mechanisms": aggregated_mechanisms[:5],
+            "technical_primitives": aggregated_primitives[:6],
+            "behavioral_patterns": user_patterns,
+            "adjacent_industries": vertical_list[:5],
+            "suggested_analogous_mechanisms": sorted(list(set(suggested_analogous_mechanisms)))[:5],
         },
         "query_matrix": {
-            "direct_queries": clean_direct,
-            "technical_primitive_queries": clean_primitives,
-            "cross_vertical_queries": clean_cross,
-            "academic_queries": clean_academic,
+            "direct_queries": clean_direct[:8],
+            "technical_primitive_queries": clean_primitives[:6],
+            "cross_vertical_queries": clean_cross[:8],
+            "academic_queries": clean_academic[:6],
         },
         "research_priorities": default_priorities,
-        "hypotheses_to_verify": [
-            {
-                "hypothesis": h,
-                "verification_status": "UNVERIFIED_HYPOTHESIS",
-                "evidence_required": "Source inspection, academic paper, or working implementation.",
-            }
-            for h in hypotheses
-        ],
+        "hypotheses_to_verify": hypotheses,
     }
 
 
@@ -227,6 +702,11 @@ def format_text_plan(plan: Dict[str, Any]) -> str:
     lines = []
     lines.append("# BeenHere Concept Expansion & Deterministic Research Plan\n")
     lines.append(f"**Target Concept:** {plan['original_concept']}\n")
+
+    meta = plan.get("expansion_metadata", {})
+    if meta:
+        lines.append(f"> **Mode:** `{meta.get('mode')}` | **Provenance:** `{meta.get('provenance')}`  ")
+        lines.append(f"> *Disclosure:* {meta.get('heuristic_expansion_disclosure')}\n")
 
     decomp = plan.get("decomposition", {})
     lines.append("## 1. Problem & Mechanism Decomposition")
@@ -246,7 +726,7 @@ def format_text_plan(plan: Dict[str, Any]) -> str:
         lines.append(f"- **Adjacent Industries:** {', '.join(decomp['adjacent_industries'])}")
     if decomp.get("suggested_analogous_mechanisms"):
         lines.append("- **Analogous Cross-Domain Mechanisms:**")
-        for am in decomp["suggestous_mechanisms"] if "suggestous_mechanisms" in decomp else decomp.get("suggested_analogous_mechanisms", []):
+        for am in decomp["suggested_analogous_mechanisms"]:
             lines.append(f"  - {am}")
     lines.append("")
 

@@ -3,6 +3,8 @@
   "run_id": "ai_recruitment_baseline_run_01",
   "scenario_id": "ai_recruitment",
   "condition": "baseline",
+  "provenance_type": "synthetic_baseline_fixture",
+  "has_raw_transcript": false,
   "timestamp": "2026-11-14T11:00:00Z",
   "environment": {
     "agent_type": "Standard AI Coding Agent (Baseline)",
@@ -13,12 +15,13 @@
     "effort_budget": "Standard single-turn research response (~3 mins)"
   },
   "prompt": "I want to build an AI-powered recruitment and candidate matching platform. It should extract structured information from unstructured resume PDFs, perform semantic matching against job descriptions, enable candidate rediscovery across legacy applicant pools, and provide recruiter review workflows. It needs to integrate with or sit on top of existing Applicant Tracking Systems (ATS).\n\nBefore writing any code, research what already exists:\n1. What existing open-source ATS platforms or commercial recruitment products solve this or parts of this?\n2. What specific open-source libraries or components can be reused for document extraction, semantic matching, and bias auditing?\n3. What license restrictions, dual-licensing hazards, or copyleft obligations apply to the candidate repositories?\n4. What are the biggest technical gaps and legal compliance hurdles we must build ourselves?\n5. What is your concrete build-versus-reuse recommendation?",
-  "output_artifact_path": "evaluations/raw_runs/baseline_ai_recruitment.md",
+  "output_artifact_path": "",
   "evaluation": {
-    "evaluator": "Lead AI Research Engineer & Evaluation Specialist",
+    "evaluator": "Lead AI Research Engineer (Self-Audit)",
     "evaluation_date": "2026-11-14",
     "is_blinded": false,
-    "self_audit_disclosure": "Baseline response reconstructed from documented ordinary host-agent outputs for the identical prompt, evaluated using evaluations/rubric.md anchors.",
+    "evaluator_conflict_of_interest": true,
+    "self_audit_disclosure": "Synthetic baseline fixture illustrating typical unassisted LLM output patterns. Not an empirical execution transcript.",
     "scores": {
       "d1_solutions_discovered": 2.5,
       "d2_reusable_code": 2.0,
@@ -28,7 +31,7 @@
       "d6_actionable_recommendation": 2.5
     },
     "dimension_justifications": {
-      "d1_solutions_discovered": "Mentioned enterprise ATS products (Greenhouse, Lever, Workday) and generic PDF tools (pdfminer, pypdf). Recomended Horilla HR as turnkey open-source base. Missed modern layout-aware models (Docling) and algorithmic fairness libraries (Fairlearn).",
+      "d1_solutions_discovered": "Mentioned enterprise ATS products (Greenhouse, Lever, Workday) and generic PDF tools (pdfminer, pypdf). Recommended Horilla HR as turnkey open-source base. Missed modern layout-aware models (Docling) and algorithmic fairness libraries (Fairlearn).",
       "d2_reusable_code": "Suggested writing a simple Python script using PyPDF2 and OpenAI embeddings. Did not inspect Horilla repository architecture, database models, or parsing limitations.",
       "d3_accuracy_evidence": "Claimed 'Horilla provides a turnkey ATS ready for production deployment with full API support'. Did not verify actual API endpoints or commit activity. No evidence classification tags.",
       "d4_licensing_risk": "Accepted Horilla's top-level LGPL-2.1 license at face value. Completely failed to inspect requirements.txt and missed the mandatory dependency on PyMuPDF (dual-licensed under AGPL-3.0 and Artifex commercial license), posing severe commercial copyleft risk.",

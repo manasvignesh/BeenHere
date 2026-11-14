@@ -3,6 +3,8 @@
   "run_id": "ai_recruitment_beenhere_run_01",
   "scenario_id": "ai_recruitment",
   "condition": "beenhere",
+  "provenance_type": "empirical_unblinded_trial",
+  "has_raw_transcript": true,
   "timestamp": "2026-11-14T11:30:00Z",
   "environment": {
     "agent_type": "OpenAI Codex with BeenHere Skill",
@@ -15,10 +17,11 @@
   "prompt": "I want to build an AI-powered recruitment and candidate matching platform. It should extract structured information from unstructured resume PDFs, perform semantic matching against job descriptions, enable candidate rediscovery across legacy applicant pools, and provide recruiter review workflows. It needs to integrate with or sit on top of existing Applicant Tracking Systems (ATS).\n\nBefore writing any code, research what already exists:\n1. What existing open-source ATS platforms or commercial recruitment products solve this or parts of this?\n2. What specific open-source libraries or components can be reused for document extraction, semantic matching, and bias auditing?\n3. What license restrictions, dual-licensing hazards, or copyleft obligations apply to the candidate repositories?\n4. What are the biggest technical gaps and legal compliance hurdles we must build ourselves?\n5. What is your concrete build-versus-reuse recommendation?",
   "output_artifact_path": "docs/CODEX_END_TO_END_TEST.md",
   "evaluation": {
-    "evaluator": "Lead AI Research Engineer & Evaluation Specialist",
+    "evaluator": "Lead AI Research Engineer (Self-Audit)",
     "evaluation_date": "2026-11-14",
     "is_blinded": false,
-    "self_audit_disclosure": "Grounded directly in the verified OpenAI Codex real-world run artifacts from BeenHere-Test (RECRUITMENT_RESEARCH.md, recruitment-evidence.json), evaluated using evaluations/rubric.md anchors.",
+    "evaluator_conflict_of_interest": true,
+    "self_audit_disclosure": "Empirical single-case trial executed by OpenAI Codex in BeenHere-Test (Phase 5). Scored unblinded by tool author against evaluations/rubric.md.",
     "scores": {
       "d1_solutions_discovered": 4.7,
       "d2_reusable_code": 4.6,

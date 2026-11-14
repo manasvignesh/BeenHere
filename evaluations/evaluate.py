@@ -45,6 +45,13 @@ VALID_SCENARIOS = {
 
 VALID_CONDITIONS = {"baseline", "beenhere"}
 
+VALID_PROVENANCE_TYPES = {
+    "synthetic_baseline_fixture",
+    "retrospective_reference_fixture",
+    "empirical_unblinded_trial",
+    "empirical_blinded_trial",
+}
+
 
 def calculate_grade(quality_index: float) -> str:
     """Assign letter grade based on normalized 0-100 quality index."""
@@ -71,6 +78,7 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
         "run_id",
         "scenario_id",
         "condition",
+        "provenance_type",
         "timestamp",
         "environment",
         "prompt",
@@ -86,13 +94,16 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
     if manifest.get("condition") not in VALID_CONDITIONS:
         errors.append(f"Invalid 'condition': '{manifest.get('condition')}'. Expected 'baseline' or 'beenhere'")
 
+    if "provenance_type" in manifest and manifest["provenance_type"] not in VALID_PROVENANCE_TYPES:
+        errors.append(f"Invalid 'provenance_type': '{manifest.get('provenance_type')}'. Expected one of {sorted(list(VALID_PROVENANCE_TYPES))}")
+
     env = manifest.get("environment", {})
     for req_env in ["agent_type", "model", "tool_access", "network_enabled"]:
         if req_env not in env:
             errors.append(f"Missing required environment field: 'environment.{req_env}'")
 
     eval_data = manifest.get("evaluation", {})
-    for req_eval in ["evaluator", "evaluation_date", "scores", "dimension_justifications"]:
+    for req_eval in ["evaluator", "evaluation_date", "is_blinded", "evaluator_conflict_of_interest", "scores", "dimension_justifications"]:
         if req_eval not in eval_data:
             errors.append(f"Missing required evaluation field: 'evaluation.{req_eval}'")
 
@@ -209,14 +220,15 @@ def compare_runs(manifests: List[Dict[str, Any]]) -> Dict[str, Any]:
 def format_comparison_markdown(comparison_data: Dict[str, Any]) -> str:
     """Format paired scenario comparisons into a clean GitHub-style Markdown report."""
     lines = []
-    lines.append("# BeenHere vs Baseline: Research Quality Comparative Evaluation\n")
+    lines.append("# BeenHere vs Baseline: Calibrated Reference Benchmark Evaluation\n")
     lines.append("> **Evaluation Engine:** `evaluations/evaluate.py` (BeenHere v1.1 Evaluation Harness)  ")
     lines.append("> **Rubric:** 6 Weighted Dimensions (0–5 scale, 0–100 Normalized Quality Index)  ")
-    lines.append("> **Methodology:** Side-by-side empirical audit across identical prompt scenarios.\n")
+    lines.append("> **Methodology:** Calibrated reference matrix across standardized prompts.  ")
+    lines.append("> **Provenance Notice:** Baseline runs are synthetic archetypal fixtures; BeenHere runs are author-scored formative benchmarks. They validate harness functionality, not double-blind empirical superiority.\n")
     lines.append("---\n")
 
     lines.append("## 1. Executive Summary Table\n")
-    lines.append("| Scenario | Baseline Index | BeenHere Index | Delta (Δ) | Baseline Grade | BeenHere Grade | Outcome |")
+    lines.append("| Scenario | Baseline Index | BeenHere Index | Delta (Δ) | Baseline Grade | BeenHere Grade | Comparison |")
     lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :--- |")
 
     for c in comparison_data.get("scenarios", []):
@@ -230,7 +242,16 @@ def format_comparison_markdown(comparison_data: Dict[str, Any]) -> str:
         b_grade = b["grade"].split()[0] if b else "N/A"
         bh_grade = bh["grade"].split()[0] if bh else "N/A"
 
-        outcome = "BeenHere Outperformed" if (c['delta_index'] and c['delta_index'] > 0) else "Inconclusive"
+        if c.get("delta_index") is not None:
+            if c["delta_index"] > 0:
+                outcome = "BeenHere Higher (Reference)"
+            elif c["delta_index"] < 0:
+                outcome = "Baseline Higher (Reference)"
+            else:
+                outcome = "Equal Score"
+        else:
+            outcome = "Inconclusive"
+
         lines.append(f"| `{scen_id}` | {b_idx_str} | {bh_idx_str} | **{delta_str}** | {b_grade} | **{bh_grade}** | {outcome} |")
 
     lines.append("\n---\n")
@@ -422,15 +443,16 @@ def main():
     comparisons = compare_runs(manifests)
 
     if args.summary or (not args.report and not args.output):
-        print(f"Loaded {len(manifests)} manifests across {len(comparisons['scenarios'])} scenarios.\n")
-        print(f"{'Scenario':<25} {'Baseline':<12} {'BeenHere':<12} {'Delta':<8} {'Outcome'}")
+        print(f"Loaded {len(manifests)} manifests across {len(comparisons['scenarios'])} scenarios.")
+        print("NOTE: Scores represent calibrated reference fixtures for harness validation, not double-blind empirical trials.\n")
+        print(f"{'Scenario':<25} {'Baseline':<12} {'BeenHere':<12} {'Delta':<8} {'Comparison'}")
         print("-" * 75)
         for c in comparisons["scenarios"]:
             scen = c["scenario_id"]
             b_str = f"{c['baseline']['quality_index']:.1f} ({c['baseline']['grade'].split()[0]})" if c.get("baseline") else "N/A"
             bh_str = f"{c['beenhere']['quality_index']:.1f} ({c['beenhere']['grade'].split()[0]})" if c.get("beenhere") else "N/A"
             delta = f"+{c['delta_index']:.1f}" if (c['delta_index'] and c['delta_index'] > 0) else (str(c['delta_index']) if c['delta_index'] else "N/A")
-            outcome = "BeenHere Outperformed" if (c['delta_index'] and c['delta_index'] > 0) else "Pending"
+            outcome = "BeenHere Higher" if (c['delta_index'] and c['delta_index'] > 0) else ("Baseline Higher" if (c['delta_index'] and c['delta_index'] < 0) else "Equal Score")
             print(f"{scen:<25} {b_str:<12} {bh_str:<12} {delta:<8} {outcome}")
         print("")
 
