@@ -1,0 +1,62 @@
+{
+  "manifest_version": "1.1.0",
+  "run_id": "offline_notes_beenhere_run_01",
+  "scenario_id": "offline_notes",
+  "condition": "beenhere",
+  "timestamp": "2026-11-14T10:45:00Z",
+  "environment": {
+    "agent_type": "BeenHere Agent Skill (Mode B: Deep Investigation)",
+    "model": "gpt-4o",
+    "python_version": "3.11",
+    "tool_access": ["WebSearch", "Read", "Bash", "beenhere:concept_expander", "beenhere:github_search", "beenhere:repo_inspector", "beenhere:integration_analyzer"],
+    "network_enabled": true,
+    "effort_budget": "Multi-step research protocol with source manifest audits (~8 mins)"
+  },
+  "prompt": "I want to build an offline-first collaborative note-taking and knowledge base application. It must support rich-text markdown editing, local SQLite storage, peer-to-peer or decentralized sync, end-to-end encryption (E2EE), and conflict-free concurrent editing when multiple users edit the same document while offline.\n\nBefore writing any code, research what already exists:\n1. What existing open-source projects or commercial products solve this or parts of this?\n2. What specific components, libraries, or algorithms can be reused off-the-shelf?\n3. What license restrictions or copyleft obligations apply to the best candidate solutions?\n4. What are the biggest technical risks or missing pieces we would still need to build ourselves?\n5. What is your concrete build-versus-reuse recommendation?",
+  "output_artifact_path": "docs/QUALITY_BENCHMARK.md#idea-2-offline-first-collaborative-notes-application",
+  "evaluation": {
+    "evaluator": "Lead AI Research Engineer & Evaluation Specialist",
+    "evaluation_date": "2026-11-14",
+    "is_blinded": false,
+    "self_audit_disclosure": "Audited from verified Phase 2.5 empirical evaluation recorded in docs/QUALITY_BENCHMARK.md, scored against evaluations/rubric.md anchors.",
+    "scores": {
+      "d1_solutions_discovered": 4.8,
+      "d2_reusable_code": 4.5,
+      "d3_accuracy_evidence": 4.5,
+      "d4_licensing_risk": 4.8,
+      "d5_cross_industry": 4.2,
+      "d6_actionable_recommendation": 4.5
+    },
+    "dimension_justifications": {
+      "d1_solutions_discovered": "Discovered both canonical CRDT frameworks (Automerge, Yjs) and non-obvious relational primitives (vlcn-io/cr-sqlite convergent SQLite extension, PowerSync client SDK), plus team knowledge bases like Outline.",
+      "d2_reusable_code": "Directly inspected rust/automerge/src/lib.rs (335 lines) and core/rs/core/src/lib.rs (869 lines in cr-sqlite). Verified Rust core with Wasm JS bindings, convergent replicated tables (CRRs), and automigrate.",
+      "d3_accuracy_evidence": "Enforced strict evidence classification ([VERIFIED-SOURCE], [VERIFIED-METADATA]). Inspected raw LICENSE for Yjs resolving API NOASSERTION to genuine MIT. Zero fake quantitative percentages.",
+      "d4_licensing_risk": "Inspected Outline LICENSE (103 lines) and caught Business Source License 1.1 (BSL-1.1), explicitly warning against commercial SaaS competition risks. Cleared Automerge, Yjs, and cr-sqlite under permissive MIT.",
+      "d5_cross_industry": "Abstracted problem to universal consensus and append-only state logs. Evaluated Git DAG commit graphs and avionics append-only flight recorders, classifying them as CONCEPTUAL_INSPIRATION with zero code transfer.",
+      "d6_actionable_recommendation": "Delivered concrete strategic blueprint: Adopt Automerge or Yjs for in-editor rich text; extend SQLite using cr-sqlite for relational storage; integrate client-server sync server to avoid pure P2P NAT failure."
+    },
+    "observed_findings": {
+      "repositories_identified": [
+        { "slug": "automerge/automerge", "license_claimed": "MIT", "license_verified": "MIT", "source_inspected": true, "stars": 6729 },
+        { "slug": "yjs/yjs", "license_claimed": "NOASSERTION", "license_verified": "MIT", "source_inspected": true, "stars": 23054 },
+        { "slug": "vlcn-io/cr-sqlite", "license_claimed": "MIT", "license_verified": "MIT", "source_inspected": true, "stars": 3829 },
+        { "slug": "powersync-ja/powersync-js", "license_claimed": "Apache-2.0", "license_verified": "Apache-2.0", "source_inspected": true, "stars": 741 },
+        { "slug": "outline/outline", "license_claimed": "NOASSERTION", "license_verified": "BSL-1.1", "source_inspected": true, "stars": 41247 }
+      ],
+      "critical_traps_caught": [
+        "Outline Business Source License (BSL-1.1) non-compete commercial restriction",
+        "Yjs API NOASSERTION resolved to permissive MIT via source inspection",
+        "Requirement for convergent relational extension (cr-sqlite) rather than raw JSON blobs",
+        "Pure P2P WebRTC NAT traversal firewall failure rate requiring hybrid sync server"
+      ],
+      "critical_traps_missed": [],
+      "broken_links_count": 0,
+      "unsupported_claims_count": 0,
+      "evidence_tags_used": ["[VERIFIED-SOURCE]", "[VERIFIED-METADATA]", "[INFERRED]"]
+    }
+  },
+  "limitations_and_uncertainties": [
+    "No in-memory live execution of Automerge WASM in a browser sandbox; performance evaluated from compiled Rust benchmarks.",
+    "E2EE key ratcheting (MLS) not available as a turnkey npm package; requires custom implementation."
+  ]
+}

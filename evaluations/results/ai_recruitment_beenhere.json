@@ -1,0 +1,63 @@
+{
+  "manifest_version": "1.1.0",
+  "run_id": "ai_recruitment_beenhere_run_01",
+  "scenario_id": "ai_recruitment",
+  "condition": "beenhere",
+  "timestamp": "2026-11-14T11:30:00Z",
+  "environment": {
+    "agent_type": "OpenAI Codex with BeenHere Skill",
+    "model": "Codex / GPT-4o",
+    "python_version": "3.14",
+    "tool_access": ["WebSearch", "Read", "Bash", "beenhere:concept_expander", "beenhere:verify_sources", "beenhere:integration_analyzer"],
+    "network_enabled": true,
+    "effort_budget": "Full multi-step Codex execution (<25% weekly quota consumed)"
+  },
+  "prompt": "I want to build an AI-powered recruitment and candidate matching platform. It should extract structured information from unstructured resume PDFs, perform semantic matching against job descriptions, enable candidate rediscovery across legacy applicant pools, and provide recruiter review workflows. It needs to integrate with or sit on top of existing Applicant Tracking Systems (ATS).\n\nBefore writing any code, research what already exists:\n1. What existing open-source ATS platforms or commercial recruitment products solve this or parts of this?\n2. What specific open-source libraries or components can be reused for document extraction, semantic matching, and bias auditing?\n3. What license restrictions, dual-licensing hazards, or copyleft obligations apply to the candidate repositories?\n4. What are the biggest technical gaps and legal compliance hurdles we must build ourselves?\n5. What is your concrete build-versus-reuse recommendation?",
+  "output_artifact_path": "docs/CODEX_END_TO_END_TEST.md",
+  "evaluation": {
+    "evaluator": "Lead AI Research Engineer & Evaluation Specialist",
+    "evaluation_date": "2026-11-14",
+    "is_blinded": false,
+    "self_audit_disclosure": "Grounded directly in the verified OpenAI Codex real-world run artifacts from BeenHere-Test (RECRUITMENT_RESEARCH.md, recruitment-evidence.json), evaluated using evaluations/rubric.md anchors.",
+    "scores": {
+      "d1_solutions_discovered": 4.7,
+      "d2_reusable_code": 4.6,
+      "d3_accuracy_evidence": 4.8,
+      "d4_licensing_risk": 5.0,
+      "d5_cross_industry": 4.0,
+      "d6_actionable_recommendation": 4.8
+    },
+    "dimension_justifications": {
+      "d1_solutions_discovered": "Discovered both open-source ATS codebases (Horilla HR, OpenCATS), specialized modular libraries (docling-project/docling 70k★, huggingface/sentence-transformers 19k★, fairlearn/fairlearn 2.3k★, pgvector), and commercial SaaS comparators (Ashby, hireEZ, Eightfold, Paradox, Dover).",
+      "d2_reusable_code": "Directly inspected requirements.txt, pyproject.toml, and source files across 8 repositories. Extracted concrete entrypoints: DocumentConverter.convert in Docling, CrossEncoder.predict/rank in Sentence-Transformers, and MetricFrame in Fairlearn.",
+      "d3_accuracy_evidence": "All 36 markdown links audited and verified via verify_sources.py with 0 broken links. Enforced strict 5-tier evidence hierarchy; verified pgvector PostgreSQL license from raw LICENSE file.",
+      "d4_licensing_risk": "Uncovered critical legal trap: Horilla HR is LGPL-2.1, but inspecting requirements.txt exposed mandatory dependency on PyMuPDF (AGPL-3.0 / commercial Artifex). Recommending Horilla for a commercial SaaS would have created severe copyleft liability.",
+      "d5_cross_industry": "Adapted two-stage information retrieval from e-commerce search engines: coarse bi-encoder vector filtering followed by fine-grained cross-encoder re-ranking.",
+      "d6_actionable_recommendation": "Provided decisive, legally safe build blueprint: Reject Horilla due to AGPL risk; assemble best-of-breed pipeline combining Docling (MIT) + Sentence-Transformers (Apache-2.0) + Fairlearn (MIT) on PostgreSQL with pgvector."
+    },
+    "observed_findings": {
+      "repositories_identified": [
+        { "slug": "docling-project/docling", "license_claimed": "MIT", "license_verified": "MIT", "source_inspected": true, "stars": 70000 },
+        { "slug": "huggingface/sentence-transformers", "license_claimed": "Apache-2.0", "license_verified": "Apache-2.0", "source_inspected": true, "stars": 19000 },
+        { "slug": "fairlearn/fairlearn", "license_claimed": "MIT", "license_verified": "MIT", "source_inspected": true, "stars": 2300 },
+        { "slug": "pgvector/pgvector", "license_claimed": "NOASSERTION", "license_verified": "PostgreSQL License", "source_inspected": true, "stars": 15000 },
+        { "slug": "horilla/horilla-hr", "license_claimed": "LGPL-2.1", "license_verified": "LGPL-2.1 with AGPL PyMuPDF dependency", "source_inspected": true, "stars": 3500 },
+        { "slug": "opencats/OpenCATS", "license_claimed": "NOASSERTION", "license_verified": "Mixed MPL-2.0 / CATS License", "source_inspected": true, "stars": 2800 }
+      ],
+      "critical_traps_caught": [
+        "PyMuPDF AGPL-3.0 dual-licensing hazard inside Horilla HR requirements.txt",
+        "pgvector NOASSERTION API response verified as permissive PostgreSQL open source",
+        "OpenCATS legacy monolithic architecture and mixed MPL/CATS license",
+        "NYC Local Law 144 / EEOC bias compliance solved via Fairlearn MetricFrame"
+      ],
+      "critical_traps_missed": [],
+      "broken_links_count": 0,
+      "unsupported_claims_count": 0,
+      "evidence_tags_used": ["[VERIFIED-SOURCE]", "[VERIFIED-METADATA]", "[UNVERIFIED-MARKETING-CLAIM]", "[INFERRED]"]
+    }
+  },
+  "limitations_and_uncertainties": [
+    "Subprocess raw network sockets were restricted in Codex Windows sandbox ([WinError 10013]), requiring seamless host-agent native tool fallback.",
+    "Commercial ATS webhook schemas (e.g. Greenhouse Harvest API) are proprietary and require partner accounts."
+  ]
+}

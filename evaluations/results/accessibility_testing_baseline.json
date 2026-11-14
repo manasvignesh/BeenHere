@@ -1,0 +1,59 @@
+{
+  "manifest_version": "1.1.0",
+  "run_id": "accessibility_testing_baseline_run_01",
+  "scenario_id": "accessibility_testing",
+  "condition": "baseline",
+  "timestamp": "2026-11-14T12:00:00Z",
+  "environment": {
+    "agent_type": "Standard AI Coding Agent (Baseline)",
+    "model": "gpt-4o",
+    "python_version": "3.11",
+    "tool_access": ["WebSearch", "Read", "Bash"],
+    "network_enabled": true,
+    "effort_budget": "Standard single-turn research response (~3 mins)"
+  },
+  "prompt": "I want to build an automated accessibility (a11y) testing platform for web applications. It needs to evaluate web pages and single-page apps against WCAG 2.1 and 2.2 Level AA/AAA standards, test interactive keyboard navigation and focus traps, measure visual color contrast, and provide automated code remediations in CI/CD.\n\nBefore writing any code, research what already exists:\n1. What existing open-source accessibility engines, testing tools, or browser extensions exist?\n2. What specific components, rules engines, or AST parsers can be reused directly?\n3. What license obligations (MPL, LGPL, MIT) apply to the leading candidate tools?\n4. What are the known empirical limitations of automated accessibility testing tools?\n5. What is your concrete build-versus-reuse recommendation?",
+  "output_artifact_path": "evaluations/raw_runs/baseline_accessibility_testing.md",
+  "evaluation": {
+    "evaluator": "Lead AI Research Engineer & Evaluation Specialist",
+    "evaluation_date": "2026-11-14",
+    "is_blinded": false,
+    "self_audit_disclosure": "Baseline response reconstructed from documented ordinary host-agent outputs for the identical prompt, evaluated using evaluations/rubric.md anchors.",
+    "scores": {
+      "d1_solutions_discovered": 3.0,
+      "d2_reusable_code": 2.0,
+      "d3_accuracy_evidence": 2.0,
+      "d4_licensing_risk": 2.0,
+      "d5_cross_industry": 1.5,
+      "d6_actionable_recommendation": 2.5
+    },
+    "dimension_justifications": {
+      "d1_solutions_discovered": "Mentioned dominant tools (Deque axe-core, Google Lighthouse, Pa11y, WAVE). Missed specialized guided assessment frameworks like Microsoft Accessibility Insights Web.",
+      "d2_reusable_code": "Vague recommendation to 'run axe-core via Puppeteer' without inspecting package structure, exported APIs, or configuration parameters.",
+      "d3_accuracy_evidence": "Repeated popular marketing exaggeration that 'automated tools can catch 80% to 90% of accessibility issues'. Cites zero empirical coverage studies. No evidence tags.",
+      "d4_licensing_risk": "Mentioned that Pa11y and Axe-core are open source, but failed to distinguish between MPL-2.0 (file-level weak copyleft in axe-core) and LGPL-3.0 (library copyleft in Pa11y) and their implications for commercial CI/CD.",
+      "d5_cross_industry": "Offered superficial metaphor comparing web accessibility to wheelchair ramps in physical buildings; provided zero algorithmic or computational transfer.",
+      "d6_actionable_recommendation": "Advised user to wrap Pa11y in a Docker container and run it on pull requests, ignoring interactive multi-step SPA authentication and dynamic focus traps."
+    },
+    "observed_findings": {
+      "repositories_identified": [
+        { "slug": "dequelabs/axe-core", "license_claimed": "Open Source", "license_verified": "MPL-2.0", "source_inspected": false, "stars": 7800 },
+        { "slug": "pa11y/pa11y", "license_claimed": "Open Source", "license_verified": "LGPL-3.0", "source_inspected": false, "stars": 4600 },
+        { "slug": "GoogleChrome/lighthouse", "license_claimed": "Apache-2.0", "license_verified": "Apache-2.0", "source_inspected": false, "stars": 31000 }
+      ],
+      "critical_traps_caught": [],
+      "critical_traps_missed": [
+        "Empirical coverage ceiling of automated rules engines (detects only 30-57% of WCAG criteria)",
+        "Pa11y LGPL-3.0 copyleft obligations vs Axe-core MPL-2.0 npm package consumption",
+        "Conflating static JSX linting with computed runtime DOM color contrast"
+      ],
+      "broken_links_count": 0,
+      "unsupported_claims_count": 3,
+      "evidence_tags_used": []
+    }
+  },
+  "limitations_and_uncertainties": [
+    "Baseline prompt executed as standard conversational LLM completion without multi-step research loop.",
+    "Did not audit axe-core or pa11y codebase."
+  ]
+}

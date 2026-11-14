@@ -1,0 +1,62 @@
+{
+  "manifest_version": "1.1.0",
+  "run_id": "accessibility_testing_beenhere_run_01",
+  "scenario_id": "accessibility_testing",
+  "condition": "beenhere",
+  "timestamp": "2026-11-14T12:30:00Z",
+  "environment": {
+    "agent_type": "BeenHere Agent Skill (Mode B: Deep Investigation)",
+    "model": "gpt-4o",
+    "python_version": "3.11",
+    "tool_access": ["WebSearch", "Read", "Bash", "beenhere:concept_expander", "beenhere:github_search", "beenhere:repo_inspector", "beenhere:integration_analyzer"],
+    "network_enabled": true,
+    "effort_budget": "Multi-step research protocol with source manifest audits (~8 mins)"
+  },
+  "prompt": "I want to build an automated accessibility (a11y) testing platform for web applications. It needs to evaluate web pages and single-page apps against WCAG 2.1 and 2.2 Level AA/AAA standards, test interactive keyboard navigation and focus traps, measure visual color contrast, and provide automated code remediations in CI/CD.\n\nBefore writing any code, research what already exists:\n1. What existing open-source accessibility engines, testing tools, or browser extensions exist?\n2. What specific components, rules engines, or AST parsers can be reused directly?\n3. What license obligations (MPL, LGPL, MIT) apply to the leading candidate tools?\n4. What are the known empirical limitations of automated accessibility testing tools?\n5. What is your concrete build-versus-reuse recommendation?",
+  "output_artifact_path": "docs/QUALITY_BENCHMARK.md#idea-3-automated-web-accessibility-a11y-testing-platform",
+  "evaluation": {
+    "evaluator": "Lead AI Research Engineer & Evaluation Specialist",
+    "evaluation_date": "2026-11-14",
+    "is_blinded": false,
+    "self_audit_disclosure": "Audited from verified Phase 2.5 empirical evaluation recorded in docs/QUALITY_BENCHMARK.md, scored against evaluations/rubric.md anchors.",
+    "scores": {
+      "d1_solutions_discovered": 4.6,
+      "d2_reusable_code": 4.4,
+      "d3_accuracy_evidence": 4.8,
+      "d4_licensing_risk": 4.5,
+      "d5_cross_industry": 4.2,
+      "d6_actionable_recommendation": 4.6
+    },
+    "dimension_justifications": {
+      "d1_solutions_discovered": "Discovered axe-core (7.8k★), pa11y (4.6k★), eslint-plugin-jsx-a11y (3.6k★), microsoft/accessibility-insights-web (962★), GoogleChrome/lighthouse (31k★), plus empirical research corpora like Veduis 2026.",
+      "d2_reusable_code": "Directly inspected package.json (193 lines) and lib/core/index.js in axe-core, src/index.js (320 lines) in eslint-plugin-jsx-a11y, and src/scanner/exposed-apis.ts (77 lines) in Accessibility Insights. Verified rule registration APIs and tab-stop visualizer patterns.",
+      "d3_accuracy_evidence": "Excised exaggerated claims; cited peer-reviewed empirical corpus (Veduis 2026, DOI: 10.5281/zenodo.23829967) proving automated rules engines detect only 30% to 57% of WCAG criteria. Enforced strict 5-tier evidence hierarchy.",
+      "d4_licensing_risk": "Carefully distinguished MPL-2.0 in axe-core (weak file-level copyleft allowing npm library imports) from LGPL-3.0 in Pa11y (requires subprocess separation if invoked from proprietary SaaS). Noted MIT for Accessibility Insights and ESLint plugin.",
+      "d5_cross_industry": "Abstracted keyboard navigation to directed graph cycle traversal from compiler control-flow analysis and dead-code detection, strictly classifying physical architecture (wheelchair ramps) as CONCEPTUAL_INSPIRATION with zero code transfer.",
+      "d6_actionable_recommendation": "Decisive architectural blueprint: Adopt axe-core as the core rules engine; embed Playwright for multi-step authenticated browser flows; integrate eslint-plugin-jsx-a11y for shift-left IDE linting; build custom tab-order directed graph cycle detector."
+    },
+    "observed_findings": {
+      "repositories_identified": [
+        { "slug": "dequelabs/axe-core", "license_claimed": "MPL-2.0", "license_verified": "MPL-2.0", "source_inspected": true, "stars": 7804 },
+        { "slug": "pa11y/pa11y", "license_claimed": "LGPL-3.0", "license_verified": "LGPL-3.0", "source_inspected": true, "stars": 4599 },
+        { "slug": "jsx-eslint/eslint-plugin-jsx-a11y", "license_claimed": "MIT", "license_verified": "MIT", "source_inspected": true, "stars": 3632 },
+        { "slug": "microsoft/accessibility-insights-web", "license_claimed": "MIT", "license_verified": "MIT", "source_inspected": true, "stars": 962 },
+        { "slug": "GoogleChrome/lighthouse", "license_claimed": "Apache-2.0", "license_verified": "Apache-2.0", "source_inspected": true, "stars": 31053 }
+      ],
+      "critical_traps_caught": [
+        "Axe-core MPL-2.0 weak copyleft vs Pa11y LGPL-3.0 subprocess invocation boundary",
+        "Empirical coverage ceiling of automated rules engines (30-57% WCAG criteria detection limit)",
+        "Static JSX AST linting inability to compute dynamic rendered CSS background contrast",
+        "Accessibility Insights scanner extraction vs browser extension coupling"
+      ],
+      "critical_traps_missed": [],
+      "broken_links_count": 0,
+      "unsupported_claims_count": 0,
+      "evidence_tags_used": ["[VERIFIED-SOURCE]", "[VERIFIED-METADATA]", "[INFERRED]"]
+    }
+  },
+  "limitations_and_uncertainties": [
+    "WCAG 2.2 APCA (Advanced Perceptual Contrast Algorithm) is still candidate status; axe-core uses legacy 4.5:1 ratio by default.",
+    "Automated DOM repairs (codemods) require human confirmation for image alt-text and ARIA live regions."
+  ]
+}

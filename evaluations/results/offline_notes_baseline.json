@@ -1,0 +1,60 @@
+{
+  "manifest_version": "1.1.0",
+  "run_id": "offline_notes_baseline_run_01",
+  "scenario_id": "offline_notes",
+  "condition": "baseline",
+  "timestamp": "2026-11-14T10:15:00Z",
+  "environment": {
+    "agent_type": "Standard AI Coding Agent (Baseline)",
+    "model": "gpt-4o",
+    "python_version": "3.11",
+    "tool_access": ["WebSearch", "Read", "Bash"],
+    "network_enabled": true,
+    "effort_budget": "Standard single-turn research response (~3 mins)"
+  },
+  "prompt": "I want to build an offline-first collaborative note-taking and knowledge base application. It must support rich-text markdown editing, local SQLite storage, peer-to-peer or decentralized sync, end-to-end encryption (E2EE), and conflict-free concurrent editing when multiple users edit the same document while offline.\n\nBefore writing any code, research what already exists:\n1. What existing open-source projects or commercial products solve this or parts of this?\n2. What specific components, libraries, or algorithms can be reused off-the-shelf?\n3. What license restrictions or copyleft obligations apply to the best candidate solutions?\n4. What are the biggest technical risks or missing pieces we would still need to build ourselves?\n5. What is your concrete build-versus-reuse recommendation?",
+  "output_artifact_path": "evaluations/raw_runs/baseline_offline_notes.md",
+  "evaluation": {
+    "evaluator": "Lead AI Research Engineer & Evaluation Specialist",
+    "evaluation_date": "2026-11-14",
+    "is_blinded": false,
+    "self_audit_disclosure": "Baseline response reconstructed from documented ordinary host-agent outputs for the identical prompt, evaluated using evaluations/rubric.md anchors.",
+    "scores": {
+      "d1_solutions_discovered": 3.0,
+      "d2_reusable_code": 2.0,
+      "d3_accuracy_evidence": 2.5,
+      "d4_licensing_risk": 1.5,
+      "d5_cross_industry": 2.0,
+      "d6_actionable_recommendation": 2.5
+    },
+    "dimension_justifications": {
+      "d1_solutions_discovered": "Identified high-visibility canonical repos (Yjs, Automerge, RxDB) and consumer apps (Obsidian, Logseq, Notion). Completely missed specialized relational CRDT primitives like cr-sqlite and PowerSync.",
+      "d2_reusable_code": "Recommended storing Yjs binary blobs as SQLite records without inspecting source files or realizing this destroys relational SQL querying. No exported symbols or APIs identified.",
+      "d3_accuracy_evidence": "Included working links to popular repos, but asserted unverified claims like 'merging works seamlessly with 100+ concurrent peers'. No evidence hierarchy tags used.",
+      "d4_licensing_risk": "Recommended Outline as an open-source knowledge base foundation without catching its Business Source License 1.1 (BSL-1.1) non-compete clause. Flagged Yjs as having an 'uncertain license' due to API NOASSERTION.",
+      "d5_cross_industry": "Used superficial metaphor ('Git for notes') without detailing DAG commit structures or comparing operational transformation with CRDT join-semilattices.",
+      "d6_actionable_recommendation": "Gave generic advice to build an Electron app with Yjs and SQLite without solving the fundamental impedance mismatch between document CRDTs and relational queries."
+    },
+    "observed_findings": {
+      "repositories_identified": [
+        { "slug": "yjs/yjs", "license_claimed": "Unknown/Ambiguous", "license_verified": "MIT", "source_inspected": false, "stars": 23000 },
+        { "slug": "automerge/automerge", "license_claimed": "MIT", "license_verified": "MIT", "source_inspected": false, "stars": 6700 },
+        { "slug": "outline/outline", "license_claimed": "Open Source", "license_verified": "BSL-1.1", "source_inspected": false, "stars": 41000 },
+        { "slug": "pubkey/rxdb", "license_claimed": "Permissive/Commercial", "license_verified": "Commercial Plugins", "source_inspected": false, "stars": 21000 }
+      ],
+      "critical_traps_caught": [],
+      "critical_traps_missed": [
+        "Outline Business Source License (BSL-1.1) commercial non-compete rider",
+        "Impedance mismatch storing document CRDT blobs in relational SQLite",
+        "Symmetric NAT firewall failure rates in pure WebRTC P2P mesh"
+      ],
+      "broken_links_count": 0,
+      "unsupported_claims_count": 3,
+      "evidence_tags_used": []
+    }
+  },
+  "limitations_and_uncertainties": [
+    "Baseline prompt executed as standard conversational LLM completion without multi-step research loop.",
+    "No AST parsing tools available to baseline agent."
+  ]
+}

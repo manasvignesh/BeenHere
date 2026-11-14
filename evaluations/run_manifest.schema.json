@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BeenHere Evaluation Run Manifest Schema",
+  "description": "Standardized schema for recording and evaluating baseline vs BeenHere research runs.",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "run_id",
+    "scenario_id",
+    "condition",
+    "timestamp",
+    "environment",
+    "prompt",
+    "evaluation"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "enum": ["1.0.0", "1.1.0"]
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_\\-]+$"
+    },
+    "scenario_id": {
+      "type": "string",
+      "enum": [
+        "offline_notes",
+        "ai_recruitment",
+        "accessibility_testing",
+        "synthetic_social_platform"
+      ]
+    },
+    "condition": {
+      "type": "string",
+      "enum": ["baseline", "beenhere"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "environment": {
+      "type": "object",
+      "required": ["agent_type", "model", "tool_access", "network_enabled"],
+      "properties": {
+        "agent_type": { "type": "string" },
+        "model": { "type": "string" },
+        "python_version": { "type": "string" },
+        "tool_access": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "network_enabled": { "type": "boolean" },
+        "effort_budget": { "type": "string" }
+      }
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "output_artifact_path": {
+      "type": "string"
+    },
+    "evaluation": {
+      "type": "object",
+      "required": ["evaluator", "evaluation_date", "scores", "dimension_justifications"],
+      "properties": {
+        "evaluator": { "type": "string" },
+        "evaluation_date": { "type": "string" },
+        "is_blinded": { "type": "boolean" },
+        "self_audit_disclosure": { "type": "string" },
+        "scores": {
+          "type": "object",
+          "required": [
+            "d1_solutions_discovered",
+            "d2_reusable_code",
+            "d3_accuracy_evidence",
+            "d4_licensing_risk",
+            "d5_cross_industry",
+            "d6_actionable_recommendation"
+          ],
+          "properties": {
+            "d1_solutions_discovered": { "type": "number", "minimum": 0, "maximum": 5 },
+            "d2_reusable_code": { "type": "number", "minimum": 0, "maximum": 5 },
+            "d3_accuracy_evidence": { "type": "number", "minimum": 0, "maximum": 5 },
+            "d4_licensing_risk": { "type": "number", "minimum": 0, "maximum": 5 },
+            "d5_cross_industry": { "type": "number", "minimum": 0, "maximum": 5 },
+            "d6_actionable_recommendation": { "type": "number", "minimum": 0, "maximum": 5 }
+          }
+        },
+        "dimension_justifications": {
+          "type": "object",
+          "required": [
+            "d1_solutions_discovered",
+            "d2_reusable_code",
+            "d3_accuracy_evidence",
+            "d4_licensing_risk",
+            "d5_cross_industry",
+            "d6_actionable_recommendation"
+          ],
+          "properties": {
+            "d1_solutions_discovered": { "type": "string" },
+            "d2_reusable_code": { "type": "string" },
+            "d3_accuracy_evidence": { "type": "string" },
+            "d4_licensing_risk": { "type": "string" },
+            "d5_cross_industry": { "type": "string" },
+            "d6_actionable_recommendation": { "type": "string" }
+          }
+        },
+        "observed_findings": {
+          "type": "object",
+          "properties": {
+            "repositories_identified": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["slug"],
+                "properties": {
+                  "slug": { "type": "string" },
+                  "license_claimed": { "type": "string" },
+                  "license_verified": { "type": "string" },
+                  "source_inspected": { "type": "boolean" },
+                  "stars": { "type": "number" }
+                }
+              }
+            },
+            "critical_traps_caught": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "critical_traps_missed": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "broken_links_count": { "type": "integer", "minimum": 0 },
+            "unsupported_claims_count": { "type": "integer", "minimum": 0 },
+            "evidence_tags_used": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "limitations_and_uncertainties": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
