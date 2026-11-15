@@ -8,6 +8,10 @@
     "ecosystem": "npm",
     "stars": 16000,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "license_info": {
       "declared_spdx": "MIT",
       "category": "PERMISSIVE",
@@ -55,6 +59,10 @@
     "ecosystem": "cargo / npm (WASM)",
     "stars": 19000,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "available_bindings": ["JavaScript", "TypeScript", "Python", "Swift"],
     "license_info": {
       "declared_spdx": "MIT",
@@ -101,6 +109,10 @@
     "ecosystem": "cargo / npm (WASM)",
     "stars": 3800,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "available_bindings": ["JavaScript", "TypeScript"],
     "license_info": {
       "declared_spdx": "MIT",

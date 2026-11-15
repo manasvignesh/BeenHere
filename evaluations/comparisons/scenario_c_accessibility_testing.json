@@ -8,6 +8,10 @@
     "ecosystem": "npm",
     "stars": 5400,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "license_info": {
       "declared_spdx": "MPL-2.0",
       "category": "WEAK_COPYLEFT",
@@ -51,6 +55,10 @@
     "ecosystem": "npm (CLI wrapper)",
     "stars": 4200,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "license_info": {
       "declared_spdx": "LGPL-3.0",
       "category": "WEAK_COPYLEFT",
@@ -94,6 +102,10 @@
     "ecosystem": "npm",
     "stars": 3800,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "license_info": {
       "declared_spdx": "MIT",
       "category": "PERMISSIVE",

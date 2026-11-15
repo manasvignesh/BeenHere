@@ -43,12 +43,14 @@ A technical component cannot be considered reusable if integrating it creates co
 - **Licenses:** `AGPL-3.0`, `OSL-3.0`
 - **Permissions:** Commercial use is permitted.
 - **Network Obligation:** Specifically closes the "SaaS loophole." Providing remote user interaction with the software over a network (e.g., a web service or cloud API) legally triggers the obligation to make the entire service's corresponding source code freely available to all network users.
-- **Verdict:** **NETWORK RECIPROCAL**. Reusable for projects committing to open-source reciprocal SaaS; strictly incompatible with proprietary closed-source SaaS business models.
+- **API Boundary Nuance:** While deploying an AGPL component as an isolated, independent network service over HTTP/gRPC is a common architectural containment strategy, legal interpretations vary regarding whether tightly coupled APIs constitute a derivative/combined work. Furthermore, many corporate open-source policies (e.g. Google's policy) strictly prohibit AGPL in production infrastructure regardless of network boundaries.
+- **Verdict:** **NETWORK RECIPROCAL / CONDITIONAL SERVICE ISOLATION**. Reusable for open-source reciprocal SaaS; requires explicit organizational legal approval and architectural isolation if integrated into proprietary environments.
 
 ### Tier 5: Source-Available & Non-Commercial (Commercial Blocker)
 - **Licenses:** `SSPL-1.0`, `BSL-1.1`, `BUSL-1.1`, `CC-BY-NC-4.0`, Commons Clause
-- **Restrictions:** Restricts commercial production use, hosting competitive managed cloud services, or production deployments beyond strict limits. Not OSI-approved open source.
-- **Verdict:** **COMMERCIAL RESTRICTED**. Reusable for non-commercial research and local experimentation only; blocked for commercial production.
+- **Restrictions:** Restricts commercial production use, hosting competitive managed cloud services, or production deployments beyond specific limits. Not OSI-approved open source.
+- **Project-Specific Grants:** BSL-1.1 is not uniform across projects. Each licensor specifies a customized "Additional Use Grant" and "Change Date" (at which point the license converts to an OSI-approved license like Apache-2.0 or GPL). Some grants permit commercial use under specified cluster size, user count, or non-competing application limits.
+- **Verdict:** **COMMERCIAL RESTRICTED / GRANT-DEPENDENT**. Safe for non-commercial research, local evaluation, and benchmarking; requires explicit audit of the Additional Use Grant before commercial deployment.
 
 ### Tier 6: Missing or Unlicensed (Critical Blocker)
 - **State:** No license file, or license explicitly says "All Rights Reserved", or `NOASSERTION`.
@@ -94,17 +96,30 @@ Evaluate maintenance health using concrete chronological signals:
 
 ---
 
-## 5. Practical Extraction vs. Direct Dependency Guidelines
+## 5. The Six Legal Assessment Distinctions
+
+To prevent automated systems from mistaking heuristic flags for verified legal conclusions, BeenHere rigorously distinguishes six legal dimensions:
+
+1. **Confirmed License Identity:** The exact license formally declared in SPDX tags and confirmed by inspecting the raw LICENSE text headers.
+2. **Observed Dependency Relationships:** Direct vs. transitive dependencies, runtime vs. dev/test scope, and dynamic linking vs. static bundling.
+3. **Potential Obligations:** Conditional terms (e.g. copyright attribution, patent peace, file-level source sharing under MPL, or full reciprocity under GPL).
+4. **Unresolved Compatibility Questions:** Ambiguities requiring human clarification (e.g. undefined Additional Use Grants in BSL, dual-licensing commercial pricing, or uncertain linkage boundaries).
+5. **Confirmed Technical Incompatibilities:** Definite runtime or architectural barriers (e.g. language mismatches without bindings, missing symbols, or unpackageable monoliths).
+6. **Organizational Policies Requiring Human Input:** Enterprise-specific legal mandates (e.g. absolute prohibitions against AGPL components, proprietary export restrictions, or Contributor License Agreements).
+
+---
+
+## 6. Practical Extraction vs. Direct Dependency Guidelines
 
 When deciding how to reuse code:
 
 - **Prefer Direct Package Dependency When:**
   - The repository publishes an official package on PyPI / npm / Cargo.
-  - The dependency is actively maintained and has a permissive license.
-  - The component represents less than 20% of your overall application scope.
+  - The dependency is actively maintained and has a verified permissive or weak copyleft license.
+  - The component provides a self-contained, modular capability without invasive architectural coupling.
 - **Prefer Code Extraction (Carving Out Primitives) When:**
-  - You only need a single mathematical function, state machine, or algorithm (e.g., 200 lines of code).
-  - The parent repository is unmaintained or bloated with unnecessary dependencies.
-  - The license is permissive (MIT/Apache), allowing you to extract the file, preserve the original copyright notice, and maintain it locally.
+  - You only need a specific mathematical routine, state machine, or isolated algorithm.
+  - The parent repository is unmaintained or bloated with heavy, unnecessary dependencies.
+  - The license is permissive (MIT/Apache/BSD), allowing you to extract the file, preserve the original copyright notice, and maintain it locally.
 - **Prefer Forking When:**
-  - The repository is 80%+ aligned with your goal, but upstream is abandoned or refuses to accept required architectural patches.
+  - The repository provides the foundational architecture for your system, but upstream is dormant or refuses necessary architectural patches.

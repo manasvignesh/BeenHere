@@ -368,5 +368,255 @@ class TestConceptExpanderRelevance(unittest.TestCase):
         self.assertEqual(meta.get("mode"), "taxonomy_matched")
 
 
+class TestComparatorReliabilityAndAdversarial(unittest.TestCase):
+    """Adversarial and reliability regression tests for repo_comparator."""
+
+    def setUp(self):
+        self.context = {
+            "target_language": "Python",
+            "deployment_model": "Proprietary SaaS",
+            "required_capability": "Resume parsing for ATS",
+        }
+
+    def test_adversarial_1_missing_license_file(self):
+        """Candidate with missing LICENSE file must be rejected under copyright law."""
+        cand = {
+            "slug": "adversarial/no-license",
+            "language": "Python",
+            "stars": 4000,
+            "license_info": {
+                "declared_spdx": "NOASSERTION",
+                "category": "MISSING_UNLICENSED",
+            },
+            "evidence_completeness": {
+                "license_inspected": False,
+                "manifest_inspected": True,
+                "source_inspected": True,
+            },
+        }
+        res = repo_comparator.evaluate_candidate_posture(cand, self.context)
+        self.assertEqual(res["posture"], "REJECT_FOR_USE_CASE")
+        self.assertEqual(res["complexity_rating"], "PROHIBITIVE")
+        self.assertIn("lacks a clear", res["fit_rationale"])
+        self.assertIn("All rights reserved", res["supporting_evidence"][0])
+
+    def test_adversarial_2_conflicting_license_declarations(self):
+        """Conflicting license declarations must trigger INVESTIGATE_FURTHER with HIGH uncertainty."""
+        cand = {
+            "slug": "adversarial/conflict-lic",
+            "language": "Python",
+            "stars": 6000,
+            "license_info": {
+                "declared_spdx": "MIT",
+                "category": "PERMISSIVE",
+                "discrepancy": "pyproject.toml declares MIT, but LICENSE file has AGPL-3.0 header.",
+            },
+            "evidence_completeness": {
+                "license_inspected": True,
+                "manifest_inspected": True,
+                "source_inspected": True,
+            },
+        }
+        res = repo_comparator.evaluate_candidate_posture(cand, self.context)
+        self.assertEqual(res["posture"], "INVESTIGATE_FURTHER")
+        self.assertEqual(res["uncertainty_rating"], "HIGH")
+        self.assertTrue(any("discrepancy" in e.lower() for e in res["supporting_evidence"]))
+
+    def test_adversarial_3_dual_licensing_unknown_commercial_terms(self):
+        """Dual licensing with unknown commercial terms must trigger INVESTIGATE_FURTHER."""
+        cand = {
+            "slug": "adversarial/dual-licensed",
+            "language": "Python",
+            "stars": 12000,
+            "license_info": {
+                "declared_spdx": "AGPL-3.0 OR Commercial",
+                "category": "DUAL_LICENSED",
+                "dual_licensing": True,
+                "commercial_terms": "unknown",
+            },
+            "evidence_completeness": {
+                "license_inspected": True,
+                "manifest_inspected": True,
+                "source_inspected": True,
+            },
+        }
+        res = repo_comparator.evaluate_candidate_posture(cand, self.context)
+        self.assertEqual(res["posture"], "INVESTIGATE_FURTHER")
+        self.assertEqual(res["uncertainty_rating"], "HIGH")
+        self.assertIn("dual-licensed", res["fit_rationale"].lower())
+        self.assertTrue(any("commercial terms" in chk.lower() for chk in res["pre_adoption_checklist"]))
+
+    def test_adversarial_4_agpl_service_boundary_uncertain_obligations(self):
+        """AGPL service boundary must note legal uncertainty and corporate policy requirements."""
+        cand = {
+            "slug": "adversarial/agpl-service",
+            "language": "Go",
+            "stars": 9000,
+            "architecture_type": "standalone_service",
+            "license_info": {
+                "declared_spdx": "AGPL-3.0",
+                "category": "NETWORK_RECIPROCAL",
+                "copyleft_tier": "STRONG_NETWORK",
+            },
+            "evidence_completeness": {
+                "license_inspected": True,
+                "manifest_inspected": True,
+                "source_inspected": True,
+            },
+        }
+        res = repo_comparator.evaluate_candidate_posture(cand, self.context)
+        self.assertEqual(res["posture"], "INTEGRATE_THROUGH_API")
+        # Must NOT claim guaranteed safe without corporate policy check
+        self.assertTrue(any("organizational policy" in chk.lower() or "corporate" in chk.lower() for chk in res["pre_adoption_checklist"]))
+        self.assertIn("corporate open-source policy", res["legal_assessment"]["organizational_policy_requirements"].lower())
+
+    def test_adversarial_5_transitive_dependency_unknown_linkage(self):
+        """Transitive copyleft dependency with unknown linkage must trigger INVESTIGATE_FURTHER."""
+        cand = {
+            "slug": "adversarial/unknown-linkage",
+            "language": "Python",
+            "stars": 3500,
+            "architecture_type": "modular_library",
+            "license_info": {
+                "declared_spdx": "MIT",
+                "category": "PERMISSIVE",
+                "transitive_license_risks": ["GPL-3.0 (transitive-helper)"],
+                "transitive_linkage": "unknown",
+            },
+            "evidence_completeness": {
+                "license_inspected": True,
+                "manifest_inspected": True,
+                "source_inspected": True,
+            },
+        }
+        res = repo_comparator.evaluate_candidate_posture(cand, self.context)
+        self.assertEqual(res["posture"], "INVESTIGATE_FURTHER")
+        self.assertEqual(res["uncertainty_rating"], "HIGH")
+        self.assertIn("unverified", res["fit_rationale"].lower())
+
+    def test_adversarial_6_offline_or_stale_repository_metadata(self):
+        """Offline or stale metadata must flag historical snapshot and not claim current activity."""
+        cand = {
+            "slug": "adversarial/stale-snapshot",
+            "language": "Python",
+            "stars": 5000,
+            "license_info": {"declared_spdx": "MIT", "category": "PERMISSIVE"},
+            "maintenance": {
+                "status": "DORMANT",
+                "last_pushed_days_ago": 600,
+                "stale_metadata": True,
+            },
+            "exported_symbols": [{"name": "func_a", "type": "function"}],
+            "evidence_completeness": {
+                "license_inspected": True,
+                "manifest_inspected": True,
+                "source_inspected": True,
+            },
+        }
+        res = repo_comparator.evaluate_candidate_posture(cand, self.context)
+        self.assertIn("historical snapshot", str(res["evidence_records"]).lower())
+        self.assertTrue(any("unverified" in m.lower() for m in res["evidence_completeness"]["missing_evidence"]))
+
+    def test_adversarial_7_fabricated_verified_source_claims(self):
+        """Fabricated [VERIFIED-SOURCE] tags without source inspection must be sanitized."""
+        claim_with_fake_tag = "[VERIFIED-SOURCE] Extracted public parser class"
+        rec = repo_comparator.create_evidence_record(
+            claim=claim_with_fake_tag,
+            provenance_type="UNVERIFIED_CLAIM",
+            source_id="adversarial/fake",
+            source_type="SOURCE_CODE",
+        )
+        self.assertNotIn("[VERIFIED-SOURCE]", rec["formatted_text"])
+        self.assertEqual(rec["tag"], "[UNVERIFIED-CLAIM]")
+
+    def test_adversarial_8_missing_api_inspection(self):
+        """Permissive candidate with uninspected source/symbols must trigger INVESTIGATE_FURTHER."""
+        cand = {
+            "slug": "adversarial/uninspected-api",
+            "language": "Python",
+            "stars": 7000,
+            "architecture_type": "modular_library",
+            "license_info": {"declared_spdx": "MIT", "category": "PERMISSIVE"},
+            "maintenance": {"status": "ACTIVE", "last_pushed_days_ago": 3},
+            "exported_symbols": [],
+            "evidence_completeness": {
+                "license_inspected": True,
+                "manifest_inspected": True,
+                "source_inspected": False,
+            },
+        }
+        res = repo_comparator.evaluate_candidate_posture(cand, self.context)
+        self.assertEqual(res["posture"], "INVESTIGATE_FURTHER")
+        self.assertEqual(res["uncertainty_rating"], "HIGH")
+        self.assertIn("exported api entrypoints have not been inspected", res["fit_rationale"].lower())
+
+    def test_adversarial_9_many_stars_poor_technical_fit(self):
+        """Repository with 100k stars but wrong capability must be rejected over a fitting 1k repo."""
+        cand_popular_unfit = {
+            "slug": "famous/huge-http-client",
+            "name": "huge-http",
+            "purpose": "A popular HTTP client library for network requests",
+            "target_capability": "HTTP network requests",
+            "technical_fit": "POOR",
+            "language": "Python",
+            "stars": 100000,
+            "architecture_type": "modular_library",
+            "license_info": {"declared_spdx": "Apache-2.0", "category": "PERMISSIVE"},
+            "maintenance": {"status": "ACTIVE", "last_pushed_days_ago": 1},
+            "evidence_completeness": {"license_inspected": True, "manifest_inspected": True, "source_inspected": True},
+        }
+        cand_modest_fit = {
+            "slug": "niche/resume-extractor",
+            "name": "resume-ext",
+            "purpose": "Resume parsing for ATS extraction",
+            "target_capability": "Resume parsing for ATS",
+            "language": "Python",
+            "stars": 1200,
+            "architecture_type": "modular_library",
+            "license_info": {"declared_spdx": "MIT", "category": "PERMISSIVE"},
+            "maintenance": {"status": "ACTIVE", "last_pushed_days_ago": 4},
+            "exported_symbols": [{"name": "Parser", "type": "class", "file": "src/parser.py"}],
+            "evidence_completeness": {"license_inspected": True, "manifest_inspected": True, "source_inspected": True},
+        }
+        comp = repo_comparator.compare_repositories([cand_popular_unfit, cand_modest_fit], self.context)
+        # Unfit candidate must be rejected
+        unfit_eval = [c for c in comp["candidates"] if c["slug"] == "famous/huge-http-client"][0]
+        self.assertEqual(unfit_eval["posture"], "REJECT_FOR_USE_CASE")
+        # Modest fit must be primary recommendation
+        self.assertEqual(comp["primary_recommendation"], "niche/resume-extractor")
+
+    def test_adversarial_10_two_candidates_insufficient_evidence(self):
+        """Two candidates with insufficient evidence must both receive INVESTIGATE_FURTHER and trigger INSUFFICIENT_EVIDENCE confidence."""
+        cand_a = {
+            "slug": "unknown/cand-a",
+            "language": "Python",
+            "stars": 300,
+            "license_info": {"declared_spdx": "UNKNOWN", "category": "UNKNOWN"},
+            "exported_symbols": [],
+            "evidence_completeness": {
+                "license_inspected": False,
+                "manifest_inspected": False,
+                "source_inspected": False,
+            },
+        }
+        cand_b = {
+            "slug": "unknown/cand-b",
+            "language": "Python",
+            "stars": 400,
+            "license_info": {"declared_spdx": "MIT", "category": "PERMISSIVE"},
+            "exported_symbols": [],
+            "evidence_completeness": {
+                "license_inspected": False,
+                "manifest_inspected": False,
+                "source_inspected": False,
+            },
+        }
+        comp = repo_comparator.compare_repositories([cand_a, cand_b], self.context)
+        self.assertEqual(comp["comparison_confidence"], "INSUFFICIENT_EVIDENCE")
+        for c in comp["candidates"]:
+            self.assertEqual(c["uncertainty"], "HIGH")
+
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -8,6 +8,10 @@
     "ecosystem": "PyPI",
     "stars": 70000,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "license_info": {
       "declared_spdx": "MIT",
       "category": "PERMISSIVE",
@@ -54,6 +58,10 @@
     "ecosystem": "PyPI",
     "stars": 8200,
     "architecture_type": "modular_library",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "license_info": {
       "declared_spdx": "BSD-3-Clause",
       "category": "PERMISSIVE",
@@ -96,6 +104,10 @@
     "ecosystem": "standalone application",
     "stars": 3500,
     "architecture_type": "monolithic_application",
+    "provenance_type": "SCENARIO_FIXTURE",
+    "is_fixture": true,
+    "snapshot_date": "2026-11-14",
+    "retrieval_timestamp": "2026-11-14T18:00:00Z",
     "license_info": {
       "declared_spdx": "LGPL-2.1",
       "category": "WEAK_COPYLEFT",
@@ -103,7 +115,8 @@
       "verified_from_file": true,
       "source_url": "https://raw.githubusercontent.com/horilla/horilla-hr/main/LICENSE",
       "discrepancy": null,
-      "transitive_license_risks": ["PyMuPDF (AGPL-3.0 / Artifex Commercial)"]
+      "transitive_license_risks": ["PyMuPDF (AGPL-3.0 / Artifex Commercial)"],
+      "transitive_linkage": "bundled"
     },
     "maintenance": {
       "status": "ACTIVE",
@@ -118,7 +131,7 @@
       { "name": "pymupdf", "version": "1.23" }
     ],
     "known_limitations": [
-      "Monolithic Django application coupling database models, auth, and UI; mandatory PyMuPDF AGPL-3.0 copyleft dependency."
+      "Monolithic Django application coupling database models, auth, and UI; incorporates PyMuPDF (AGPL-3.0 / Artifex Commercial dual license)."
     ],
     "evidence_completeness": {
       "license_inspected": true,
