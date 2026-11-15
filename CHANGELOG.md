@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] (v1.1 Development)
+
+### Added
+- **Cross-Industry Research Intelligence Engine (`scripts/cross_industry_analyzer.py`):** Deterministic tool discovering battle-tested solutions from outside a developer's immediate product category.
+  - Extracts underlying computational problem mechanisms distinguishing directly stated requirements, inferred requirements, and candidate hypotheses (`[RESEARCH-HYPOTHESIS]`).
+  - Implements anti-buzzword relevance filtering rejecting superficial metaphors (beehive, courtroom trial, quantum thinking).
+  - Implements negative-control screening (`NEGATIVE_CONTROL_TRIGGERED` / `NO_TRANSFER_NEEDED`) on basic CRUD apps to prevent unwarranted overengineering.
+  - Evaluates engineering transferability across 8 dimensions (`problem_equivalence`, `input_compatibility`, `output_suitability`, `operational_constraints`, `assumptions`, `integration_practicality`, `risk`, `evidence_strength`).
+  - Classifies candidate transfers into 6 standardized outcomes: `TRANSFERABLE_IMPLEMENTATION`, `TRANSFERABLE_ALGORITHM`, `TRANSFERABLE_ARCHITECTURAL_PATTERN`, `CONCEPTUAL_INSPIRATION`, `REQUIRES_VALIDATION`, `NOT_TRANSFERABLE`.
+  - Enforces the Anti-Percentage Rule across all evaluations and generated report text.
+  - Generates standardized Markdown section `### Solutions from Other Industries` with evidence disclosures and concrete validation experiments.
+- **Cross-Industry Evaluation Scenarios (`evaluations/cross_industry/`):**
+  - `scenario_a_recruitment_matching.json`: Recruitment matching -> Stable matching (Gale-Shapley) & Hungarian algorithm.
+  - `scenario_b_multiplayer_matchmaking.json`: Real-time multiplayer matchmaking -> Ride-hailing batch dispatch & Bayesian volatility (Glicko-2).
+  - `scenario_c_collaborative_knowledge.json`: Collaborative notes -> CRDTs & Event Sourcing (with Raft consensus evaluated and disqualified as `NOT_TRANSFERABLE` for offline editing).
+  - `negative_control_crud_blog.json`: Simple CRUD blog correctly triggering `NO_TRANSFER_NEEDED`.
+- **Capability Audit & Regression Suite:**
+  - `evaluations/reports/CROSS_INDUSTRY_CAPABILITY_AUDIT.md`: Complete audit of prior cross-vertical methodology vs implemented capabilities.
+  - `tests/test_cross_industry_analyzer.py`: 19 comprehensive unit and regression tests covering all 12 criteria, raising the total test suite to 151 passing tests.
+- **Repository Comparison Engine (`scripts/repo_comparator.py`):**
+  - Structural comparison engine evaluating multi-repository overlap, license compatibility, maintenance signals, and integration postures.
+  - Qualified legal risk handling distinguishing confirmed facts from jurisdictional and architectural risk assessments.
+
+---
+
 ## [1.0.0-beta.1] - 2026-11-13 (Phase 5: Final Hardening & Public Beta Preparation)
 
 ### Added

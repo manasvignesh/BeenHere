@@ -1,0 +1,37 @@
+{
+  "scenario_id": "scenario_b_multiplayer_matchmaking",
+  "name": "Scenario B: Real-Time Multiplayer Matchmaking",
+  "category": "Gaming & Real-Time Multiplayer Networking",
+  "original_concept": "Multiplayer matchmaking system balancing player skill ratings, latency, queue times, and lobby capacity",
+  "provenance": {
+    "source": "BeenHere Evaluation Suite - Cross-Industry Intelligence",
+    "type": "SCENARIO_FIXTURE",
+    "verified": true
+  },
+  "context": {
+    "target_language": "go",
+    "deployment_model": "stateful_game_coordinator",
+    "latency_sla": "sub_5_second_dispatch",
+    "required_capability": "dynamic player batching under ping and skill constraints"
+  },
+  "expected_evaluations": [
+    {
+      "approach_name": "Bayesian Skill Volatility Updates (Glicko-2 / TrueSkill)",
+      "source_domain": "Statistical Biometrics & Competitive Chess",
+      "expected_classification": "TRANSFERABLE_IMPLEMENTATION",
+      "key_tradeoff": "Requires warm-up matches to establish confidence bounds; susceptible to smurfing"
+    },
+    {
+      "approach_name": "M/M/c Queueing Theory with Customer Reneging",
+      "source_domain": "Telecommunications & Call Center Traffic Engineering",
+      "expected_classification": "TRANSFERABLE_ALGORITHM",
+      "key_tradeoff": "Aggressive radius expansion prevents queue abandonment but risks match quality degrade"
+    },
+    {
+      "approach_name": "Ride-Hailing Dynamic Batch Dispatch",
+      "source_domain": "Urban Transportation Logistics (Uber / Lyft)",
+      "expected_classification": "TRANSFERABLE_ARCHITECTURAL_PATTERN",
+      "key_tradeoff": "Requires sliding window buffer, introducing minimum 2-3 second delay before match"
+    }
+  ]
+}

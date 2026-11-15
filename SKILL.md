@@ -120,8 +120,14 @@ Transform raw discoveries into defensible technical intelligence:
 
 1. **Evidence Verification & Link Reachability (Step 8):**
    Validate discovered URLs using [scripts/verify_sources.py](scripts/verify_sources.py).
-2. **Cross-Vertical Transferability Audit (Step 9):**
-   Apply the 10-point audit and 5-tier classification in [references/transferability_rubric.md](references/transferability_rubric.md). Reject superficial analogies. Distinguish conceptual inspiration from reusable code.
+2. **Cross-Industry Discovery & Transferability Audit (Step 9):**
+   Execute BeenHere's cross-industry intelligence engine to identify shared underlying problem mechanisms, filter superficial buzzword metaphors, evaluate 8-dimension engineering transferability, and populate the report's `### Solutions from Other Industries` section:
+   ```bash
+   python scripts/cross_industry_analyzer.py --concept "<user concept>" --json
+   # Or using an expanded research plan and project context:
+   python scripts/cross_industry_analyzer.py --plan <path-to-query-plan.json> --context context.json --output cross_industry_section.md
+   ```
+   Assigns 6-tier technical classifications (`TRANSFERABLE_IMPLEMENTATION`, `TRANSFERABLE_ALGORITHM`, `TRANSFERABLE_ARCHITECTURAL_PATTERN`, `CONCEPTUAL_INSPIRATION`, `REQUIRES_VALIDATION`, `NOT_TRANSFERABLE`). Automatically triggers negative controls (`NO_TRANSFER_NEEDED`) on basic CRUD apps to avoid overengineering. Grounded via [references/transferability_rubric.md](references/transferability_rubric.md) and [references/cross_vertical_research.md](references/cross_vertical_research.md).
 3. **Feature Gap & Enhancement Analysis (Step 10):**
    Execute the 7-step comparison in [references/feature_gap_analysis.md](references/feature_gap_analysis.md). Distinguish intentional engineering trade-offs from real opportunities. Formulate 2-3 cross-domain enhancements with full 8-point dossiers.
 4. **Code Reusability & License Clearance Audit (Step 11):**

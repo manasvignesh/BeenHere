@@ -1,0 +1,37 @@
+{
+  "scenario_id": "scenario_c_collaborative_knowledge",
+  "name": "Scenario C: Collaborative Knowledge & Offline Note-Taking System",
+  "category": "Productivity & Distributed Document Collaboration",
+  "original_concept": "Collaborative notes and document editor with offline-first synchronization and conflict resolution",
+  "provenance": {
+    "source": "BeenHere Evaluation Suite - Cross-Industry Intelligence",
+    "type": "SCENARIO_FIXTURE",
+    "verified": true
+  },
+  "context": {
+    "target_language": "typescript",
+    "deployment_model": "client_offline_first_browser_mobile",
+    "latency_sla": "local_immediate_sync_eventual",
+    "required_capability": "offline synchronization and non-blocking edits"
+  },
+  "expected_evaluations": [
+    {
+      "approach_name": "State-based & Operation-based CRDTs",
+      "source_domain": "Distributed Database Systems & Peer-to-Peer Computing",
+      "expected_classification": "TRANSFERABLE_IMPLEMENTATION",
+      "key_tradeoff": "Tombstone accumulation requires periodic garbage collection compacting"
+    },
+    {
+      "approach_name": "Event Sourcing with CQRS (Command Query Responsibility Segregation)",
+      "source_domain": "Financial Ledgers & High-Frequency Trading Systems",
+      "expected_classification": "TRANSFERABLE_ARCHITECTURAL_PATTERN",
+      "key_tradeoff": "Event schema migrations require careful upcasters over time"
+    },
+    {
+      "approach_name": "Raft Consensus / Replicated State Machines",
+      "source_domain": "Fault-Tolerant Clustered Server Systems (etcd / ZooKeeper)",
+      "expected_classification": "NOT_TRANSFERABLE",
+      "disqualification_reason": "Raft requires majority quorum network connectivity; offline client operations completely invalidate this assumption"
+    }
+  ]
+}

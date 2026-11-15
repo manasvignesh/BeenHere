@@ -1,0 +1,37 @@
+{
+  "scenario_id": "scenario_a_recruitment_matching",
+  "name": "Scenario A: AI Recruitment Platform Matching",
+  "category": "Human Resources & Talent Acquisition",
+  "original_concept": "AI recruitment platform matching candidate resumes to job requirements with candidate and employer ranking",
+  "provenance": {
+    "source": "BeenHere Evaluation Suite - Cross-Industry Intelligence",
+    "type": "SCENARIO_FIXTURE",
+    "verified": true
+  },
+  "context": {
+    "target_language": "python",
+    "deployment_model": "serverless_microservice",
+    "latency_sla": "batch_hourly",
+    "required_capability": "two-sided candidate matching with partial preferences"
+  },
+  "expected_evaluations": [
+    {
+      "approach_name": "Hungarian Algorithm / Linear Sum Assignment (Kuhn-Munkres)",
+      "source_domain": "Operations Research & Logistics Fleet Scheduling",
+      "expected_classification": "TRANSFERABLE_IMPLEMENTATION",
+      "key_tradeoff": "O(n^3) complexity restricts dynamic scaling to small/medium cohort batches"
+    },
+    {
+      "approach_name": "Gale-Shapley Stable Matching (Deferred Acceptance)",
+      "source_domain": "Economics & Higher Education Admissions",
+      "expected_classification": "TRANSFERABLE_ALGORITHM",
+      "key_tradeoff": "Requires adaptation for partial preference lists and incomplete candidate rankings"
+    },
+    {
+      "approach_name": "Two-Tower Dense Retrieval & Reciprocal Rank Fusion",
+      "source_domain": "E-Commerce Search & Large-Scale Product Recommendation",
+      "expected_classification": "TRANSFERABLE_ARCHITECTURAL_PATTERN",
+      "key_tradeoff": "Proxy bias in semantic embeddings requires adverse-impact governance audit"
+    }
+  ]
+}

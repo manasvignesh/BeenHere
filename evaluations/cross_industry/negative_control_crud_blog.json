@@ -1,0 +1,20 @@
+{
+  "scenario_id": "negative_control_crud_blog",
+  "name": "Negative Control: Simple CRUD Blog & Markdown Publisher",
+  "category": "Web Content Management & Simple CRUD",
+  "original_concept": "Simple CRUD blog with static HTML pages and markdown posts",
+  "provenance": {
+    "source": "BeenHere Evaluation Suite - Cross-Industry Intelligence",
+    "type": "NEGATIVE_CONTROL_FIXTURE",
+    "verified": true
+  },
+  "context": {
+    "target_language": "python",
+    "deployment_model": "static_or_monolith",
+    "latency_sla": "standard_web",
+    "required_capability": "basic database CRUD and html view rendering"
+  },
+  "expected_evaluations": [],
+  "expected_status": "NEGATIVE_CONTROL_TRIGGERED",
+  "expected_transfer_needed": false
+}
