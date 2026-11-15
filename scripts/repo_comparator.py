@@ -121,24 +121,37 @@ def evaluate_candidate_posture(
     target_model = (ctx.get("deployment_model") or "proprietary_saas").lower()
     user_capability = (ctx.get("required_capability") or "").lower()
 
-    slug = candidate.get("slug", "unknown/unknown")
+    slug = candidate.get("slug") or candidate.get("repository", "unknown/unknown")
     name = candidate.get("name") or slug.split("/")[-1]
-    stars = candidate.get("stars", 0)
-    cand_purpose = candidate.get("purpose", "")
+    stars = candidate.get("stars") if "stars" in candidate else candidate.get("stargazers_count", 0)
+    cand_purpose = candidate.get("purpose") or candidate.get("description", "")
     cand_capability = (candidate.get("target_capability") or "").lower()
 
     # Provenance and Snapshot Metadata
     cand_provenance = candidate.get("provenance_type")
     is_fixture = bool(candidate.get("is_fixture"))
-    retrieval_ts = candidate.get("retrieval_timestamp") or candidate.get("snapshot_date")
+    retrieval_ts = candidate.get("retrieval_timestamp") or candidate.get("snapshot_date") or candidate.get("inspected_at")
     if not cand_provenance:
         if is_fixture or "evaluations" in str(candidate.get("source_file", "")):
             cand_provenance = "SCENARIO_FIXTURE"
         else:
-            cand_provenance = "LIVE_VERIFIED" if candidate.get("evidence_completeness", {}).get("source_inspected") else "CACHED_RECORD"
+            cand_provenance = "LIVE_VERIFIED" if (candidate.get("evidence_completeness", {}).get("source_inspected") or candidate.get("verification_depth") == "SOURCE_CODE_INSPECTED") else "CACHED_RECORD"
 
     # 1. Extract Evidence
-    lic_info = candidate.get("license_info", {})
+    lic_info = candidate.get("license_info")
+    if not lic_info and isinstance(candidate.get("license"), dict):
+        raw_lic = candidate["license"]
+        spdx_val = raw_lic.get("spdx_id") or raw_lic.get("key") or "UNKNOWN"
+        cat_val = (raw_lic.get("category") or "UNKNOWN").upper()
+        lic_info = {
+            "declared_spdx": spdx_val,
+            "category": cat_val,
+            "copyleft_tier": "STRONG_NETWORK" if cat_val == "NETWORK_RECIPROCAL" else ("RECIPROCAL" if cat_val == "RECIPROCAL_ON_DISTRIBUTION" else "NONE"),
+            "license_file_inspected": candidate.get("verification_depth") == "SOURCE_CODE_INSPECTED" or bool(spdx_val and spdx_val != "UNKNOWN"),
+        }
+    elif not lic_info:
+        lic_info = {}
+
     spdx = lic_info.get("declared_spdx", "UNKNOWN")
     lic_cat = lic_info.get("category", "UNKNOWN").upper()
     copyleft_tier = lic_info.get("copyleft_tier", "NONE").upper()
@@ -153,16 +166,28 @@ def evaluate_candidate_posture(
     maint = candidate.get("maintenance", {})
     maint_status = maint.get("status", "ACTIVE").upper()
     is_archived = bool(maint.get("is_archived"))
-    days_inactive = maint.get("last_pushed_days_ago", 0)
+    days_inactive = maint.get("last_pushed_days_ago") if "last_pushed_days_ago" in maint else maint.get("days_since_last_push", 0)
     is_stale_snapshot = bool(maint.get("stale_metadata") or maint.get("is_stale_snapshot"))
 
-    cand_lang = (candidate.get("language") or "").lower()
+    cand_lang = (candidate.get("language") or candidate.get("primary_language") or "").lower()
     cand_ecosystem = (candidate.get("ecosystem") or "").lower()
     exported_symbols = candidate.get("exported_symbols", [])
     dependencies = candidate.get("dependencies", [])
     known_limitations = candidate.get("known_limitations", [])
 
-    evidence_comp = candidate.get("evidence_completeness", {})
+    evidence_comp = candidate.get("evidence_completeness")
+    if not evidence_comp:
+        v_depth = candidate.get("verification_depth", "")
+        evidence_comp = {
+            "license_inspected": bool(lic_info.get("license_file_inspected") or (spdx not in ("UNKNOWN", "NOASSERTION", "NONE"))),
+            "manifest_inspected": bool(candidate.get("manifests_detected")),
+            "source_inspected": v_depth == "SOURCE_CODE_INSPECTED" or bool(candidate.get("inspected_source_files")),
+            "runtime_tested": False,
+            "missing_evidence": [],
+        }
+        if not evidence_comp["source_inspected"]:
+            evidence_comp["missing_evidence"].append("Source code exports not inspected")
+
     license_inspected = bool(evidence_comp.get("license_inspected", False))
     manifest_inspected = bool(evidence_comp.get("manifest_inspected", False))
     source_inspected = bool(evidence_comp.get("source_inspected", False))
@@ -659,13 +684,16 @@ def evaluate_candidate_posture(
 
 
 def compare_repositories(
-    candidates: List[Dict[str, Any]],
+    candidates: Any,
     project_context: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Compare two or more repository evidence records across functional, architectural,
     legal, and operational dimensions. Produces a structured comparative synthesis.
     """
+    if isinstance(candidates, dict):
+        candidates = candidates.get("candidates") or candidates.get("repositories") or [candidates]
+
     if not candidates:
         raise ValueError("At least one candidate repository must be provided for comparison.")
 
@@ -676,21 +704,29 @@ def compare_repositories(
 
     comparisons = []
     for c, eval_res in zip(candidates, evaluated_candidates):
-        lic_info = c.get("license_info", {})
+        lic_info = c.get("license_info") or {}
         maint = c.get("maintenance", {})
+        c_slug = c.get("slug") or c.get("repository", "unknown")
+        c_name = c.get("name") or c_slug.split("/")[-1]
+        c_purpose = c.get("purpose") or c.get("description", "Unspecified")
+        c_lang = c.get("language") or c.get("primary_language", "Unknown")
+        c_stars = c.get("stars") if "stars" in c else c.get("stargazers_count", 0)
+        c_lic = lic_info.get("declared_spdx") or (c.get("license", {}).get("spdx_id") if isinstance(c.get("license"), dict) else "UNKNOWN")
+        c_cat = lic_info.get("category") or (c.get("license", {}).get("category") if isinstance(c.get("license"), dict) else "UNKNOWN")
+        c_days = maint.get("last_pushed_days_ago") if "last_pushed_days_ago" in maint else maint.get("days_since_last_push", "N/A")
 
         comparisons.append({
-            "slug": c.get("slug", "unknown"),
-            "name": c.get("name", c.get("slug", "unknown")),
-            "purpose": c.get("purpose", "Unspecified"),
+            "slug": c_slug,
+            "name": c_name,
+            "purpose": c_purpose,
             "target_capability": c.get("target_capability", ctx.get("required_capability", "Unspecified")),
-            "language": c.get("language", "Unknown"),
+            "language": c_lang,
             "ecosystem": c.get("ecosystem", "Unknown"),
-            "stars": c.get("stars", 0),
-            "declared_license": lic_info.get("declared_spdx", "UNKNOWN"),
-            "license_category": lic_info.get("category", "UNKNOWN"),
+            "stars": c_stars,
+            "declared_license": c_lic,
+            "license_category": c_cat,
             "maintenance_status": maint.get("status", "UNKNOWN"),
-            "last_pushed_days_ago": maint.get("last_pushed_days_ago", "N/A"),
+            "last_pushed_days_ago": c_days,
             "exported_symbol_count": len(c.get("exported_symbols", [])),
             "dependency_count": len(c.get("dependencies", [])),
             "known_limitations_count": len(c.get("known_limitations", [])),
@@ -879,9 +915,14 @@ def generate_integration_blueprint(
         lines.append("| Exported Symbol | Type | Source File | Reusability Role |")
         lines.append("| :--- | :---: | :--- | :--- |")
         for sym in symbols[:8]:
-            s_name = sym.get("name", "anonymous")
-            s_type = sym.get("type", "symbol")
-            s_file = sym.get("file", "unknown")
+            if isinstance(sym, dict):
+                s_name = sym.get("name", "anonymous")
+                s_type = sym.get("type", "symbol")
+                s_file = sym.get("file", "unknown")
+            else:
+                s_name = str(sym)
+                s_type = "symbol"
+                s_file = "source"
             lines.append(f"| `{s_name}` | `{s_type}` | `{s_file}` | Direct integration entrypoint |")
         lines.append("")
     else:

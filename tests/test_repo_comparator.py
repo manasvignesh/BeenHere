@@ -616,6 +616,62 @@ class TestComparatorReliabilityAndAdversarial(unittest.TestCase):
         for c in comp["candidates"]:
             self.assertEqual(c["uncertainty"], "HIGH")
 
+    def test_repo_inspector_output_compatibility(self):
+        """Direct output from repo_inspector.py must be compatible with compare_repositories."""
+        inspector_output = {
+            "status": "success",
+            "repository": "libp2p/go-libp2p",
+            "html_url": "https://github.com/libp2p/go-libp2p",
+            "description": "libp2p networking stack in Go",
+            "verification_depth": "SOURCE_CODE_INSPECTED",
+            "primary_language": "Go",
+            "stargazers_count": 8500,
+            "license": {
+                "spdx_id": "MIT",
+                "name": "MIT License",
+                "category": "PERMISSIVE",
+                "clearance": "PERMITTED_FOR_ADOPTION",
+                "rationale": "Permissive license.",
+            },
+            "manifests_detected": ["go.mod"],
+            "maintenance": {
+                "status": "ACTIVE",
+                "is_archived": False,
+                "days_since_last_push": 2,
+            },
+            "inspected_source_files": [{"path": "p2p/net.go"}],
+            "exported_symbols": ["NewNode", "ConnectPeer"],
+        }
+        res = repo_comparator.compare_repositories([inspector_output], {"target_language": "go"})
+        cand = res["candidates"][0]
+        self.assertEqual(cand["slug"], "libp2p/go-libp2p")
+        self.assertEqual(cand["stars"], 8500)
+        self.assertEqual(cand["declared_license"], "MIT")
+        self.assertEqual(cand["license_category"], "PERMISSIVE")
+        self.assertEqual(cand["language"].lower(), "go")
+
+    def test_dict_wrapper_candidates_compatibility(self):
+        """A dictionary wrapper {"candidates": [...]} must be automatically unpacked."""
+        cand_wrapper = {
+            "candidates": [
+                {
+                    "slug": "org/repo-a",
+                    "language": "Go",
+                    "stars": 1000,
+                    "license_info": {"declared_spdx": "MIT", "category": "PERMISSIVE"},
+                    "exported_symbols": ["Run"],
+                    "evidence_completeness": {
+                        "license_inspected": True,
+                        "manifest_inspected": True,
+                        "source_inspected": True,
+                    },
+                }
+            ]
+        }
+        res = repo_comparator.compare_repositories(cand_wrapper, {"target_language": "go"})
+        self.assertEqual(len(res["candidates"]), 1)
+        self.assertEqual(res["candidates"][0]["slug"], "org/repo-a")
+
 
 
 if __name__ == "__main__":

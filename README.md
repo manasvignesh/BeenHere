@@ -1,6 +1,6 @@
 # BeenHere 🧭 — Explore Every Angle Before You Build
 
-[![Test Suite](https://img.shields.io/badge/tests-151%20passing-brightgreen.svg)](tests/)
+[![Test Suite](https://img.shields.io/badge/tests-156%20passing-brightgreen.svg)](tests/)
 [![Benchmarks](https://img.shields.io/badge/benchmarks-10%2F10%20passing-brightgreen.svg)](scripts/benchmark_runner.py)
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)

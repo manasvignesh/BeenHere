@@ -23,9 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `scenario_b_multiplayer_matchmaking.json`: Real-time multiplayer matchmaking -> Ride-hailing batch dispatch & Bayesian volatility (Glicko-2).
   - `scenario_c_collaborative_knowledge.json`: Collaborative notes -> CRDTs & Event Sourcing (with Raft consensus evaluated and disqualified as `NOT_TRANSFERABLE` for offline editing).
   - `negative_control_crud_blog.json`: Simple CRUD blog correctly triggering `NO_TRANSFER_NEEDED`.
-- **Capability Audit & Regression Suite:**
-  - `evaluations/reports/CROSS_INDUSTRY_CAPABILITY_AUDIT.md`: Complete audit of prior cross-vertical methodology vs implemented capabilities.
-  - `tests/test_cross_industry_analyzer.py`: 19 comprehensive unit and regression tests covering all 12 criteria, raising the total test suite to 151 passing tests.
+- **End-to-End Integration Testing & Data Contract Harmonization:**
+  - Added `tests/test_e2e_integration.py` verifying full-lifecycle chaining across concept expansion, cross-industry analysis, candidate inspection, repository comparison, and blueprint generation.
+  - Enhanced `scripts/repo_comparator.py` to seamlessly accept dictionary-wrapped candidate lists (`{"candidates": [...]}`) and direct outputs from `scripts/repo_inspector.py`.
+  - Hardened `generate_integration_blueprint` to safely format both string symbols and structured symbol dictionaries without `AttributeError`.
+  - Executed end-to-end validation on a completely unfamiliar scenario: *Offline-first local disaster-response coordination system*.
+  - Completed live agent verification in OpenAI Codex CLI v0.168.0 (`C:\Users\Manas\BeenHere-Phase4-DisasterResponse`) and evaluated against a controlled baseline (`C:\Users\Manas\Codex-Baseline-DisasterResponse`).
+  - Total test suite expanded to 156 passing tests.
 - **Repository Comparison Engine (`scripts/repo_comparator.py`):**
   - Structural comparison engine evaluating multi-repository overlap, license compatibility, maintenance signals, and integration postures.
   - Qualified legal risk handling distinguishing confirmed facts from jurisdictional and architectural risk assessments.
