@@ -9,11 +9,11 @@
 
 ## 1. Executive Summary
 
-This audit evaluates BeenHere's existing capabilities for cross-industry and cross-vertical research. Prior to Phase 3, BeenHere established rigorous conceptual methodologies ([references/cross_vertical_research.md](file:///C:/Users/Manas/BeenHere/references/cross_vertical_research.md) and [references/transferability_rubric.md](file:///C:/Users/Manas/BeenHere/references/transferability_rubric.md)) and static domain taxonomy keywords in [scripts/concept_expander.py](file:///C:/Users/Manas/BeenHere/scripts/concept_expander.py).
+This audit evaluates BeenHere's existing capabilities for cross-industry and cross-vertical research. Prior to Phase 3, BeenHere established rigorous conceptual methodologies ([references/cross_vertical_research.md](../../references/cross_vertical_research.md) and [references/transferability_rubric.md](../../references/transferability_rubric.md)) and static domain taxonomy keywords in [scripts/concept_expander.py](../../scripts/concept_expander.py).
 
 However, **there was no automated engine to extract underlying problem mechanisms, filter superficial buzzwords, ingest candidate approaches from external domains, or systematically evaluate practical engineering transferability.**
 
-Phase 3 introduces [scripts/cross_industry_analyzer.py](file:///C:/Users/Manas/BeenHere/scripts/cross_industry_analyzer.py), bridging the gap between documented methodology and automated, reproducible tooling.
+Phase 3 introduces [scripts/cross_industry_analyzer.py](../../scripts/cross_industry_analyzer.py), bridging the gap between documented methodology and automated, reproducible tooling.
 
 ---
 

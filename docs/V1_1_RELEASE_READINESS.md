@@ -1,10 +1,11 @@
 # BeenHere v1.1 Release Readiness Assessment Report
 
-**Report Date:** 2026-11-15  
-**Assessment Lead:** Independent QA Engineer & Evaluation Specialist  
-**Evaluated Repository:** `C:\Users\Manas\BeenHere`  
-**Latest Evaluated Commit:** `3d0f2bc` (+ Phase 4 integration hardening)  
-**Target Release:** BeenHere v1.1  
+**Report Date:** 2026-11-16  
+**Assessment Lead:** Independent Release Auditor & Senior QA Engineer  
+**Evaluated Repository:** `BeenHere` (local workspace)  
+**Latest Evaluated Commit:** `d3ca0b1`  
+**Current Public Release:** `v1.0.0-beta.1`  
+**Target Release Candidate:** `v1.1.0`  
 **Release Recommendation:** **`READY_WITH_DOCUMENTED_LIMITATIONS`**
 
 ---
@@ -12,15 +13,12 @@
 ## 1. Executive Summary
 
 BeenHere v1.1 introduces significant architectural enhancements over v1.0.0-beta.1:
-- A deterministic **Cross-Industry Research Intelligence Engine** (`scripts/cross_industry_analyzer.py`) with 8-dimension transferability auditing and negative controls.
+- A deterministic **Cross-Industry Research Intelligence Engine** (`scripts/cross_industry_analyzer.py`) with 8-dimension transferability auditing, negative-control screening, and hypothesis tagging.
 - A multi-candidate **Repository Comparison Engine** (`scripts/repo_comparator.py`) with qualified legal risk handling and automated integration blueprints.
-- A hardened **Concept Expander** with anti-buzzword filtering and query matrix deduplication.
+- A hardened **Concept Expander** with anti-buzzword filtering, morphological fallbacks, and deduplicated query matrices.
 - A comprehensive **156-test automated regression suite** and a **10-case structural benchmark suite**.
 
-To determine release readiness, Phase 4 evaluated the complete skill workflow inside a live, authenticated coding agent (**OpenAI Codex v0.168.0**) on a primary, completely unfamiliar scenario:
-> *"Build an offline-first local disaster-response coordination system that lets volunteer teams exchange task assignments, resource availability, and location updates when internet connectivity is intermittent."*
-
-The end-to-end integration test successfully verified skill discovery, rule-based decomposition, cross-industry mechanism screening (identifying CRDTs as transferable and disqualifying Raft consensus), candidate repository comparison, and live agent host-tool fallbacks.
+This audit independently inspected the actual live-agent execution evidence, examined the controlled baseline, audited all disaster-response research claims, verified release packaging, and reviewed public-facing documentation.
 
 ---
 
@@ -54,7 +52,7 @@ The end-to-end BeenHere v1.1 pipeline operates across 4 core phases:
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ Phase 3: Technical Synthesis & Evaluation (Steps 8–11)                                 │
 │ - scripts/cross_industry_analyzer.py (Step 9)                                          │
-│   * Screens superficial metaphors (beehive, courtroom trial)                           │
+│   * Screens superficial metaphors (beehive, courtroom trial, quantum thinking)        │
 │   * Triggers negative controls (NO_TRANSFER_NEEDED for simple CRUD apps)               │
 │   * Audits 8 transferability dimensions; assigns 6 standardized outcome tiers          │
 │   * Emits "### Solutions from Other Industries" markdown section                       │
@@ -79,96 +77,138 @@ The end-to-end BeenHere v1.1 pipeline operates across 4 core phases:
 
 ---
 
-## 3. Live Agent Testing Evidence & Transcripts
+## 3. Independent Audit of Live Codex Execution Evidence
 
-### 3.1 Test Environment & Configuration
-- **Host Agent:** OpenAI Codex CLI v0.168.0 (`windows-x86_64`)
-- **Inference Model:** `gpt-6-luna` (OpenAI provider)
-- **Isolated Workspace:** `C:\Users\Manas\BeenHere-Phase4-DisasterResponse`
-- **Installation Method:** `python scripts/install_skill.py --target-dir C:\Users\Manas\BeenHere-Phase4-DisasterResponse --agent all --mode copy`
-- **Installed Skill Location:** `.agents/skills/beenhere/SKILL.md`
+The trial was conducted in an isolated test directory (`BeenHere-Phase4-DisasterResponse`) using `codex-cli 0.168.0` and model `gpt-6-luna`.
 
-### 3.2 Discovery & Execution Verification
-1. **Skill Discovery:** Codex immediately inventoried the workspace, identified `.agents/skills/beenhere`, and read the full `SKILL.md` instructions.
-2. **Subprocess Sandbox & Environment Fallback:**
-   - In Codex's read-only subprocess sandbox, local PowerShell execution lacked an active Python path.
-   - Following `SKILL.md` Section 94–100, Codex **did not crash or halt**. It immediately fell back to host-agent native tools:
-     - Read pre-generated / cached query plans and evidence records.
-     - Executed live native WebSearch (`web search: site:github.com automerge/automerge local-first CRDT sync official ...`).
-     - Inspected online project documentation directly.
-3. **Synthesis Quality:**
-   - Identified `automerge/automerge` (MIT) as the primary data synchronization engine.
-   - Identified `meshtastic/firmware` (GPL-3.0) as off-grid radio transport, warning about distribution obligations.
-   - Surfaced `briar/briar` and `ushahidi/platform`, correctly noting unconfirmed licenses in metadata.
-   - Highlighted domain-specific conflict hazards: *CRDT convergence ensures document equality, but does not solve real-world race conditions on finite physical resources.*
+### 3.1 Provenance Classification of Workflow Steps
 
-### 3.3 Preserved Original Transcripts
-- **Skill Discovery & Read Turn:** [transcript step 2305](file:///C:/Users/Manas/.gemini/antigravity/brain/ae17bc32-8fd8-4f11-90e4-c71fd62fbbf5/.system_generated/steps/2305/output.txt)
-- **Full Research Execution Turn:** [transcript step 2314](file:///C:/Users/Manas/.gemini/antigravity/brain/ae17bc32-8fd8-4f11-90e4-c71fd62fbbf5/.system_generated/steps/2314/output.txt)
-- **Agent Final Message Artifact:** [codex_last_message.txt](file:///C:/Users/Manas/BeenHere-Phase4-DisasterResponse/codex_last_message.txt)
-- **Controlled Baseline Transcript:** [transcript step 2359](file:///C:/Users/Manas/.gemini/antigravity/brain/ae17bc32-8fd8-4f11-90e4-c71fd62fbbf5/.system_generated/steps/2359/output.txt)
+| Pipeline Step / Artifact | Provenance Classification | Executor / Runtime Environment | Audit Details & Verification |
+| :--- | :--- | :--- | :--- |
+| **Skill Discovery** | `EXECUTED_IN_CODEX` | OpenAI Codex CLI (Session `01a1ddec-0555-75d3`) | Codex ran PowerShell `Get-ChildItem -Path .agents/skills` and confirmed `beenhere`. |
+| **Reading `SKILL.md`** | `EXECUTED_IN_CODEX` | OpenAI Codex CLI (Session `01a1ddec-c0b2-7a60`) | Codex ran `Get-Content .agents/skills/beenhere/SKILL.md` (lines 1–183). |
+| **Query Plan Generation** | `EXECUTED_EXTERNALLY` | Antigravity Host CLI prior to Codex run | Generated `disaster_query_plan.json` (12:04:22). |
+| **Cross-Industry Analysis** | `EXECUTED_EXTERNALLY` | Antigravity Host CLI prior to Codex run | Generated `disaster_cross_industry.json` (12:04:33). |
+| **GitHub Discovery** | `EXECUTED_EXTERNALLY` | Antigravity Host CLI prior to Codex run | Generated `disaster_github_search.json` (12:04:57). |
+| **Academic Discovery** | `EXECUTED_EXTERNALLY` | Antigravity Host CLI prior to Codex run | Generated `disaster_paper_search.json` (12:05:13). |
+| **Repo Inspection** | `EXECUTED_EXTERNALLY` | Antigravity Host CLI prior to Codex run | Generated `automerge_evidence.json`, `briar_evidence.json`, etc. |
+| **Repo Comparison & Blueprint**| `EXECUTED_EXTERNALLY` | Antigravity Host CLI prior to Codex run | Generated `comparison_table.md` & `disaster_blueprint.md`. |
+| **Ingesting Cached Evidence** | `USED_PREGENERATED_EVIDENCE` | OpenAI Codex CLI (Session `01a1ddec-c0b2-7a60`) | Codex read pre-generated JSON files via PowerShell `Get-Content`. |
+| **Native WebSearch & Deep Domain Analysis** | `EXECUTED_IN_CODEX` | OpenAI Codex CLI (Model `gpt-6-luna`) | Codex autonomously executed live web search queries for Automerge and Sahayata Setu. |
+| **Python Script Invocations in Codex Subshell** | `NOT_EXECUTED` | Codex Subprocess Shell | Python runtime was inaccessible in Codex's subshell (`py.exe` reported no installed runtime). |
+| **File Creation of `DISASTER_RESPONSE_RESEARCH.md` in Codex** | `NOT_EXECUTED` | Codex Subprocess Sandbox | Sandbox was read-only; file write tool call was rejected by sandbox policy. |
+| **Assembly of Final `DISASTER_RESPONSE_RESEARCH.md` File** | `EXECUTED_EXTERNALLY` | Antigravity Host CLI post-Codex run | Assembled report file in workspace combining BeenHere evidence and Codex inline evaluation. |
+| **Link & Source Verification (`verify_sources.py`)** | `EXECUTED_EXTERNALLY` | Antigravity Host CLI post-Codex run | Validated 7/7 URLs and DOIs reachable with 0 broken links. |
+
+### 3.2 Audit Verdict on Codex Execution:
+Codex **successfully discovered and activated** the skill, correctly parsed its frontmatter, and when its subshell encountered an inaccessible Python runtime, **properly followed the documented Host-Agent Fallback**. It used cached evidence, conducted live web search, and synthesized an inline assessment. The Markdown file on disk was assembled post-run because Codex ran with read-only sandbox permissions.
 
 ---
 
-## 4. Controlled Baseline Comparison
+## 4. Audit of Baseline Comparison & Evaluation Fairness
 
-A controlled baseline run was conducted under identical conditions in `C:\Users\Manas\Codex-Baseline-DisasterResponse` without BeenHere installed, using the same agent and model (`gpt-6-luna`).
+A baseline run was conducted in `Codex-Baseline-DisasterResponse` without BeenHere installed, using the same model (`gpt-6-luna`).
 
-| Evaluation Dimension | Controlled Baseline (Without BeenHere) | BeenHere v1.1 Workflow |
-| :--- | :--- | :--- |
-| **Evidence Traceability** | General web search links to brochures and wiki guides; no formal evidence tags. | Strict evidence hierarchy (`[VERIFIED-SOURCE]`, `[VERIFIED-METADATA]`, `[INFERRED]`). |
-| **Source Verification** | Did not run automated link reachability or DOI resolution. | 100% verified URLs (7/7 reachable via `verify_sources.py`, including Zenodo DOIs). |
-| **Cross-Industry Discovery** | Relied entirely on familiar disaster tools (Sahana Eden, ODK Collect, Ushahidi). | Identified CRDTs, Event Sourcing, and explicitly disqualified Raft consensus via 8-dimension audit. |
-| **Licensing Analysis** | General mention that tools are open-source; no copyleft or distribution audit. | Rigorous distinction between permissive (MIT), reciprocal (GPL-3.0), and network copyleft (AGPL-3.0). |
-| **Integration Architecture** | High-level prose recommending an Android client and local server hub. | Formal **Integration Blueprint** with Anti-Corruption Adapter interface, sequence diagram, and validation checklist. |
-| **Anti-Percentage Rule** | No percentages generated. | Strictly enforced; zero ungrounded quantitative reusability claims. |
+### 4.1 Evaluation Context & Characterization:
+- **Baseline Prompt:** Evaluated the disaster coordination idea without BeenHere instructions.
+- **Tools Available:** Codex had native WebSearch and shell access. It queried Sahana Eden, ODK Collect, Briar, Meshtastic, and MapLibre.
+- **Comparison Nature:** Because the BeenHere test workspace was pre-populated with BeenHere JSON records, the conditions were **not strictly blinded or identical**.
+- **Official Characterization:** This evaluation is designated as an **exploratory qualitative comparison**, not an empirical benchmark. **No quantitative percentage superiority is claimed.**
 
-*Finding:* Both conditions delivered strong conceptual insights on operational conflict resolution. However, BeenHere v1.1 provided verifiable source provenance, explicit legal obligation clearance, cross-industry computational mechanisms, and concrete architectural adapter contracts.
-
----
-
-## 5. Confirmed Defects & Fixes Landed in Phase 4
-
-During end-to-end integration auditing, two data contract defects were discovered and resolved:
-
-1. **`repo_comparator.py` Input Contract Harmonization:**
-   - *Defect:* If an agent passed a candidate list wrapped in a dictionary (`{"candidates": [...]}` or `{"repositories": [...]}`), or directly passed `scripts/repo_inspector.py` JSON, field mismatches (`repository` vs `slug`, `stargazers_count` vs `stars`, `primary_language` vs `language`) caused fields to fall back to `unknown`.
-   - *Fix:* Harmonized `evaluate_candidate_posture` and `compare_repositories` to automatically unwrap dict wrappers and map `repo_inspector.py` field schemas seamlessly.
-2. **`generate_integration_blueprint` String Symbol Handling:**
-   - *Defect:* If candidate evidence records contained string symbols (e.g., `["SyncNode", "ConnectPeer"]`) rather than symbol dictionaries, `generate_integration_blueprint` crashed with `AttributeError: 'str' object has no attribute 'get'`.
-   - *Fix:* Added type-safe introspection in line 918 handling both `dict` and `str` symbols cleanly.
-3. **Automated Test Suite Expansion:**
-   - Added `tests/test_e2e_integration.py` (3 new tests) and 2 new regression tests in `tests/test_repo_comparator.py`, raising the total unit test suite from 151 to **156 passing tests**.
+### 4.2 Qualitative Observations:
+1. **Both Conditions:** Showed strong understanding of operational disaster hazards (e.g. CRDTs cannot resolve physical race conditions on finite rescue resources).
+2. **BeenHere Contribution:**
+   - Provided concrete software library inspection (`automerge/automerge` MIT TypeScript/Rust).
+   - Distinguished licensing tiers (MIT vs. GPL-3.0 distribution triggers vs. AGPL-3.0 network copyleft).
+   - Surfaced cross-industry delay-tolerant networking (DTN) and academic preprints.
+   - Formulated a concrete Integration Blueprint with a typed TypeScript adapter interface.
 
 ---
 
-## 6. Verification & Regression Safety
+## 5. Audit of Disaster-Response Technical Findings
 
-All four quality and validation gates pass with zero failures:
-1. `python -m unittest discover tests -v` -> **156 / 156 tests passing** (3.1s runtime).
-2. `python scripts/benchmark_runner.py` -> **10 / 10 structural benchmark cases passing**.
-3. `python scripts/validate_skill.py` -> **[PASS] VALID** (packaging, frontmatter, scripts, secrets clean).
-4. `python evaluations/evaluate.py --validate evaluations/results` -> **[PASS] 6 / 6 manifests valid**.
+All substantive claims in `DISASTER_RESPONSE_RESEARCH.md` were audited:
+
+1. **Automerge Integration:**
+   - *Audit Finding:* Automerge provides in-memory CRDT state and delta synchronization. It is network and persistence agnostic. It does *not* provide wireless transport, device encryption, or user authentication. The report accurately assigns it a bounded role as an in-memory document engine.
+2. **Meshtastic Licensing & Boundaries:**
+   - *Audit Finding:* Meshtastic firmware is GPL-3.0. Reusing its C++ code inside a proprietary smartphone app triggers copyleft distribution obligations. The report correctly assigns it as an `USE_AS_ARCHITECTURAL_REFERENCE` and external radio hardware link rather than an embedded library dependency.
+3. **CRDT Limitations in Disaster Dispatch:**
+   - *Audit Finding:* Conflict-Free Replicated Data Types guarantee bitwise document convergence upon network reconnection. They do *not* prevent real-world race conditions (e.g., two disconnected teams claiming the same victim rescue or the last drinking water supply). The report explicitly warns against silent "last-write-wins" overwrites and mandates visual dual-claim conflict flags.
+4. **LoRa & Wireless Constraints:**
+   - *Audit Finding:* LoRa offers 0.3–5 kbps bandwidth with regional airtime limits (e.g. 1% duty-cycle in EU 868 MHz band; FCC Part 15 dwell-time in US 915 MHz band). The report explicitly proscribes verbose JSON payloads and specifies binary Protobuf/CBOR deltas.
+5. **Academic Preprints:**
+   - *Audit Finding:* Anil et al. (2026) (DOI: `10.5281/zenodo.19615256`) and Alpasan (2026) (DOI: `10.5281/zenodo.20776149`) are published Zenodo/OSF preprints. They are relevant to P2P CRDT sync over WebRTC/libp2p, but their empirical latency claims are unrefereed. The report explicitly labels them as preprints with unverified author claims.
+6. **Life-Safety Warning:**
+   - *Audit Finding:* A prominent Life Safety & Operational Disclaimer was added explicitly stating that exploratory research must not be deployed in emergency operations without rigorous field testing and emergency management authorization.
 
 ---
 
-## 7. Documented Limitations
+## 6. Release-Gate Checklist
 
-Before deploying v1.1 in production environments, the following technical boundaries are formally documented:
-1. **Subprocess Python Environment Dependency:** In restricted agent sandboxes where subprocesses do not inherit the host Python runtime, the agent must leverage BeenHere's documented host-agent fallback mode (native WebSearch and inspecting pre-generated plans).
-2. **Sandbox Filesystem Write Policies:** When coding agents run in default read-only sandbox mode (e.g., `codex exec` without `--sandbox workspace-write`), reports are outputted to stdout rather than written to disk unless explicitly approved by the user.
-3. **Cross-Industry Taxonomy Depth:** The curated taxonomy contains deep mappings for two-sided matching, dynamic queuing/batching, and distributed consistency. Unfamiliar concepts outside these domains rely on heuristic morphological decomposition.
-4. **Legal Disclaimers:** Automated license classification identifies copyleft triggers and commercial restrictions heuristics, but does not substitute for qualified intellectual property counsel.
+| Checklist Item | Requirement | Evidence / Test Output | Status |
+| :--- | :--- | :--- | :---: |
+| **1. Skill Discovery** | Agent discovers and parses `SKILL.md` frontmatter | Verified in Codex CLI v0.168.0 (`step 2305`) | **`PASS`** |
+| **2. Host Fallback** | Fallback triggered when subprocess environment is restricted | Verified in Codex CLI v0.168.0 (`step 2314`) | **`PASS`** |
+| **3. Automated Tests** | All automated unit and regression tests pass | `python -m unittest discover tests -v` (156/156 passed in 3.0s) | **`PASS`** |
+| **4. Structural Benchmarks**| All 10 domain benchmark cases pass | `python scripts/benchmark_runner.py` (10/10 passed) | **`PASS`** |
+| **5. Packaging Validity** | Packaging, frontmatter, scripts, and secrets clean | `python scripts/validate_skill.py` (Overall Status: PASS VALID) | **`PASS`** |
+| **6. Manifest Validity** | Evaluation manifest schemas and rubrics valid | `python evaluations/evaluate.py --validate` (6/6 valid) | **`PASS`** |
+| **7. Cross-Platform Paths**| No hardcoded machine paths in release codebase | Scanned git tracked files; cleaned relative links | **`PASS`** |
+| **8. Anti-Percentage Rule**| No ungrounded quantitative reuse percentages | Enforced in linters and test assertions | **`PASS`** |
+| **9. Negative Controls** | Straightforward CRUD apps trigger `NO_TRANSFER_NEEDED` | Verified in unit tests and CLI runs | **`PASS`** |
+| **10. Zero Pip Dependencies**| Uses Python 3.8+ standard library only | Verified by AST import audit in `validate_skill.py` | **`PASS`** |
 
 ---
 
-## 8. Release-Readiness Decision
+## 7. Documented Operational Limitations
 
-### Status: **`READY_WITH_DOCUMENTED_LIMITATIONS`**
+1. **Subprocess Python Environment Isolation:** In restricted agent sandboxes where subprocesses do not inherit the host Python runtime, the agent must leverage BeenHere's documented host-agent fallback mode (native WebSearch and inspecting pre-generated plans).
+2. **Sandbox Filesystem Write Policies:** In read-only agent sandboxes, report outputs are delivered inline to chat/stdout rather than written directly to disk without user write permissions.
+3. **Taxonomy Coverage:** The curated cross-industry taxonomy covers distributed state consistency, two-sided resource allocation, and dynamic queuing. Highly niche domains rely on heuristic token expansion.
+4. **Legal Disclaimers:** Automated heuristic license audits assist engineering planning but do not replace formal review by qualified legal counsel.
 
-BeenHere v1.1 has satisfied all end-to-end integration requirements, demonstrated reliable behavior in an actual AI coding agent, passed all packaging and regression benchmarks, and documented its operational constraints honestly.
+---
 
-### Remaining Steps to Publish v1.1 (When Authorized):
-1. User authorization to push local commits to remote GitHub (`origin/main`).
-2. Draft and publish GitHub Release `v1.1.0` linking `CHANGELOG.md` and `docs/V1_1_RELEASE_READINESS.md`.
-3. Verify Agent Skills registry synchronization (`npx skills add manasvignesh/BeenHere`).
+## 8. Final Release Verdict & Recommendation
+
+### Recommendation: **`READY_WITH_DOCUMENTED_LIMITATIONS`**
+
+BeenHere v1.1 has satisfied all verification gates, demonstrated reliable fallback behavior in OpenAI Codex, passed 156 regression tests, resolved data contract edge cases, and documented its operational constraints honestly.
+
+---
+
+## 9. Proposed v1.1.0 Release Notes
+
+```markdown
+# BeenHere v1.1.0 — Cross-Industry Intelligence & Multi-Repository Comparison
+
+BeenHere v1.1.0 enhances the agent skill with cross-industry research intelligence, automated multi-repository comparisons, and concrete architecture integration blueprints.
+
+### Highlights:
+- **Cross-Industry Research Intelligence Engine (`scripts/cross_industry_analyzer.py`):**
+  - Uncovers battle-tested engineering mechanisms from adjacent domains.
+  - 8-dimension transferability auditing (problem equivalence, input compatibility, operational constraints, assumptions, integration practicality, risk, evidence strength).
+  - Negative-control screening (`NO_TRANSFER_NEEDED`) on basic CRUD apps to prevent overengineering.
+  - Rejects superficial metaphors (beehive, courtroom trial) while preserving genuine algorithmic transfers (CRDTs, Gale-Shapley, Hungarian algorithm).
+  - Explicitly disqualifies incompatible mechanisms (e.g., Raft consensus disqualified for offline-first partitioned editing).
+- **Intelligent Repository Comparison Engine (`scripts/repo_comparator.py`):**
+  - Side-by-side comparative matrices across functional overlap, maintenance, language, and license obligations.
+  - Generates actionable Integration Blueprints with proposed Anti-Corruption Adapter interfaces.
+  - Qualified legal risk handling distinguishing confirmed license text from jurisdictional interpretations.
+- **Robustness & Compatibility:**
+  - Expanded automated test suite from 82 to 156 passing tests.
+  - 10/10 passing structural benchmarks.
+  - Python 3.8+ standard library only (zero external pip dependencies).
+  - Host-agent fallback handling for restricted sandboxes and subprocess socket denials.
+```
+
+---
+
+## 10. Publication Steps (Pending User Authorization)
+
+When authorized, execute the following commands:
+1. `git push origin main`
+2. `git tag -a v1.1.0 -m "Release v1.1.0: Cross-Industry Research Intelligence & Repository Comparison"`
+3. `git push origin v1.1.0`
+4. Create GitHub Release `v1.1.0` linking `CHANGELOG.md` and `docs/V1_1_RELEASE_READINESS.md`.
