@@ -4,7 +4,7 @@ description: Explores prior art, open-source repositories, academic papers, and 
 license: MIT
 compatibility: Requires Python 3.8+ (standard library only). Optional git, gh CLI, or GITHUB_TOKEN for elevated rate limits.
 metadata:
-  version: "1.0.0-beta.1"
+  version: "1.1.0"
   author: "BeenHere Open Source Project"
 allowed-tools: Bash, Read, Grep, Glob, WebSearch
 ---

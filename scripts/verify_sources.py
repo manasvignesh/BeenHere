@@ -16,7 +16,7 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/manasvignesh/BeenHere)"
+USER_AGENT = "BeenHere/1.1.0 (https://github.com/manasvignesh/BeenHere)"
 
 EVIDENCE_TAGS = [
     "[VERIFIED-TEST]",

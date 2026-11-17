@@ -18,7 +18,7 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional, Tuple
 
-USER_AGENT = "BeenHere/1.0.0-beta.1 (https://github.com/manasvignesh/BeenHere)"
+USER_AGENT = "BeenHere/1.1.0 (https://github.com/manasvignesh/BeenHere)"
 GITHUB_API_BASE = "https://api.github.com"
 
 # Patterns commonly used in prompt injection attempts within external repos

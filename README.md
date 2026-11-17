@@ -5,7 +5,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-stdlib%20only-orange.svg)](scripts/)
-[![Release Candidate](https://img.shields.io/badge/release-v1.0.0--beta.1-blueviolet.svg)](CHANGELOG.md)
+[![Release](https://img.shields.io/badge/release-v1.1.0-blueviolet.svg)](CHANGELOG.md)
 
 > **BeenHere — Explore every angle before you build.**  
 > *Discover existing products, reusable code, academic research, and unexpected approaches from other industries before writing new software.*
@@ -104,7 +104,7 @@ python scripts/install_skill.py --uninstall
 
 ```
 beenhere/
-├── SKILL.md                          # Canonical Agent Skill specification (v1.0.0-beta.1)
+├── SKILL.md                          # Canonical Agent Skill specification (v1.1.0)
 ├── README.md                         # Project overview and documentation
 ├── LICENSE                           # MIT License
 ├── CONTRIBUTING.md                   # Development guide and contribution standards
@@ -114,8 +114,10 @@ beenhere/
 ├── scripts/                          # Zero-dependency Python CLI utilities
 │   ├── github_search.py              # GitHub discovery with multi-query deduplication & rate limiting
 │   ├── repo_inspector.py             # Repository metadata, health, and source code inspection
+│   ├── repo_comparator.py            # Multi-candidate repository comparison & integration posture engine
 │   ├── integration_analyzer.py       # Static AST symbol, manifest, and license obligation analyzer
 │   ├── concept_expander.py           # 4-tier search query planner and mechanism abstractor
+│   ├── cross_industry_analyzer.py    # Cross-industry research intelligence & transferability auditor
 │   ├── paper_search.py               # Academic discovery across OpenAlex, arXiv, and Semantic Scholar
 │   ├── verify_sources.py             # Evidence tag auditor and link reachability verifier
 │   ├── benchmark_runner.py           # 10-domain automated benchmark evaluation suite
@@ -184,7 +186,7 @@ BeenHere is built around strict research integrity and defensible claims:
 BeenHere is continuously tested using standard Python unittest and automated benchmark suites:
 
 ```bash
-# Run all 82 automated unit tests:
+# Run all 156 automated unit tests:
 python -m unittest discover tests -v
 
 # Run the 10-case benchmark evaluation suite:

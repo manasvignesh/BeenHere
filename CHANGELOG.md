@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] (v1.1 Development)
+## [1.1.0] - 2026-11-17
 
 ### Added
 - **Cross-Industry Research Intelligence Engine (`scripts/cross_industry_analyzer.py`):** Deterministic tool discovering battle-tested solutions from outside a developer's immediate product category.
@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced `scripts/repo_comparator.py` to seamlessly accept dictionary-wrapped candidate lists (`{"candidates": [...]}`) and direct outputs from `scripts/repo_inspector.py`.
   - Hardened `generate_integration_blueprint` to safely format both string symbols and structured symbol dictionaries without `AttributeError`.
   - Executed end-to-end validation on a completely unfamiliar scenario: *Offline-first local disaster-response coordination system*.
-  - Completed live agent verification in OpenAI Codex CLI v0.168.0 (`C:\Users\Manas\BeenHere-Phase4-DisasterResponse`) and evaluated against a controlled baseline (`C:\Users\Manas\Codex-Baseline-DisasterResponse`).
+  - Completed live agent verification in OpenAI Codex CLI v0.168.0 in an isolated test environment and evaluated against an unassisted baseline.
   - Total test suite expanded to 156 passing tests.
 - **Repository Comparison Engine (`scripts/repo_comparator.py`):**
   - Structural comparison engine evaluating multi-repository overlap, license compatibility, maintenance signals, and integration postures.
